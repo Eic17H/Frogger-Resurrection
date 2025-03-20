@@ -1,0 +1,21 @@
+posizione
+int x
+int y
+
+messaggio
+posizione pos
+pid_t pid
+enum mittente 
+
+proiettile 
+posizione pos
+
+granate
+posizione pos
+
+coccodrillo
+posizione pos
+int indice_riga
+
+rana 
+posizione pos
