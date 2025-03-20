@@ -1,0 +1,17 @@
+ obbligatorio utilizzare i processi per la gestione della
+elaborazione concorrente e le pipes per la comunicazione (simile all’esercizio
+guardie e ladri). È richiesta una singola pipe per le comunicazioni dai processi
+produttore (multiple entità di gioco) al singolo processo consumatore (gestore di
+grafica e collisioni). È ammessa l’aggiunta di ulteriori pipes multiple opzionali solo
+per le comunicazioni in senso inverso (ovvero, dal gestore di grafica e collisioni alle
+singole entità di gioco). Saranno invece rifiutate soluzioni che utilizzano pipe
+multiple per la comunicazione dai produttori al consumatore, così come quelle che
+implementano la comunicazione con altre soluzioni (e.g., segnali).
+
+main legge coord rana
+scorre i coccodrilli per disegnarli
+se ce n'è uno su cui è la rana se lo segna in un bool
+quando stampa la rana, se è su un coccodrillo, mette la colorazione RANA_SU_COCCODRILLO
+
+FAVCCIOAMO STATISTICHE E TI FA VEFDERE QUANTE VOLTE SEIMORTO IN GONI PUNTO DELLO SCEMOOR UOOOOOOOH
+statistiche altre generali: punteggi, tempi etcs
