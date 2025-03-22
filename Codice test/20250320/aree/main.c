@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 typedef enum{
 	BASE,
@@ -32,6 +33,8 @@ int altezzaMarciapiede(){
 
 #define DIM_LINES 24
 #define DIM_COLS 80
+
+#define DURATA_MANCHE_S 6
 
 int main(){
 	initscr();
@@ -103,31 +106,33 @@ int main(){
         attron(COLOR_PAIR(COCCODRILLO));
         
         int vivo;
-        int tempo=1000;
-        
-        while(1){
-        // TODO: usare time.h eccetera con start stop clock eccetera eccetera
-        tempo -= 2;
-        attron(COLOR_PAIR(NERO));
-        mvprintw(0, 0, "Tempo: %d", tempo/10);
-        mvaddch(1, 1, vivo+'0');
-        attron(COLOR_PAIR(COCCODRILLO));
-        mvaddstr(y, x, COCCODRILLO_NO);
-        mvaddstr(y+1, x, COCCODRILLO_NO);
-        x++;
-        vivo = X-x>-W_RANA&&X-x<W_COCCODRILLO;
-        mvaddstr(y, x, COCCODRILLO_SU);
-        mvaddstr(y+1, x, COCCODRILLO_GIU);
-        if(vivo) attron(COLOR_PAIR(RANA_SU_COCCODRILLO));
-        else attron(COLOR_PAIR(ACQUA));
-        if(vivo) beep();
-        mvaddstr(Y, X, RANA);
-        refresh();
-        usleep(100000);
-        }
-        
-        
-        while(getch()=='\0');
+        time_t start, ora = 0;
+        time(&start);
+        do {  
+                attron(COLOR_PAIR(NERO));
+
+                mvaddch(1, 1, vivo+'0');
+                attron(COLOR_PAIR(COCCODRILLO));
+                mvaddstr(y, x, COCCODRILLO_NO);
+                mvaddstr(y+1, x, COCCODRILLO_NO);
+                x++;
+                vivo = X-x>-W_RANA&&X-x<W_COCCODRILLO;
+                mvaddstr(y, x, COCCODRILLO_SU);
+                mvaddstr(y+1, x, COCCODRILLO_GIU);
+                if(vivo) attron(COLOR_PAIR(RANA_SU_COCCODRILLO));
+                else attron(COLOR_PAIR(ACQUA));
+                if(vivo) beep();
+                mvaddstr(Y, X, RANA);
+                refresh();
+                usleep(100000);
+
+                attron(COLOR_PAIR(NERO));
+                time(&ora);
+                mvprintw(0, 0, "Tempo: %d", DURATA_MANCHE_S - (int)(ora - start));
+                refresh();
+        } while (ora - start < DURATA_MANCHE_S); 
+
+        //while(getch()=='\0');
         endwin();
         
 	return 0;
