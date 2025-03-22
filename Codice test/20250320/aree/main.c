@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <ncurses.h>
+#include <string.h>
 #include <unistd.h>
 
 typedef enum{
@@ -29,14 +30,44 @@ int altezzaMarciapiede(){
 #define W_RANA 4
 #define W_COCCODRILLO 8
 
+#define DIM_LINES 24
+#define DIM_COLS 80
+
 int main(){
 	initscr();
         noecho();
         curs_set(0);
         cbreak();
         keypad(stdscr, 1);
-        //box(stdscr, ACS_VLINE, ACS_HLINE);
+        
+        int dim_msg_benvenuto = strlen("BENVENUTO!")/2;
+        mvprintw(LINES/2, COLS/2 - dim_msg_benvenuto, "BENVENUTO!");
         refresh();
+        sleep(2);
+        if (LINES != DIM_LINES || COLS != DIM_COLS) {
+                clear();
+                int dim_msg_dim = strlen("Ridimensiona lo schermo per un'esperienza ottimale")/2;
+                mvprintw(LINES/2, COLS/2 - dim_msg_dim, "Ridimensiona lo schermo per un'esperienza ottimale");
+                refresh();
+                sleep(1);
+        }       
+
+        clear();
+        refresh();
+        
+        int dim1 = strlen("TU: LINES = xx COLS = yy")/2;  
+        int dim2 = strlen("DIM: LINES = xx COLS = yy")/2;
+        while (LINES != DIM_LINES || COLS != DIM_COLS) {
+                WINDOW* indicaz_win = newwin(DIM_LINES, DIM_COLS, 0, 0);
+                box(indicaz_win, ACS_VLINE, ACS_HLINE);
+                mvwprintw(indicaz_win, LINES/2, COLS/2 - dim1, "TU: LINES = %d COLS = %d", LINES, COLS);
+                mvwprintw(indicaz_win, LINES/2 + 1, COLS/2 - dim2, "DIM: LINES = %d COLS = %d", DIM_LINES, DIM_COLS);
+                wrefresh(indicaz_win);
+                
+                delwin(indicaz_win);
+        }
+        usleep(10000);
+
         start_color();
         init_pair(MARCIAPIEDE, COLOR_BLACK, COLOR_WHITE);
         init_pair(ACQUA, COLOR_WHITE, COLOR_BLUE);
@@ -94,8 +125,6 @@ int main(){
         refresh();
         usleep(100000);
         }
-        
-        
         
         
         while(getch()=='\0');
