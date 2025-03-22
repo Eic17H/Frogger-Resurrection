@@ -34,7 +34,7 @@ int altezzaMarciapiede(){
 #define DIM_LINES 24
 #define DIM_COLS 80
 
-#define DURATA_MANCHE_S 6
+#define DURATA_MANCHE_S 12
 
 int main(){
 	initscr();
@@ -128,8 +128,9 @@ int main(){
 
                 attron(COLOR_PAIR(NERO));
                 time(&ora);
-                mvprintw(0, 0, "Tempo: %d", DURATA_MANCHE_S - (int)(ora - start));
+                mvprintw(0, 0, "Tempo: %d ", DURATA_MANCHE_S - (int)(ora - start));
                 refresh();
+                
         } while (ora - start < DURATA_MANCHE_S); 
 
         //while(getch()=='\0');
