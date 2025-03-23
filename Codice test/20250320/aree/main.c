@@ -123,8 +123,8 @@ void adattaFinestra() {
         while (LINES != DIM_LINES || COLS != DIM_COLS) {
                 WINDOW* indicaz_win = newwin(DIM_LINES, DIM_COLS, 0, 0);
                 box(indicaz_win, ACS_VLINE, ACS_HLINE);
-                mvwprintw(indicaz_win, LINES/2, COLS/2 - dim1, "TU: LINES = %d COLS = %d", LINES, COLS);
-                mvwprintw(indicaz_win, LINES/2 + 1, COLS/2 - dim2, "DIM: LINES = %d COLS = %d", DIM_LINES, DIM_COLS);
+                mvwprintw(indicaz_win, DIM_LINES/2, DIM_COLS/2 - dim1, "TU: LINES = %d COLS = %d", LINES, COLS);
+                mvwprintw(indicaz_win, DIM_LINES/2 + 1, DIM_COLS/2 - dim2, "DIM: LINES = %d COLS = %d", DIM_LINES, DIM_COLS);
                 wrefresh(indicaz_win);
                 
                 delwin(indicaz_win);
