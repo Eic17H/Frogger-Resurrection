@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 typedef enum{ BASE, MARCIAPIEDE, ACQUA, SPONDA, COCCODRILLO, RANA_SU_COCCODRILLO, NERO } colori;
-typedef enum { RANA } mittente;
+typedef enum { RANA, GRANATA } mittente;
 
 struct posizione {
         int x;
@@ -15,12 +15,15 @@ struct messaggio {
         Posizione pos;
         pid_t pid;
         mittente mittente;
+        bool sparo; 
 }; typedef struct messaggio Messaggio;
 
+#define NON_SU_SCHERMO -1
 #define DIM_LINES 24
 #define DIM_COLS 80
 
 #define SPRITE_RANA "<00>"
+#define SPRITE_GRANATA '*'
 
 #define COCCODRILLO_SU "______^^"
 #define COCCODRILLO_GIU "uu__uu_<"
@@ -35,6 +38,7 @@ struct messaggio {
 
 #define DURATA_MANCHE_S 30
 
+#define KEY_BARRA_SPAZIATRICE ' '
 
 int altezzaSponda();
 int altezzaMarciapiede();
@@ -44,5 +48,7 @@ void adattaFinestra();
 void inizializzaColori();
 
 void coloraAmbienteGioco();
+
+void inizializzaColoreSprite(int ySprite);
 
 #endif

@@ -1,14 +1,17 @@
+#include <stdbool.h>
 #include <ncurses.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 
 #include "main.h"
 #include "rana.h"
 
 int main(){
-        int fd[2], myPipe = pipe(fd), x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA; 
+        int fd[2], myPipe = pipe(fd), x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO; 
 
 	initscr(); // inizializzazione schermo ncurses prima della fork()
         keypad(stdscr, true);
@@ -31,10 +34,10 @@ int main(){
 
         coloraAmbienteGioco();
         
-        pid_t pid = fork();
-        if (pid < 0) { perror("chiamata fork()"); _exit(2); };
+        pid_t pid_rana = fork(), pid_granata;
+        if (pid_rana < 0) { endwin(); perror("chiamata fork() rana"); _exit(2); };
 
-        if (pid == 0) { // processo figlio
+        if (pid_rana == 0) { // processo figlio
                 close(fd[0]);
                 rana(2, fd);
         } 
@@ -48,23 +51,30 @@ int main(){
                         close(fd[1]);
                         read(fd[0], &messaggio, sizeof(Messaggio));
                         
-                        if (messaggio.pid == pid) {
-                                if (y_rana <= altezzaSponda()) {
-                                        attron(COLOR_PAIR(SPONDA));
-                                }
-                                else if (y_rana >= LINES -altezzaMarciapiede()) {
-                                        attron(COLOR_PAIR(MARCIAPIEDE));
-                                }
-                                else {
-                                        attron(COLOR_PAIR(ACQUA));
-                                }
-                                
+                        if (messaggio.mittente == RANA) {
+                                inizializzaColoreSprite(y_rana);
                                 mvaddstr(y_rana, x_rana, "    ");
                                 y_rana = messaggio.pos.y;
                                 x_rana = messaggio.pos.x;
                                 
                                 mvaddstr(y_rana, x_rana, SPRITE_RANA);
-                                refresh();
+                        }
+                        else if (messaggio.mittente == GRANATA) {
+                                inizializzaColoreSprite(y_granata);
+                                
+                                if (x_granata != NON_SU_SCHERMO && y_granata != NON_SU_SCHERMO) {
+                                        mvaddstr(y_granata, x_granata, " ");
+                                }
+
+                                if (messaggio.pos.x < DIM_COLS) {
+                                        y_granata = messaggio.pos.y;
+                                        x_granata = messaggio.pos.x;
+                                        
+                                        mvaddch(y_granata, x_granata, SPRITE_GRANATA);
+                                }
+                                else {
+                                        kill(messaggio.pid, SIGKILL);
+                                }
                         }
 
                         // stampa timer
@@ -74,7 +84,7 @@ int main(){
                         refresh();
 
                 } while (ora - start < DURATA_MANCHE_S); 
-                kill(pid, SIGTERM);
+                kill(pid_rana, SIGTERM);
         }
         
         endwin();
@@ -150,4 +160,17 @@ void coloraAmbienteGioco() {
         	}
         }
         refresh();
+}
+
+
+void inizializzaColoreSprite(int ySprite) {
+        if (ySprite <= altezzaSponda()) {
+                attron(COLOR_PAIR(SPONDA));
+        }
+        else if (ySprite >= LINES -altezzaMarciapiede()) {
+                attron(COLOR_PAIR(MARCIAPIEDE));
+        }
+        else {
+                attron(COLOR_PAIR(ACQUA));
+        }
 }
