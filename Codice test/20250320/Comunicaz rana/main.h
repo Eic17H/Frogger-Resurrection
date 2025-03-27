@@ -15,7 +15,6 @@ struct messaggio {
         Posizione pos;
         pid_t pid;
         mittente mittente;
-        bool sparo; 
 }; typedef struct messaggio Messaggio;
 
 #define NON_SU_SCHERMO -1

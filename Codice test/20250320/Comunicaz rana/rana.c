@@ -17,12 +17,10 @@ void rana(int n, int fd[n]) {
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
     messaggio.pos.x = x;
     messaggio.pos.y = y;
-    messaggio.sparo = false;
 
     write(fd[1], &messaggio, sizeof(Messaggio));
 
     while (1) {
-        messaggio.sparo = false;
         kCode = getch();
 
         switch(kCode) {

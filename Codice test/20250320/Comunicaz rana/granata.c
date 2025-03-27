@@ -13,7 +13,6 @@ void granata(int fdScrittura, int xPartenza, int yPartenza) {
     messaggio.pos.y = y;
     messaggio.pid = getpid();
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
-    messaggio.sparo = false;
 
     write(fdScrittura, &messaggio, sizeof(Messaggio));
     
