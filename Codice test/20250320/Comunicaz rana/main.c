@@ -66,7 +66,7 @@ int main(){
                                         mvaddstr(y_granata, x_granata, " ");
                                 }
 
-                                if (messaggio.pos.x < DIM_COLS) {
+                                if (messaggio.pos.x < DIM_COLS && messaggio.pos.x >= 0) {
                                         y_granata = messaggio.pos.y;
                                         x_granata = messaggio.pos.x;
                                         

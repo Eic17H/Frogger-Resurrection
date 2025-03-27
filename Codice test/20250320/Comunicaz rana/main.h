@@ -39,6 +39,9 @@ struct messaggio {
 
 #define KEY_BARRA_SPAZIATRICE ' '
 
+#define AVANZAMENTO_DX 1
+#define AVANZAMENTO_SX -1
+
 int altezzaSponda();
 int altezzaMarciapiede();
 

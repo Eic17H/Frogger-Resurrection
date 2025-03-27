@@ -4,7 +4,7 @@
 
 #include "main.h"
 
-void granata(int fdScrittura, int xPartenza, int yPartenza) {
+void granata(int fdScrittura, int xPartenza, int yPartenza, int direzione) {
     Messaggio messaggio;
     int x = xPartenza, y = yPartenza;
 
@@ -17,7 +17,7 @@ void granata(int fdScrittura, int xPartenza, int yPartenza) {
     write(fdScrittura, &messaggio, sizeof(Messaggio));
     
     while (1) {
-        x++;
+        x += direzione;
         messaggio.pos.x = x;
         write(fdScrittura, &messaggio, sizeof(Messaggio));
         

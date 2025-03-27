@@ -54,13 +54,13 @@ void rana(int n, int fd[n]) {
 
             case KEY_BARRA_SPAZIATRICE:
                 time(&ora);
-                creaProcessoGranata(fd[1], x, y);               
-            break;
+                creaProcessoGranata(fd[1], x, y, AVANZAMENTO_DX);               
+                creaProcessoGranata(fd[1], x, y, AVANZAMENTO_SX);
+                break;
 
             default:
             break;
         }
-
 
         // aggiornamento coordinate
         messaggio.pos.x = x;
@@ -72,12 +72,12 @@ void rana(int n, int fd[n]) {
 
 }
 
-void creaProcessoGranata(int fdScrittura, int xPartenza, int yPartenza) {
+void creaProcessoGranata(int fdScrittura, int xPartenza, int yPartenza, int direzione) {
     pid_t pid_granata = fork();
-    if (pid_granata < 0) {perror("Errore getpid()"); _exit(2);}
+    if (pid_granata < 0) {perror("Errore fork() granata"); _exit(2);}
 
     if (pid_granata == 0) { // processo granata (eredita il fd chiuso in lettura)
-        granata(fdScrittura, xPartenza, yPartenza);
+        granata(fdScrittura, xPartenza, yPartenza, direzione);
     }
     // processo padre continua l'esecuzione
 }
