@@ -18,8 +18,10 @@ struct messaggio {
 }; typedef struct messaggio Messaggio;
 
 #define NON_SU_SCHERMO -1
-#define DIM_LINES 24
-#define DIM_COLS 80
+//#define DIM_LINES 24
+//#define DIM_COLS 80
+#define DIM_LINES 38
+#define DIM_COLS 143
 
 #define SPRITE_RANA "<00>"
 #define SPRITE_GRANATA '*'
@@ -36,6 +38,7 @@ struct messaggio {
 #define Y_PARTENZA_RANA (LINES - 1)
 
 #define DURATA_MANCHE_S 30
+#define TEMPO_RICARICA_GRANATA 2
 
 #define KEY_BARRA_SPAZIATRICE ' '
 

@@ -1,4 +1,5 @@
 #include <ncurses.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <time.h>
 
@@ -7,10 +8,11 @@
 #include "granata.h"
 
 void rana(int n, int fd[n]) {
-    int kCode, x = X_PARTENZA_RANA, y = Y_PARTENZA_RANA, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = W_RANA - 1;
+    int kCode, x = X_PARTENZA_RANA, y = Y_PARTENZA_RANA, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
     Messaggio messaggio;
-    time_t start, ora = 0;
-    
+    time_t start = 0, ora = 0;
+    _Bool sparato = false;
+
     // scrittura primo messaggio
     messaggio.mittente = RANA;
     messaggio.pid = getpid();
@@ -53,9 +55,13 @@ void rana(int n, int fd[n]) {
             break;
 
             case KEY_BARRA_SPAZIATRICE:
-                time(&ora);
-                creaProcessoGranata(fd[1], x, y, AVANZAMENTO_DX);               
-                creaProcessoGranata(fd[1], x, y, AVANZAMENTO_SX);
+                if (!sparato || ora - start >= TEMPO_RICARICA_GRANATA) {
+                    sparato = true;
+                    time(&start);
+                    creaProcessoGranata(fd[1], x + W_RANA, y, AVANZAMENTO_DX);    
+                    usleep(100000);
+                    creaProcessoGranata(fd[1], x -  1, y, AVANZAMENTO_SX);
+                }
                 break;
 
             default:
@@ -68,6 +74,8 @@ void rana(int n, int fd[n]) {
         write(fd[1], &messaggio, sizeof(Messaggio));
 
         usleep(10000);
+
+        time(&ora);
     }
 
 }

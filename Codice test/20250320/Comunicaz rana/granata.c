@@ -15,12 +15,11 @@ void granata(int fdScrittura, int xPartenza, int yPartenza, int direzione) {
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
 
     write(fdScrittura, &messaggio, sizeof(Messaggio));
-    
+
     while (1) {
         x += direzione;
         messaggio.pos.x = x;
         write(fdScrittura, &messaggio, sizeof(Messaggio));
-        
-        usleep(10000);
+        usleep(20000);
     }
 }
