@@ -9,16 +9,24 @@ void granata(int fdScrittura, int xPartenza, int yPartenza, int direzione) {
     int x = xPartenza, y = yPartenza;
 
     messaggio.mittente = GRANATA;
-    messaggio.pos.x = x;
-    messaggio.pos.y = y;
+    
+    messaggio.posAttuale.x = x;
+    messaggio.posAttuale.y = y;
+
+    messaggio.posVecchia.x = x;
+    messaggio.posVecchia.y = y;
+
     messaggio.pid = getpid();
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
 
     write(fdScrittura, &messaggio, sizeof(Messaggio));
 
     while (1) {
+        messaggio.posVecchia.x = x;
+
         x += direzione;
-        messaggio.pos.x = x;
+
+        messaggio.posAttuale.x = x;
         write(fdScrittura, &messaggio, sizeof(Messaggio));
         usleep(20000);
     }

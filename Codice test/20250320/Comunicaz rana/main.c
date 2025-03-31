@@ -52,23 +52,25 @@ int main(){
                         read(fd[0], &messaggio, sizeof(Messaggio));
                         
                         if (messaggio.mittente == RANA) {
-                                inizializzaColoreSprite(y_rana);
-                                mvaddstr(y_rana, x_rana, "    ");
-                                y_rana = messaggio.pos.y;
-                                x_rana = messaggio.pos.x;
+                                inizializzaColoreSprite(messaggio.posVecchia.y);
+
+                                mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, "    ");
+                                
+                                inizializzaColoreSprite(messaggio.posAttuale.y);
+
+                                y_rana = messaggio.posAttuale.y;
+                                x_rana = messaggio.posAttuale.x;
                                 
                                 mvaddstr(y_rana, x_rana, SPRITE_RANA);
                         }
                         else if (messaggio.mittente == GRANATA) {
-                                inizializzaColoreSprite(y_granata);
+                                inizializzaColoreSprite(messaggio.posAttuale.y);
                                 
-                                if (x_granata != NON_SU_SCHERMO && y_granata != NON_SU_SCHERMO) {
-                                        mvaddstr(y_granata, x_granata, " ");
-                                }
-
-                                if (messaggio.pos.x < DIM_COLS && messaggio.pos.x >= 0) {
-                                        y_granata = messaggio.pos.y;
-                                        x_granata = messaggio.pos.x;
+                                mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, " ");
+                                
+                                if (messaggio.posAttuale.x < DIM_COLS && messaggio.posAttuale.x >= 0) {
+                                        y_granata = messaggio.posAttuale.y;
+                                        x_granata = messaggio.posAttuale.x;
                                         
                                         mvaddch(y_granata, x_granata, SPRITE_GRANATA);
                                 }
@@ -136,29 +138,29 @@ void inizializzaColori() {
 }
 
 void coloraAmbienteGioco() {
+        // sfondo blu
         attron(COLOR_PAIR(ACQUA));
         bkgd(COLOR_PAIR(ACQUA));
-        
+        // barra superiore        
         attron(COLOR_PAIR(NERO));
-        for(int i=0; i<COLS+1; i++){
+        for(int i=0; i<DIM_COLS+1; i++){
         	mvaddch(0, i, ' ');
         }
-
+        // sponda verde
         attron(COLOR_PAIR(SPONDA));
-        for(int i=0; i<COLS+1; i++){
+        for(int i=0; i<DIM_COLS+1; i++){
         	for(int j=0; j<altezzaSponda(); j++){
         		mvaddch(j+1, i, ' ');
-        		refresh();
         	}
         }
-        
+        // marciapiede bianco        
         attron(COLOR_PAIR(MARCIAPIEDE));
-        for(int i=0; i<COLS+1; i++){
+        for(int i=0; i<DIM_COLS+1; i++){
         	for(int j=0; j<altezzaMarciapiede(); j++){
         		mvaddch(LINES-1 -j, i, ' ');
-        		refresh();
         	}
         }
+
         refresh();
 }
 

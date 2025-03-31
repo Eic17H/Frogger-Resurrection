@@ -1,4 +1,5 @@
 #include <ncurses.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <time.h>
@@ -8,7 +9,7 @@
 #include "granata.h"
 
 void rana(int n, int fd[n]) {
-    int kCode, x = X_PARTENZA_RANA, y = Y_PARTENZA_RANA, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
+    int kCode, x = X_PARTENZA_RANA, xVecchia, y = Y_PARTENZA_RANA, yVecchia, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
     Messaggio messaggio;
     time_t start = 0, ora = 0;
     _Bool sparato = false;
@@ -17,12 +18,18 @@ void rana(int n, int fd[n]) {
     messaggio.mittente = RANA;
     messaggio.pid = getpid();
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
-    messaggio.pos.x = x;
-    messaggio.pos.y = y;
+    messaggio.posAttuale.x = x;
+    messaggio.posAttuale.y = y;
+
+    messaggio.posVecchia.x = x;
+    messaggio.posVecchia.y = y;
 
     write(fd[1], &messaggio, sizeof(Messaggio));
 
     while (1) {
+        xVecchia = x;
+        yVecchia = y;
+
         kCode = getch();
 
         switch(kCode) {
@@ -59,7 +66,6 @@ void rana(int n, int fd[n]) {
                     sparato = true;
                     time(&start);
                     creaProcessoGranata(fd[1], x + W_RANA, y, AVANZAMENTO_DX);    
-                    usleep(100000);
                     creaProcessoGranata(fd[1], x -  1, y, AVANZAMENTO_SX);
                 }
                 break;
@@ -69,8 +75,10 @@ void rana(int n, int fd[n]) {
         }
 
         // aggiornamento coordinate
-        messaggio.pos.x = x;
-        messaggio.pos.y = y;
+        messaggio.posVecchia.x = xVecchia;
+        messaggio.posVecchia.y = yVecchia;
+        messaggio.posAttuale.x = x;
+        messaggio.posAttuale.y = y;
         write(fd[1], &messaggio, sizeof(Messaggio));
 
         usleep(10000);

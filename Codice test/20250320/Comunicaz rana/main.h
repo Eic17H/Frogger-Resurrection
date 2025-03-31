@@ -12,7 +12,8 @@ struct posizione {
 }; typedef struct posizione Posizione;
 
 struct messaggio {
-        Posizione pos;
+        Posizione posVecchia;
+        Posizione posAttuale;
         pid_t pid;
         mittente mittente;
 }; typedef struct messaggio Messaggio;
@@ -30,9 +31,16 @@ struct messaggio {
 #define COCCODRILLO_GIU "uu__uu_<"
 #define COCCODRILLO_NO "        "
 
+#define SPRITE_TANA_APERTA1 "###***###"
+#define SPRITE_TANA_APERTA2 "##*   *##"
+#define SPRITE_TANA_APERTA3 "#*     *#"
+#define SPRITE_TANA_APERTA4 "#*.....*#"
+
 #define SALTO_RANA 2
 #define W_RANA 4
 #define W_COCCODRILLO 8
+#define W_TANA 9
+#define H_TANA 4
 
 #define X_PARTENZA_RANA (COLS/2 - W_RANA/2)
 #define Y_PARTENZA_RANA (LINES - 1)
