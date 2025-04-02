@@ -25,6 +25,7 @@ struct flusso {
         Posizione posIniziale;
 }; typedef struct flusso Flusso;
 
+#define NON_IN_LISTA -1
 #define NON_SU_SCHERMO -1
 //#define DIM_LINES 24
 //#define DIM_COLS 80
@@ -39,8 +40,8 @@ struct flusso {
 
 #define MIN_VELOCITA_COCCO 1
 #define MAX_VELOCITA_COCCO 4
-#define MIN_SPAZIO_FRA_COCCO 1
-#define MAX_SPAZIO_FRA_COCCO 2
+#define MIN_SPAZIO_FRA_COCCO 10
+#define MAX_SPAZIO_FRA_COCCO 20
 
 #define COCCODRILLO_SU "______^^"
 #define COCCODRILLO_GIU "uu__uu_<"
@@ -81,6 +82,13 @@ void inizializzaColoreSprite(int ySprite);
 
 void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]);
 
-void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFlussi]);
+void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFlussi], pid_t coccodrilliCreatiPerPrimi[nFlussi]);
 
+bool coccodrilloFuoriSchermo(int xAttuale, int xVecchia);
+
+int trovaPosCoccodrilloListaPrimi(pid_t pidCoccodrillo, int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlussi]);
+
+bool creareNuovoCoccodrillo(int indiceFlussoCoccodrillo, int nFlussi, Flusso flussi[nFlussi], Messaggio messaggioCoccodrillo);
+
+void creaNuovoPrimoCoccodrillo(int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlussi], Flusso flussi[nFlussi], int indiceFlussoCoccodrillo, int n, int fd[n]);
 #endif

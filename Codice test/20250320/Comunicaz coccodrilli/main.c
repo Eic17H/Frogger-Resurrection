@@ -13,8 +13,9 @@
 #include "coccodrillo.h"
 
 int main(){
-        int fd[2], myPipe = pipe(fd), x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO; 
+        int fd[2], myPipe = pipe(fd), x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO, indiceFlussoCoccodrilloPrimo; 
         Flusso flussi[N_FLUSSI];
+        pid_t coccodrilliCreatiPerPrimi[N_FLUSSI];
         srand(time(NULL));
 
 	initscr(); // inizializzazione schermo ncurses prima della fork()
@@ -40,7 +41,7 @@ int main(){
         
         inizializzaArrayFlussi(N_FLUSSI, flussi);
 
-        creaCoccodrilliIniziali(2, fd, N_FLUSSI, flussi);
+        creaCoccodrilliIniziali(2, fd, N_FLUSSI, flussi, coccodrilliCreatiPerPrimi);
 
         pid_t pidRana = fork();
         if (pidRana < 0) { endwin(); perror("chiamata fork() rana"); _exit(2); };
@@ -56,48 +57,57 @@ int main(){
                 time(&start);
                 do {  
                         // lettura coordinate
-                        close(fd[1]);
+                        //close(fd[1]);
                         read(fd[0], &messaggio, sizeof(Messaggio));
                         
-                        if (messaggio.mittente == RANA) {
-                                inizializzaColoreSprite(messaggio.posVecchia.y);
+                        switch (messaggio.mittente) {
+                                case RANA:
+                                        inizializzaColoreSprite(messaggio.posVecchia.y);
 
-                                mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, "    ");
-                                
-                                inizializzaColoreSprite(messaggio.posAttuale.y);
+                                        mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, "    ");
 
-                                y_rana = messaggio.posAttuale.y;
-                                x_rana = messaggio.posAttuale.x;
+                                        inizializzaColoreSprite(messaggio.posAttuale.y);
+
+                                        y_rana = messaggio.posAttuale.y;
+                                        x_rana = messaggio.posAttuale.x;
+
+                                        mvaddstr(y_rana, x_rana, SPRITE_RANA);
+                                break;
+
+                                case GRANATA:
+                                        inizializzaColoreSprite(messaggio.posAttuale.y);
                                 
-                                mvaddstr(y_rana, x_rana, SPRITE_RANA);
-                        }
-                        else if (messaggio.mittente == GRANATA) {
-                                inizializzaColoreSprite(messaggio.posAttuale.y);
-                                
-                                mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, " ");
-                                
-                                if (messaggio.posAttuale.x < DIM_COLS && messaggio.posAttuale.x >= 0) {
-                                        y_granata = messaggio.posAttuale.y;
-                                        x_granata = messaggio.posAttuale.x;
+                                        mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, " ");
+                                                                        
+                                        if (messaggio.posAttuale.x < DIM_COLS && messaggio.posAttuale.x >= 0) {
+                                                y_granata = messaggio.posAttuale.y;
+                                                x_granata = messaggio.posAttuale.x;
+                                                
+                                                mvaddch(y_granata, x_granata, SPRITE_GRANATA);
+                                        }
+                                        else {
+                                                kill(messaggio.pid, SIGKILL);
+                                        }
+                                break;
+
+                                case COCCOD:
+                                        attron(COLOR_PAIR(COCCODRILLO));
+                                        mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, COCCODRILLO_NO);
+                                        mvaddstr(messaggio.posVecchia.y + 1, messaggio.posVecchia.x, COCCODRILLO_NO);
+
+                                        if (!coccodrilloFuoriSchermo(messaggio.posAttuale.x, messaggio.posVecchia.x)) {
+                                                mvaddstr(messaggio.posAttuale.y, messaggio.posAttuale.x, COCCODRILLO_SU);
+                                                mvaddstr(messaggio.posAttuale.y + 1, messaggio.posAttuale.x, COCCODRILLO_GIU);
                                         
-                                        mvaddch(y_granata, x_granata, SPRITE_GRANATA);
-                                }
-                                else {
-                                        kill(messaggio.pid, SIGKILL);
-                                }
-                        }
-                        else if (messaggio.mittente == COCCOD) {
-                                attron(COLOR_PAIR(COCCODRILLO));
-                                mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, COCCODRILLO_NO);
-                                mvaddstr(messaggio.posVecchia.y + 1, messaggio.posVecchia.x, COCCODRILLO_NO);
-
-                                if (messaggio.posAttuale.x < DIM_COLS) {
-                                        mvaddstr(messaggio.posAttuale.y, messaggio.posAttuale.x, COCCODRILLO_SU);
-                                        mvaddstr(messaggio.posAttuale.y + 1, messaggio.posAttuale.x, COCCODRILLO_GIU);
-                                }
-                                else {
-                                        kill(messaggio.pid, SIGKILL);
-                                }
+                                                indiceFlussoCoccodrilloPrimo = trovaPosCoccodrilloListaPrimi(messaggio.pid, N_FLUSSI, coccodrilliCreatiPerPrimi);
+                                                if (indiceFlussoCoccodrilloPrimo > NON_IN_LISTA && creareNuovoCoccodrillo(indiceFlussoCoccodrilloPrimo, N_FLUSSI, flussi, messaggio)) {
+                                                        creaNuovoPrimoCoccodrillo(N_FLUSSI, coccodrilliCreatiPerPrimi, flussi, indiceFlussoCoccodrilloPrimo, 2, fd);
+                                                }
+                                        }
+                                        else {
+                                                kill(messaggio.pid, SIGKILL);
+                                        }
+                                break;
                         }
 
                         // stampa timer
@@ -216,12 +226,11 @@ void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]) {
                 // velocità e distanza fra coccodrilli del flusso sono estratti casualmente
                 flussi[i].velocità = MIN_VELOCITA_COCCO + rand() % (MAX_VELOCITA_COCCO - MIN_VELOCITA_COCCO + 1);
                 flussi[i].distanzaCoccodrilli = MIN_SPAZIO_FRA_COCCO + rand() % (MAX_SPAZIO_FRA_COCCO - MIN_SPAZIO_FRA_COCCO + 1);
-        
                 yPartenza -= DISTANZA_FLUSSI + 1; // +1 per la sprite inferiore del coccodrillo 
         }
 }
 
-void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFlussi]) {
+void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFlussi], pid_t coccodrilliCreatiPerPrimi[nFlussi]) {
         pid_t pidCoccodrillo;
 
         for (int i = 0; i < nFlussi; i++) {
@@ -231,13 +240,58 @@ void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFluss
 
                 if (pidCoccodrillo == 0) { // processo figlio
                         close(fd[0]);
-                        if (flussi[i].verso == AVANZAMENTO_DX) {
-                                coccodrillo(fd[1], flussi[i]); 
-                        }
-                        else {
-                                coccodrillo(fd[1], flussi[i]); 
-                        }
+                        coccodrillo(fd[1], flussi[i]); 
                 }
-                // il padre riprende l'esecuzione normale
+                else {
+                        coccodrilliCreatiPerPrimi[i] = pidCoccodrillo;
+                }
+        }
+}
+
+bool coccodrilloFuoriSchermo(int xAttuale, int xVecchia) {
+        if (xAttuale - xVecchia >= AVANZAMENTO_DX && xAttuale >= DIM_COLS - 1) { // se il coccodrillo che va verso destra (fa uno spostamento positivo) è fuori dalloo schermo
+                return true;
+        }
+        if (xAttuale - xVecchia <= AVANZAMENTO_SX && xAttuale <= 0) { // se il coccodrillo che va verso sinistra (fa uno spostamento negativo) è fuori dalloo schermo
+                return true;
+        }
+        return false;
+}
+
+int trovaPosCoccodrilloListaPrimi(pid_t pidCoccodrillo, int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlussi]) {
+        int i = 0, posizCoccodrillo = NON_IN_LISTA;
+        bool coccodrilloPrimo = false;
+
+        while (i < nFlussi && !coccodrilloPrimo) {
+                if (pidCoccodrillo == coccodrilliCreatiPerPrimi[i]) {
+                        coccodrilloPrimo = true;
+                        posizCoccodrillo = i;
+                }
+                i++;
+        }
+
+        return posizCoccodrillo;
+}
+
+bool creareNuovoCoccodrillo(int indiceFlussoCoccodrillo, int nFlussi, Flusso flussi[nFlussi], Messaggio messaggioCoccodrillo) {
+        if (flussi[indiceFlussoCoccodrillo].verso == AVANZAMENTO_DX && messaggioCoccodrillo.posAttuale.x >= flussi[indiceFlussoCoccodrillo].distanzaCoccodrilli) {
+                return true;
+        }
+        if (flussi[indiceFlussoCoccodrillo].verso == AVANZAMENTO_SX && DIM_COLS - messaggioCoccodrillo.posAttuale.x - W_COCCODRILLO -1 >= flussi[indiceFlussoCoccodrillo].distanzaCoccodrilli) {
+                return true;
+        }
+        return false;
+}
+
+void creaNuovoPrimoCoccodrillo(int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlussi], Flusso flussi[nFlussi], int indiceFlussoCoccodrillo, int n, int fd[n]) {
+        pid_t pidNuovoCoccodrillo = fork();
+        if (pidNuovoCoccodrillo < 0) { endwin(); perror("chiamata fork() nuovo coccodrillo"); _exit(2); }; 
+
+        if (pidNuovoCoccodrillo == 0) {
+                close(fd[0]);
+                coccodrillo(fd[1], flussi[indiceFlussoCoccodrillo]);
+        }
+        else {
+                coccodrilliCreatiPerPrimi[indiceFlussoCoccodrillo] = pidNuovoCoccodrillo;
         }
 }

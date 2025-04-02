@@ -6,7 +6,6 @@
 #include "main.h"
 
 void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
-    //int kCode, x = 0, xVecchia, y = 0, yVecchia, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
     Posizione pos; 
     Messaggio messaggio;
     time_t start = 0, ora = 0;
