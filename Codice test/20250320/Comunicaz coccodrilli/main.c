@@ -16,6 +16,7 @@ int main(){
         int fd[2], myPipe = pipe(fd), x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO, indiceFlussoCoccodrilloPrimo; 
         Flusso flussi[N_FLUSSI];
         pid_t coccodrilliCreatiPerPrimi[N_FLUSSI];
+        char* spriteCoccodrilloGiu = NULL, *spriteCoccodrillosu = NULL;
         srand(time(NULL));
 
 	initscr(); // inizializzazione schermo ncurses prima della fork()
@@ -92,16 +93,19 @@ int main(){
 
                                 case COCCOD:
                                         attron(COLOR_PAIR(COCCODRILLO));
-                                        mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, COCCODRILLO_NO);
-                                        mvaddstr(messaggio.posVecchia.y + 1, messaggio.posVecchia.x, COCCODRILLO_NO);
+                                        cancellaVecchioCoccodrillo(messaggio.posVecchia);
+                                        //mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, COCCODRILLO_NO);
+                                        //mvaddstr(messaggio.posVecchia.y + 1, messaggio.posVecchia.x, COCCODRILLO_NO);
 
                                         if (!coccodrilloFuoriSchermo(messaggio.posAttuale.x, messaggio.posVecchia.x)) {
-                                                mvaddstr(messaggio.posAttuale.y, messaggio.posAttuale.x, COCCODRILLO_SU);
-                                                mvaddstr(messaggio.posAttuale.y + 1, messaggio.posAttuale.x, COCCODRILLO_GIU);
-                                        
+                                                disegnaCoccodrillo(messaggio.posAttuale);
+                                                //mvaddstr(messaggio.posAttuale.y, messaggio.posAttuale.x, COCCODRILLO_SU);
+                                                //mvaddstr(messaggio.posAttuale.y + 1, messaggio.posAttuale.x, COCCODRILLO_GIU);
+                                                
                                                 indiceFlussoCoccodrilloPrimo = trovaPosCoccodrilloListaPrimi(messaggio.pid, N_FLUSSI, coccodrilliCreatiPerPrimi);
-                                                if (indiceFlussoCoccodrilloPrimo > NON_IN_LISTA && creareNuovoCoccodrillo(indiceFlussoCoccodrilloPrimo, N_FLUSSI, flussi, messaggio)) {
-                                                        creaNuovoPrimoCoccodrillo(N_FLUSSI, coccodrilliCreatiPerPrimi, flussi, indiceFlussoCoccodrilloPrimo, 2, fd);
+                                
+                                                if (indiceFlussoCoccodrilloPrimo > NON_IN_LISTA && creareNuovoCoccodrillo(flussi[indiceFlussoCoccodrilloPrimo], messaggio)) {
+                                                        creaNuovoPrimoCoccodrillo(N_FLUSSI, coccodrilliCreatiPerPrimi, flussi[indiceFlussoCoccodrilloPrimo], indiceFlussoCoccodrilloPrimo, 2, fd);
                                                 }
                                         }
                                         else {
@@ -219,7 +223,7 @@ void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]) {
                 }
                 else {
                         flussi[i].verso = AVANZAMENTO_SX;
-                        flussi[i].posIniziale.x = COLS - 1;
+                        flussi[i].posIniziale.x = DIM_COLS - 1;
                 }
                 flussi[i].posIniziale.y = yPartenza;
 
@@ -273,25 +277,198 @@ int trovaPosCoccodrilloListaPrimi(pid_t pidCoccodrillo, int nFlussi, pid_t cocco
         return posizCoccodrillo;
 }
 
-bool creareNuovoCoccodrillo(int indiceFlussoCoccodrillo, int nFlussi, Flusso flussi[nFlussi], Messaggio messaggioCoccodrillo) {
-        if (flussi[indiceFlussoCoccodrillo].verso == AVANZAMENTO_DX && messaggioCoccodrillo.posAttuale.x >= flussi[indiceFlussoCoccodrillo].distanzaCoccodrilli) {
+bool coccodrilloStaComparendo(Flusso flussoCoccodrillo, int xAttuale) {
+        // se il coccodrillo va verso destra e non è ancora comparso totalmente dal margine sinistro
+        if (flussoCoccodrillo.verso == AVANZAMENTO_DX && xAttuale < W_COCCODRILLO) {
                 return true;
-        }
-        if (flussi[indiceFlussoCoccodrillo].verso == AVANZAMENTO_SX && DIM_COLS - messaggioCoccodrillo.posAttuale.x - W_COCCODRILLO -1 >= flussi[indiceFlussoCoccodrillo].distanzaCoccodrilli) {
+        } 
+        // se va verso sinistra e non è ancora comparso totalmente dal margine destro
+        if (flussoCoccodrillo.verso == AVANZAMENTO_SX && xAttuale > DIM_COLS - W_COCCODRILLO + 1) {
                 return true;
         }
         return false;
 }
 
-void creaNuovoPrimoCoccodrillo(int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlussi], Flusso flussi[nFlussi], int indiceFlussoCoccodrillo, int n, int fd[n]) {
+bool creareNuovoCoccodrillo(Flusso flussoCoccodrillo, Messaggio messaggioCoccodrillo) {
+        // se il coccodrillo va verso destra e la distanza dal margine sinistro permette di stampare un altro coccodrillo
+        if (flussoCoccodrillo.verso == AVANZAMENTO_DX && messaggioCoccodrillo.posAttuale.x - W_COCCODRILLO >= flussoCoccodrillo.distanzaCoccodrilli) {
+                return true;
+        }
+        // se il coccodrillo va verso sinistra e la distanza dal margine deztro permette di stampare un altro coccodrillo
+        if (flussoCoccodrillo.verso == AVANZAMENTO_SX && DIM_COLS - messaggioCoccodrillo.posAttuale.x - W_COCCODRILLO -1 >= flussoCoccodrillo.distanzaCoccodrilli) {
+                return true;
+        }
+        return false;
+}
+
+void creaNuovoPrimoCoccodrillo(int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlussi], Flusso FlussoCoccodrillo, int indiceFlussoCoccodrillo, int n, int fd[n]) {
         pid_t pidNuovoCoccodrillo = fork();
         if (pidNuovoCoccodrillo < 0) { endwin(); perror("chiamata fork() nuovo coccodrillo"); _exit(2); }; 
 
         if (pidNuovoCoccodrillo == 0) {
                 close(fd[0]);
-                coccodrillo(fd[1], flussi[indiceFlussoCoccodrillo]);
+                coccodrillo(fd[1], FlussoCoccodrillo);
         }
         else {
                 coccodrilliCreatiPerPrimi[indiceFlussoCoccodrillo] = pidNuovoCoccodrillo;
+        }
+}
+
+
+void cancellaVecchioCoccodrillo(Posizione posVecchia) {
+        switch(posVecchia.x) {
+                case 0:
+                        mvaddstr(posVecchia.y, 0, " ");
+                        mvaddstr(posVecchia.y + 1, 0, " ");
+                break;
+
+                case 1: 
+                        mvaddstr(posVecchia.y, 0, "  ");
+                        mvaddstr(posVecchia.y + 1, 0, "  ");
+                break;
+
+                case 2:
+                        mvaddstr(posVecchia.y, 0, "   ");
+                        mvaddstr(posVecchia.y + 1, 0, "   ");
+                break;
+
+                case 3:
+                        mvaddstr(posVecchia.y, 0, "    ");
+                        mvaddstr(posVecchia.y + 1, 0, "    ");
+                break;
+
+                case 4:
+                        mvaddstr(posVecchia.y, 0, "     ");
+                        mvaddstr(posVecchia.y + 1, 0, "     ");
+                break;
+
+                case 5:
+                        mvaddstr(posVecchia.y, 0, "      ");
+                        mvaddstr(posVecchia.y + 1, 0, "      ");
+                break;
+
+                case 6:
+                        mvaddstr(posVecchia.y, 0, "       ");
+                        mvaddstr(posVecchia.y + 1, 0, "       ");
+                break; 
+
+                case DIM_COLS-1:
+                        mvaddstr(posVecchia.y, posVecchia.x, " ");
+                        mvaddstr(posVecchia.y + 1, posVecchia.x, " ");
+                break;          
+
+                case DIM_COLS-2:
+                        mvaddstr(posVecchia.y, posVecchia.x, "  ");
+                        mvaddstr(posVecchia.y + 1, posVecchia.x, "  ");
+                break;                       
+
+                case DIM_COLS-3:
+                        mvaddstr(posVecchia.y, posVecchia.x, "   ");
+                        mvaddstr(posVecchia.y + 1, posVecchia.x, "   ");
+                break;                       
+
+                case DIM_COLS-4:
+                        mvaddstr(posVecchia.y, posVecchia.x, "    ");
+                        mvaddstr(posVecchia.y + 1, posVecchia.x, "    ");
+                break;                       
+
+                case DIM_COLS-5:
+                        mvaddstr(posVecchia.y, posVecchia.x, "     ");
+                        mvaddstr(posVecchia.y + 1, posVecchia.x, "     ");
+                break;                       
+
+                case DIM_COLS-6:
+                        mvaddstr(posVecchia.y, posVecchia.x, "      ");
+                        mvaddstr(posVecchia.y + 1, posVecchia.x, "      ");
+                break;                       
+
+                case DIM_COLS-7:
+                        mvaddstr(posVecchia.y, posVecchia.x, "       ");
+                        mvaddstr(posVecchia.y + 1, posVecchia.x, "       ");
+                break;                       
+
+                default:
+                        mvaddstr(posVecchia.y, posVecchia.x, COCCODRILLO_NO);
+                        mvaddstr(posVecchia.y + 1, posVecchia.x, COCCODRILLO_NO);
+                break;
+        }
+}
+
+void disegnaCoccodrillo(Posizione posAttuale) {
+        switch (posAttuale.x) {
+                case 0:
+                        mvaddstr(posAttuale.y, 0, "_");
+                        mvaddstr(posAttuale.y + 1, 0, "u");
+                break;
+                
+                case 1:
+                        mvaddstr(posAttuale.y, 0, "__");
+                        mvaddstr(posAttuale.y + 1, 0, "uu");
+                break;
+                
+                case 2:
+                        mvaddstr(posAttuale.y, 0, "___");
+                        mvaddstr(posAttuale.y + 1, 0, "uu_");
+                break;
+                
+                case 3:
+                        mvaddstr(posAttuale.y, 0, "____");
+                        mvaddstr(posAttuale.y + 1, 0, "uu__");
+                break;
+                
+                case 4:
+                        mvaddstr(posAttuale.y, 0, "_____");
+                        mvaddstr(posAttuale.y + 1, 0, "uu__u");
+                break;
+                
+                case 5:
+                        mvaddstr(posAttuale.y, 0, "______");
+                        mvaddstr(posAttuale.y + 1, 0, "uu__uu");
+                break;
+                
+                case 6:
+                        mvaddstr(posAttuale.y, 0, "______^");
+                        mvaddstr(posAttuale.y + 1, 0, "uu__uu_");
+                break; 
+                
+                case DIM_COLS-1:
+                        mvaddstr(posAttuale.y, posAttuale.x, "_");
+                        mvaddstr(posAttuale.y + 1, posAttuale.x, "u");
+                break;          
+                
+                case DIM_COLS-2:
+                        mvaddstr(posAttuale.y, posAttuale.x, "__");
+                        mvaddstr(posAttuale.y + 1, posAttuale.x, "uu");
+                break;                       
+                
+                case DIM_COLS-3:
+                        mvaddstr(posAttuale.y, posAttuale.x, "____");
+                        mvaddstr(posAttuale.y + 1, posAttuale.x, "uu__");
+                break;                       
+                
+                case DIM_COLS-4:
+                        mvaddstr(posAttuale.y, posAttuale.x, "____");
+                        mvaddstr(posAttuale.y + 1, posAttuale.x, "uu__");
+                break;                       
+                
+                case DIM_COLS-5:
+                        mvaddstr(posAttuale.y, posAttuale.x, "_____");
+                        mvaddstr(posAttuale.y + 1, posAttuale.x, "uu__u");
+                break;                       
+                
+                case DIM_COLS-6:
+                        mvaddstr(posAttuale.y, posAttuale.x, "______");
+                        mvaddstr(posAttuale.y + 1, posAttuale.x, "uu__uu");
+                break;                       
+                
+                case DIM_COLS-7:
+                        mvaddstr(posAttuale.y, posAttuale.x, "______^");
+                        mvaddstr(posAttuale.y + 1, posAttuale.x, "uu__uu_");
+                break;                       
+
+                default:
+                        mvaddstr(posAttuale.y, posAttuale.x, COCCODRILLO_SU);
+                        mvaddstr(posAttuale.y + 1, posAttuale.x, COCCODRILLO_GIU);
+                break;
         }
 }

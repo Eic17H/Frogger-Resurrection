@@ -88,7 +88,14 @@ bool coccodrilloFuoriSchermo(int xAttuale, int xVecchia);
 
 int trovaPosCoccodrilloListaPrimi(pid_t pidCoccodrillo, int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlussi]);
 
-bool creareNuovoCoccodrillo(int indiceFlussoCoccodrillo, int nFlussi, Flusso flussi[nFlussi], Messaggio messaggioCoccodrillo);
+bool creareNuovoCoccodrillo(Flusso flussoCoccodrillo, Messaggio messaggioCoccodrillo);
 
-void creaNuovoPrimoCoccodrillo(int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlussi], Flusso flussi[nFlussi], int indiceFlussoCoccodrillo, int n, int fd[n]);
+void creaNuovoPrimoCoccodrillo(int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlussi], Flusso FlussoCoccodrillo, int indiceFlussoCoccodrillo, int n, int fd[n]);
+
+bool coccodrilloStaComparendo(Flusso flussoCoccodrillo, int xAttuale);
+
+void cancellaVecchioCoccodrillo(Posizione posVecchia);
+
+void disegnaCoccodrillo(Posizione posAttuale);
+
 #endif

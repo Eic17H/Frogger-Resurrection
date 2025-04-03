@@ -40,7 +40,7 @@ void rana(int n, int fd[n]) {
             break;
 
             case KEY_DOWN:
-                if (y + SALTO_RANA < LINES) {
+                if (y + SALTO_RANA < DIM_LINES) {
                     y += SALTO_RANA;
                 } 
             break;
@@ -49,7 +49,7 @@ void rana(int n, int fd[n]) {
             * A sinistra si ha x - spazioNuovaTestaRana. */
             case KEY_RIGHT:
                 // Per evitare di uscire dal bordo destro, la testa dopo il salto + il corpo della rana non devono superare il confine */   
-                if (x + spazioNuovaTestaRana + wRanaSenzaTesta < COLS) {
+                if (x + spazioNuovaTestaRana + wRanaSenzaTesta < DIM_COLS) {
                     x += spazioNuovaTestaRana;
                 }
             break;
