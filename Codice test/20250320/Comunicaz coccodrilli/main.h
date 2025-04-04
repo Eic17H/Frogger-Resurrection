@@ -45,6 +45,9 @@ struct flusso {
 
 #define COCCODRILLO_SU "______^^"
 #define COCCODRILLO_GIU "uu__uu_<"
+
+#define COCCODRILLO_DX_SU "^^______"
+#define COCCODRILLO_DX_GIU ">_uu__uu"
 #define COCCODRILLO_NO "        "
 
 #define SPRITE_TANA_APERTA1 "###***###"
@@ -96,6 +99,6 @@ bool coccodrilloStaComparendo(Flusso flussoCoccodrillo, int xAttuale);
 
 void cancellaVecchioCoccodrillo(Posizione posVecchia);
 
-void disegnaCoccodrillo(Posizione posAttuale);
+void disegnaCoccodrillo(Posizione posAttuale, int versoCoccodrillo);
 
 #endif
