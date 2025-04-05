@@ -4,17 +4,15 @@
 
 #include "main.h"
 
-void granata(int fdScrittura, int xPartenza, int yPartenza, int direzione) {
+void granata(int fdScrittura, Posizione posPartenza, int direzione) {
     Messaggio messaggio;
-    int x = xPartenza, y = yPartenza;
+    Posizione pos = posPartenza;
 
     messaggio.mittente = GRANATA;
     
-    messaggio.posAttuale.x = x;
-    messaggio.posAttuale.y = y;
-
-    messaggio.posVecchia.x = x;
-    messaggio.posVecchia.y = y;
+    messaggio.posAttuale = pos;
+    // inizialmente la posizione vecchia è la stessa di quella di partenza
+    messaggio.posVecchia = pos;
 
     messaggio.pid = getpid();
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
@@ -22,11 +20,11 @@ void granata(int fdScrittura, int xPartenza, int yPartenza, int direzione) {
     write(fdScrittura, &messaggio, sizeof(Messaggio));
 
     while (1) {
-        messaggio.posVecchia.x = x;
+        messaggio.posVecchia = pos;
 
-        x += direzione;
+        pos.x += direzione;
 
-        messaggio.posAttuale.x = x;
+        messaggio.posAttuale = pos;
         write(fdScrittura, &messaggio, sizeof(Messaggio));
         usleep(20000);
     }

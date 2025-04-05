@@ -49,7 +49,7 @@ int main(){
 
         if (pidRana == 0) { // processo figlio
                 close(fd[0]);
-                rana(2, fd);
+                rana(fd[1]);
         } 
         else { // processo padre
                 int vivo;
@@ -276,7 +276,7 @@ int trovaPosCoccodrilloListaPrimi(pid_t pidCoccodrillo, int nFlussi, pid_t cocco
 
 bool creareNuovoCoccodrillo(Flusso flussoCoccodrillo, Messaggio messaggioCoccodrillo) {
         // se il coccodrillo va verso destra e la distanza dal margine sinistro permette di stampare un altro coccodrillo
-        if (flussoCoccodrillo.verso == AVANZAMENTO_DX && messaggioCoccodrillo.posAttuale.x - W_COCCODRILLO >= flussoCoccodrillo.distanzaCoccodrilli) {
+        if (flussoCoccodrillo.verso == AVANZAMENTO_DX && messaggioCoccodrillo.posAttuale.x >= flussoCoccodrillo.distanzaCoccodrilli) {
                 return true;
         }
         // se il coccodrillo va verso sinistra e la distanza dal margine deztro permette di stampare un altro coccodrillo

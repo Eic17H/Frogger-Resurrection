@@ -1,6 +1,8 @@
 #ifndef GRANATA_H
 #define GRANATA_H
 
-void granata(int fdScrittura, int xPartenza, int yPartenza, int direzione);
+#include "main.h"
+
+void granata(int fdScrittura, Posizione posPartenza, int direzione);
 
 #endif
