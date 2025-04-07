@@ -223,7 +223,7 @@ void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]) {
                         flussi[i].posIniziale.x = DIM_COLS - 1;
                 }
                 flussi[i].posIniziale.y = yPartenza;
-
+                
                 // velocità e distanza fra coccodrilli del flusso sono estratti casualmente
                 flussi[i].velocità = MIN_VELOCITA_COCCO + rand() % (MAX_VELOCITA_COCCO - MIN_VELOCITA_COCCO + 1);
                 flussi[i].distanzaCoccodrilli = MIN_SPAZIO_FRA_COCCO + rand() % (MAX_SPAZIO_FRA_COCCO - MIN_SPAZIO_FRA_COCCO + 1);
@@ -250,10 +250,10 @@ void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFluss
 }
 
 bool coccodrilloFuoriSchermo(int xAttuale, int xVecchia) {
-        if (xAttuale - xVecchia >= AVANZAMENTO_DX && xAttuale >= DIM_COLS - 1) { // se il coccodrillo che va verso destra (fa uno spostamento positivo) è fuori dalloo schermo
+        if (xAttuale - xVecchia >= AVANZAMENTO_DX && xAttuale > DIM_COLS - 1) { // se il coccodrillo che va verso destra (fa uno spostamento positivo) è fuori dalloo schermo
                 return true;
         }
-        if (xAttuale - xVecchia <= AVANZAMENTO_SX && xAttuale <= -W_COCCODRILLO+1) { // se il coccodrillo che va verso sinistra (fa uno spostamento negativo) è fuori dalloo schermo
+        if (xAttuale - xVecchia <= AVANZAMENTO_SX && xAttuale < -W_COCCODRILLO+1) { // se il coccodrillo che va verso sinistra (fa uno spostamento negativo) è fuori dalloo schermo
                 return true;
         }
         return false;
@@ -300,169 +300,53 @@ void creaNuovoPrimoCoccodrillo(int nFlussi, pid_t coccodrilliCreatiPerPrimi[nFlu
 }
 
 void cancellaVecchioCoccodrillo(Posizione posVecchia) {
-        switch(posVecchia.x) {
-                case -W_COCCODRILLO+1:
-                        mvaddstr(posVecchia.y, 0, " ");
-                        mvaddstr(posVecchia.y + 1, 0, " ");
-                break;
+        char spirteCoccodrilloVuoto[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_NO, " ", "  ", "   ", "    ", "     ", "      ", "       "};
+        int xSprite = posVecchia.x, pxAlLimiteSchermo = 0; 
 
-                case -W_COCCODRILLO+2: 
-                        mvaddstr(posVecchia.y, 0, "  ");
-                        mvaddstr(posVecchia.y + 1, 0, "  ");
-                break;
-
-                case -W_COCCODRILLO+3:
-                        mvaddstr(posVecchia.y, 0, "   ");
-                        mvaddstr(posVecchia.y + 1, 0, "   ");
-                break;
-
-                case -W_COCCODRILLO+4:
-                        mvaddstr(posVecchia.y, 0, "    ");
-                        mvaddstr(posVecchia.y + 1, 0, "    ");
-                break;
-
-                case -W_COCCODRILLO+5:
-                        mvaddstr(posVecchia.y, 0, "     ");
-                        mvaddstr(posVecchia.y + 1, 0, "     ");
-                break;
-
-                case -W_COCCODRILLO+6:
-                        mvaddstr(posVecchia.y, 0, "      ");
-                        mvaddstr(posVecchia.y + 1, 0, "      ");
-                break;
-
-                case -W_COCCODRILLO+7:
-                        mvaddstr(posVecchia.y, 0, "       ");
-                        mvaddstr(posVecchia.y + 1, 0, "       ");
-                break; 
-
-                case DIM_COLS-1:
-                        mvaddstr(posVecchia.y, posVecchia.x, " ");
-                        mvaddstr(posVecchia.y + 1, posVecchia.x, " ");
-                break;          
-
-                case DIM_COLS-2:
-                        mvaddstr(posVecchia.y, posVecchia.x, "  ");
-                        mvaddstr(posVecchia.y + 1, posVecchia.x, "  ");
-                break;                       
-
-                case DIM_COLS-3:
-                        mvaddstr(posVecchia.y, posVecchia.x, "   ");
-                        mvaddstr(posVecchia.y + 1, posVecchia.x, "   ");
-                break;                       
-
-                case DIM_COLS-4:
-                        mvaddstr(posVecchia.y, posVecchia.x, "    ");
-                        mvaddstr(posVecchia.y + 1, posVecchia.x, "    ");
-                break;                       
-
-                case DIM_COLS-5:
-                        mvaddstr(posVecchia.y, posVecchia.x, "     ");
-                        mvaddstr(posVecchia.y + 1, posVecchia.x, "     ");
-                break;                       
-
-                case DIM_COLS-6:
-                        mvaddstr(posVecchia.y, posVecchia.x, "      ");
-                        mvaddstr(posVecchia.y + 1, posVecchia.x, "      ");
-                break;                       
-
-                case DIM_COLS-7:
-                        mvaddstr(posVecchia.y, posVecchia.x, "       ");
-                        mvaddstr(posVecchia.y + 1, posVecchia.x, "       ");
-                break;                       
-
-                default:
-                        mvaddstr(posVecchia.y, posVecchia.x, COCCODRILLO_NO);
-                        mvaddstr(posVecchia.y + 1, posVecchia.x, COCCODRILLO_NO);
-                break;
+        // se il coccodrillo sta sbucando gradualmente dal lato sinistro dello schermo (non si è ancora mostrato interamente)
+        if (posVecchia.x >= -W_COCCODRILLO+1 && posVecchia.x <= -W_COCCODRILLO+7) {
+                // i pixel che sporgono sono dati dalla lunghezza del coccodrillo + x (che qui è sempre negativa). Se x = -W_COCCODRILLO +1, sta sporgendo un solo pixel 
+                pxAlLimiteSchermo = W_COCCODRILLO + posVecchia.x;
+                xSprite = 0;
         }
+        // se il coccodrillo sta scomparendo gradualmente dal lato destro dello schermo 
+        else if (posVecchia.x >= DIM_COLS-7 && posVecchia.x <= DIM_COLS-1) {
+                // se per esempio x = DIM_COLS - 1, facendo DIM_COLS - x si ottiene che al limite dello schermo c'è un solo pixel
+                pxAlLimiteSchermo = DIM_COLS - posVecchia.x; 
+        }
+        // se il coccodrillo è intero, si stamperà la sprite di default (in posizione 0)
+        
+        mvaddstr(posVecchia.y, xSprite, spirteCoccodrilloVuoto[pxAlLimiteSchermo]); 
+        mvaddstr(posVecchia.y + 1, xSprite, spirteCoccodrilloVuoto[pxAlLimiteSchermo]);
 }
 
 void disegnaCoccodrillo(Posizione posAttuale, int versoCoccodrillo) {
+        // le colonne sono W_COCCODRILLO+1 perché a W_COCCODRILLO si aggiunge il terminatore di stringa /0
+        char spriteCoccodrilloDxSu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_DX_SU, "^", "^^", "_^^", "__^^", "___^^", "____^^", "_____^^"};
+        char spriteCoccodrilloDxGiu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_DX_GIU, "<", "_<", "u_<", "uu_<", "_uu_<", "__uu_<", "u__uu_<"};
+        char spriteCoccodrilloSxSu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_SX_SU, "^", "^^", "^^_", "^^__", "^^___", "^^____", "^^_____"}; 
+        char spriteCoccodrilloSxGiu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_SX_GIU, ">", ">_", ">_u", ">_uu", ">_uu_", ">_uu__", ">_uu__u"};
+        int xSprite = posAttuale.x, pxAlLimiteSchermo = 0; 
+
+        // se il coccodrillo sta sbucando gradualmente dal lato sinistro dello schermo (non si è ancora mostrato interamente)
+        if (posAttuale.x >= -W_COCCODRILLO+1 && posAttuale.x <= -W_COCCODRILLO+7) {
+                // i pixel che sporgono sono dati dalla lunghezza del coccodrillo + x (che qui è sempre negativa). Se x = -W_COCCODRILLO +1, sta sporgendo un solo pixel 
+                pxAlLimiteSchermo = W_COCCODRILLO + posAttuale.x;
+                xSprite = 0;
+        }
+        // se il coccodrillo sta scomparendo gradualmente dal lato destro dello schermo 
+        else if (posAttuale.x >= DIM_COLS-7 && posAttuale.x <= DIM_COLS-1) {
+                // se per esempio x = DIM_COLS - 1, facendo DIM_COLS - x si ottiene che al limite dello schermo c'è un solo pixel
+                pxAlLimiteSchermo = DIM_COLS - posAttuale.x; 
+        }
+        // se il coccodrillo è intero, si stamperà la sprite di default (in posizione 0)
+
         if (versoCoccodrillo >= AVANZAMENTO_DX) {
-                switch (posAttuale.x) {
-                        case -W_COCCODRILLO+1:
-                                mvaddstr(posAttuale.y, 0, "^");
-                                mvaddstr(posAttuale.y + 1, 0, "<");
-                        break;
-                        
-                        case -W_COCCODRILLO+2:
-                                mvaddstr(posAttuale.y, 0, "^^");
-                                mvaddstr(posAttuale.y + 1, 0, "_<");
-                        break;
-                        
-                        case -W_COCCODRILLO+3:
-                                mvaddstr(posAttuale.y, 0, "_^^");
-                                mvaddstr(posAttuale.y + 1, 0, "u_<");
-                        break;
-                        
-                        case -W_COCCODRILLO+4:
-                                mvaddstr(posAttuale.y, 0, "__^^");
-                                mvaddstr(posAttuale.y + 1, 0, "uu_<");
-                        break;
-                        
-                        case -W_COCCODRILLO+5:
-                                mvaddstr(posAttuale.y, 0, "___^^");
-                                mvaddstr(posAttuale.y + 1, 0, "_uu_<");
-                        break;
-                        
-                        case -W_COCCODRILLO+6:
-                                mvaddstr(posAttuale.y, 0, "____^^");
-                                mvaddstr(posAttuale.y + 1, 0, "__uu_<");
-                        break;
-                        
-                        case -W_COCCODRILLO+7:
-                                mvaddstr(posAttuale.y, 0, "_____^^");
-                                mvaddstr(posAttuale.y + 1, 0, "u__uu_<");
-                        break; 
-                        
-                        default:
-                                mvaddstr(posAttuale.y, posAttuale.x, COCCODRILLO_SU);
-                                mvaddstr(posAttuale.y + 1, posAttuale.x, COCCODRILLO_GIU);
-                        break;
-                }
-                return;
+                mvaddstr(posAttuale.y, xSprite, spriteCoccodrilloDxSu[pxAlLimiteSchermo]); 
+                mvaddstr(posAttuale.y + 1, xSprite, spriteCoccodrilloDxGiu[pxAlLimiteSchermo]);
+                return ;
         }
 
-        switch(posAttuale.x) {
-                case DIM_COLS-1:
-                        mvaddstr(posAttuale.y, posAttuale.x, "^");
-                        mvaddstr(posAttuale.y + 1, posAttuale.x, "<");
-                break;          
-                
-                case DIM_COLS-2:
-                        mvaddstr(posAttuale.y, posAttuale.x, "^^");
-                        mvaddstr(posAttuale.y + 1, posAttuale.x, ">_");
-                break;                       
-                
-                case DIM_COLS-3:
-                        mvaddstr(posAttuale.y, posAttuale.x, "^^_");
-                        mvaddstr(posAttuale.y + 1, posAttuale.x, ">_u");
-                break;                       
-                
-                case DIM_COLS-4:
-                        mvaddstr(posAttuale.y, posAttuale.x, "^^__");
-                        mvaddstr(posAttuale.y + 1, posAttuale.x, ">_uu");
-                break;                       
-                
-                case DIM_COLS-5:
-                        mvaddstr(posAttuale.y, posAttuale.x, "^^___");
-                        mvaddstr(posAttuale.y + 1, posAttuale.x, ">_uu_");
-                break;                       
-                
-                case DIM_COLS-6:
-                        mvaddstr(posAttuale.y, posAttuale.x, "^^____");
-                        mvaddstr(posAttuale.y + 1, posAttuale.x, ">_uu__");
-                break;                       
-                
-                case DIM_COLS-7:
-                        mvaddstr(posAttuale.y, posAttuale.x, "^^_____");
-                        mvaddstr(posAttuale.y + 1, posAttuale.x, ">_uu__u");
-                break;                       
-
-                default:
-                        mvaddstr(posAttuale.y, posAttuale.x, COCCODRILLO_DX_SU);
-                        mvaddstr(posAttuale.y + 1, posAttuale.x, COCCODRILLO_DX_GIU);
-                break;
-        }
+        mvaddstr(posAttuale.y, xSprite, spriteCoccodrilloSxSu[pxAlLimiteSchermo]); 
+        mvaddstr(posAttuale.y + 1, xSprite, spriteCoccodrilloSxGiu[pxAlLimiteSchermo]);
 }

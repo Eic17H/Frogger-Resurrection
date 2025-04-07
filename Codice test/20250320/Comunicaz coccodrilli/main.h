@@ -43,11 +43,11 @@ struct flusso {
 #define MIN_SPAZIO_FRA_COCCO 10
 #define MAX_SPAZIO_FRA_COCCO 20
 
-#define COCCODRILLO_SU "______^^"
-#define COCCODRILLO_GIU "uu__uu_<"
+#define COCCODRILLO_DX_SU "______^^"
+#define COCCODRILLO_DX_GIU "uu__uu_<"
 
-#define COCCODRILLO_DX_SU "^^______"
-#define COCCODRILLO_DX_GIU ">_uu__uu"
+#define COCCODRILLO_SX_SU "^^______"
+#define COCCODRILLO_SX_GIU ">_uu__uu"
 #define COCCODRILLO_NO "        "
 
 #define SPRITE_TANA_APERTA1 "###***###"
