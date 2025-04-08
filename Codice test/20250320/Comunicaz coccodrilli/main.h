@@ -25,12 +25,29 @@ struct flusso {
         Posizione posIniziale;
 }; typedef struct flusso Flusso;
 
+struct tana {
+        bool chiusa;
+        int xInizio;
+        int xFine;
+        int y;
+}; typedef struct tana Tana;
+
+#define N_TANE 5
+#define N_SEPARATORI_TANE 6
+#define SPRITE_TANA_APERTA1 "###***###"
+#define SPRITE_TANA_APERTA2 "##*   *##"
+#define SPRITE_TANA_APERTA3 "#*     *#"
+#define SPRITE_TANA_APERTA4 "#*.....*#"
+
+#define SPRITE_TANA_CHIUSA1 "###@@@###"
+#define SPRITE_TANA_CHIUSA2 "##@I@I@##"
+#define SPRITE_TANA_CHIUSA3 "#@I@I@I@#"
+#define SPRITE_TANA_CHIUSA4 "#@*****@#"
+
 #define NON_IN_LISTA -1
 #define NON_SU_SCHERMO -1
-//#define DIM_LINES 24
-//#define DIM_COLS 80
 #define DIM_LINES 38
-#define DIM_COLS 143
+#define DIM_COLS 141
 
 #define SPRITE_RANA "<00>"
 #define SPRITE_GRANATA '*'
@@ -82,6 +99,10 @@ void inizializzaColori();
 void coloraAmbienteGioco();
 
 void inizializzaColoreSprite(int ySprite);
+
+void creaTane(int nTane, Tana tane[nTane]);
+
+void disegnaTane(int nTane, Tana tane[nTane]);
 
 void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]);
 

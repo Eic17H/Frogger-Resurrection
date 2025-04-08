@@ -17,6 +17,7 @@ int main(){
         Flusso flussi[N_FLUSSI];
         pid_t coccodrilliCreatiPerPrimi[N_FLUSSI];
         char* spriteCoccodrilloGiu = NULL, *spriteCoccodrillosu = NULL;
+        Tana tane[N_TANE];
         srand(time(NULL));
 
 	initscr(); // inizializzazione schermo ncurses prima della fork()
@@ -40,6 +41,9 @@ int main(){
 
         coloraAmbienteGioco();
         
+        creaTane(N_TANE, tane);
+        disegnaTane(N_TANE, tane);
+
         inizializzaArrayFlussi(N_FLUSSI, flussi);
 
         creaCoccodrilliIniziali(2, fd, N_FLUSSI, flussi, coccodrilliCreatiPerPrimi);
@@ -58,7 +62,6 @@ int main(){
                 time(&start);
                 do {  
                         // lettura coordinate
-                        //close(fd[1]);
                         read(fd[0], &messaggio, sizeof(Messaggio));
                         
                         switch (messaggio.mittente) {
@@ -205,6 +208,46 @@ void inizializzaColoreSprite(int ySprite) {
         else {
                 attron(COLOR_PAIR(ACQUA));
         }
+}
+
+void creaTane(int nTane, Tana tane[nTane]) {
+        int wTotTane = W_TANA*nTane, wSpondaLibera = DIM_COLS - wTotTane, spazioFraTane = wSpondaLibera / N_SEPARATORI_TANE; 
+        int indiceTane = 0;
+
+        // si sposta il cursore nel punto giusto per disegnare la nuova tana
+        for (int j = spazioFraTane; j < DIM_COLS; j += W_TANA + spazioFraTane) { 
+                // inizialmente tutte le tane sono aperte
+                tane[indiceTane].chiusa = false;
+                tane[indiceTane].y = H_TANA;
+                
+                tane[indiceTane].xInizio = j;
+                tane[indiceTane].xFine = j + W_TANA;
+
+                indiceTane++;
+        }
+}
+
+void disegnaTane(int nTane, Tana tane[nTane]) {
+        // W_TANA+1 per includere il terminatore di stringa /0
+        char spriteTanaAperta[H_TANA][W_TANA+1] = {SPRITE_TANA_APERTA1, SPRITE_TANA_APERTA2, SPRITE_TANA_APERTA3, SPRITE_TANA_APERTA4};
+        char spriteTanaChiusa[H_TANA][W_TANA+1] = {SPRITE_TANA_CHIUSA1, SPRITE_TANA_CHIUSA2, SPRITE_TANA_CHIUSA3, SPRITE_TANA_CHIUSA4};
+        int indiceTana;
+
+        for (int i = 0; i < nTane; i++) {
+                indiceTana = 0;
+                // si disegna la tana partendo dall'alto fino ad arrivare alla riva
+                for (int j = altezzaSponda() - H_TANA + 1; j <= altezzaSponda(); j++) {
+                        attron(COLOR_PAIR(SPONDA));
+                        if (!tane[i].chiusa) {
+                                mvaddstr(j, tane[i].xInizio, spriteTanaAperta[indiceTana]);
+                        }
+                        else {
+                                mvaddstr(j, tane[i].xInizio, spriteTanaChiusa[indiceTana]);
+                        }
+                        indiceTana++;
+                }
+        }
+        refresh();
 }
 
 void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]) {
