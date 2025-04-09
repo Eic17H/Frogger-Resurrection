@@ -67,14 +67,23 @@ int main(){
                         switch (messaggio.mittente) {
                                 case RANA:
                                         inizializzaColoreSprite(messaggio.posVecchia.y);
-
+                                        
+                                        if (messaggio.posVecchia.x != messaggio.posAttuale.x || messaggio.posVecchia.y != messaggio.posAttuale.y) {
+                                                char c = mvinch(messaggio.posAttuale.y, messaggio.posAttuale.x) & A_CHARTEXT;
+                                                if (c == '_' || c == 'u' || c == '>' || c == '<' || c == '^') {
+                                                        mvprintw(0, 16, "cocco");
+                                                }
+                                                else {
+                                                        mvprintw(0, 16, "     ");
+                                                }
+                                        }
                                         mvaddstr(messaggio.posVecchia.y, messaggio.posVecchia.x, "    ");
 
                                         inizializzaColoreSprite(messaggio.posAttuale.y);
 
                                         y_rana = messaggio.posAttuale.y;
                                         x_rana = messaggio.posAttuale.x;
-
+                                        
                                         mvaddstr(y_rana, x_rana, SPRITE_RANA);
                                 break;
 
