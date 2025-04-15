@@ -7,6 +7,9 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
+#include "visualizzazione.h"
+#include "inizializzazione.h"
+
 int main(){
     // Creazione variabili necessarie
     // Le solite cose per ncurses
@@ -47,10 +50,18 @@ int main(){
     // Nuova struttura invece:
 
     // Creazione variabili
-    INIZIALIZZA_NCURSES;
-    MESSAGGIO_BENVENUTO;
-    DIMENSIONE_FINESTRA;
-    INIZIALIZZA_PARTITA;
+    int fd[2], myPipe = pipe(fd), x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO, indiceFlussoCoccodrilloPrimo; 
+    Flusso flussi[N_FLUSSI];
+    pid_t coccodrilliCreatiPerPrimi[N_FLUSSI];
+    char* spriteCoccodrilloGiu = NULL, *spriteCoccodrillosu = NULL;
+    Tana tane[N_TANE];
+    srand(time(NULL));
+
+    // Inizializzazione
+    inizializzaNcurses();
+    messaggioBenvenuto();
+    inizializzaNcurses();
+    void inizializzaPartita();
     fork();
     if(RANA){
         rana()
