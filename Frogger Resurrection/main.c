@@ -9,6 +9,10 @@
 
 #include "visualizzazione.h"
 #include "inizializzazione.h"
+#include "processi.h"
+#include "struttureDati.h"
+#include "costanti.h"
+#include "regole.h"
 
 int main(){
     // Creazione variabili necessarie
@@ -60,21 +64,36 @@ int main(){
     // Inizializzazione
     inizializzaNcurses();
     messaggioBenvenuto();
-    inizializzaNcurses();
     void inizializzaPartita();
-    fork();
-    if(RANA){
-        rana()
-    }else if(MAIN){
-        INIZIALIZZA_VARIABILI;
-        INIZIALIZZA_TIMER;
-        while(PARTITA_IN_CORSO){
-            messaggio = LEGGI_MESSAGGIO;
-            spostaSprite(messaggio.mittente, messaggio.posVecchia, messaggio.posAttuale, sprite(messaggio.mittente))
+
+
+    pid_t pidRana = fork();
+
+    if (forkFallita(pidRana)){
+        endwin();
+        perror("chiamata fork() rana");
+        _exit(2);
+    }
+
+    if(processoFiglio(pidRana)){
+        close(fd[0]);
+        rana(fd[1]);
+    }else if(processoPadre(pidRana)){
+        // Inizializzazione variabili e timer
+        bool vivo;
+        time_t start, ora=0;
+        Messaggio messaggio;
+        time(&start);
+
+        // Loop della manche
+        while(!tempoScaduto(ora, start) && vivo){
+            read(fd[0], &messaggio, sizeof(Messaggio));
+            spostaSprite(messaggio.mittente, messaggio.posVecchia, messaggio.posAttuale, sprite(messaggio.mittente));
+            if(messaggio.mittente = RANA) vivo = !cadutoInAcqua(messaggio.posAttuale);
             VISUALIZZA_TIMER;
             VISUALIZZA_PUNTEGGIO;
         }
-        kill(RANA)
+        kill(pidRana, SIGTERM);
     }
     endwin();
     return 0;
