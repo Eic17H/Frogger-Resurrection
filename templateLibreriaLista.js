@@ -72,6 +72,10 @@ Nodo${tipo}* creaNodo${tipo}(${tipo} dato){
    
         console.log(`
 
+
+#ifndef LISTA${tipo.toUpperCase()}_H
+#define LISTA${tipo.toUpperCase()}_H
+
 #include <stdlib.h>
 #include "tipi.h"
 
@@ -94,6 +98,8 @@ void scollega${tipo}(Nodo${tipo}* nodo);
 bool listaVuota${tipo}(Lista${tipo} lista);
 Lista${tipo}* creaListaVuota${tipo}();
 Nodo${tipo}* creaNodo${tipo}(${tipo} dato);
+
+#endif /* LISTA${tipo.toUpperCase()}_H */
        `)
    
         console.log(`^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ lista${tipo}.h - FINE ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^`)
