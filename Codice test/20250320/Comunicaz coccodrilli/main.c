@@ -365,9 +365,9 @@ void cancellaVecchioCoccodrillo(Posizione posVecchia) {
 
 void disegnaCoccodrillo(Posizione posAttuale, int versoCoccodrillo) {
         // le colonne sono W_COCCODRILLO+1 perché a W_COCCODRILLO si aggiunge il terminatore di stringa /0
-        char spriteCoccodrilloDxSu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_DX_SU, "^", "^^", "_^^", "__^^", "___^^", "____^^", "_____^^"};
+        char spriteCoccodrilloDxSu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_DX_SU,   "^", "^^", "_^^", "__^^", "___^^", "____^^", "_____^^"};
         char spriteCoccodrilloDxGiu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_DX_GIU, "<", "_<", "u_<", "uu_<", "_uu_<", "__uu_<", "u__uu_<"};
-        char spriteCoccodrilloSxSu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_SX_SU, "^", "^^", "^^_", "^^__", "^^___", "^^____", "^^_____"}; 
+        char spriteCoccodrilloSxSu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_SX_SU,   "^", "^^", "^^_", "^^__", "^^___", "^^____", "^^_____"}; 
         char spriteCoccodrilloSxGiu[W_COCCODRILLO][W_COCCODRILLO+1] = {COCCODRILLO_SX_GIU, ">", ">_", ">_u", ">_uu", ">_uu_", ">_uu__", ">_uu__u"};
         int xSprite = posAttuale.x, pxAlLimiteSchermo = 0; 
 

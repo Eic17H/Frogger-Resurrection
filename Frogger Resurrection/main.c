@@ -13,6 +13,7 @@
 #include "struttureDati.h"
 #include "costanti.h"
 #include "regole.h"
+#include "listaCoccodrillo.h"
 
 int main(){
     // Creazione variabili necessarie
@@ -94,6 +95,14 @@ int main(){
             VISUALIZZA_PUNTEGGIO;
         }
         kill(pidRana, SIGTERM);
+
+        /**
+         * Come gestire i coccodrilli
+         * DISTMAX è la distanza tra due coccodrilli diciamo
+         * Se la testa è fuori dallo schermo, pop e dealloca
+         * Se la coda è lontana >DISTMAX dal bordo dell'area di gioco, crea coccodrillo e push
+         * Questo è consistente anche col fatto di creare un solo coccodrillo per riga all'inizio e far creare tutti gli altri in automatico
+         */
     }
     endwin();
     return 0;

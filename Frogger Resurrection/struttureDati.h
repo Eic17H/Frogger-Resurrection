@@ -18,4 +18,8 @@ typedef struct {
     mittente mittente;
 } Messaggio;
 
+typedef struct {
+    pid_t pid;
+} Coccodrillo;
+
 #endif /* STRUTTUREDATI_H */
