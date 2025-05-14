@@ -82,25 +82,28 @@ int main(){
     }else if(processoPadre(pidRana)){
         // Inizializzazione variabili e timer
         bool vivo;
-        time_t start, ora=0;
+        time_t start, ora;
         Messaggio messaggio;
         time(&start);
+        ora=start;
+        int punteggio;
 
         // Loop della manche
         while(!tempoScaduto(ora, start) && vivo){
             read(fd[0], &messaggio, sizeof(Messaggio));
-            spostaSprite(messaggio.mittente, messaggio.posVecchia, messaggio.posAttuale, sprite(messaggio.mittente));
-            if(messaggio.mittente = RANA) vivo = !cadutoInAcqua(messaggio.posAttuale);
-            VISUALIZZA_TIMER;
-            VISUALIZZA_PUNTEGGIO;
+            spostaSprite(messaggio.mittente, messaggio.posVecchia, messaggio.posAttuale);
+            if(messaggio.mittente == RANA) vivo = !cadutoInAcqua(messaggio.posAttuale);
+            time(&ora);
+            visualizzaTimer(ora-start);
+            visualizzaPunteggio(punteggio);
         }
         kill(pidRana, SIGTERM);
 
         /**
          * Come gestire i coccodrilli
          * DISTMAX è la distanza tra due coccodrilli diciamo
-         * Se la testa è fuori dallo schermo, pop e dealloca
-         * Se la coda è lontana >DISTMAX dal bordo dell'area di gioco, crea coccodrillo e push
+         * Se la testa (della lista) è fuori dallo schermo, pop e dealloca
+         * Se la coda (della lista)  è lontana >DISTMAX dal bordo dell'area di gioco, crea coccodrillo e push
          * Questo è consistente anche col fatto di creare un solo coccodrillo per riga all'inizio e far creare tutti gli altri in automatico
          */
     }

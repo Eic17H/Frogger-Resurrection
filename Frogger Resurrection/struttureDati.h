@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 typedef enum{ BASE, MARCIAPIEDE, ACQUA, SPONDA, COCCODRILLO, RANA_SU_COCCODRILLO, NERO } colori; // Probabilmente da rifare in vista delle skin
-typedef enum { RANA, GRANATA } mittente;
+typedef enum { RANA, GRANATA } Mittente;
 
 typedef struct {
     int x;

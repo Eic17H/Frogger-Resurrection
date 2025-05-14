@@ -16,3 +16,10 @@ bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodri
     if(rana.x > limDestro) return false;
     return true;
 }
+
+// 136 -> 216 (perché è 2:16)
+int daSecondiAMinutiSecondi(int tempoInSecondi){
+    int secondi = tempoInSecondi%60;
+    int minuti = tempoInSecondi/60;
+    return minuti*100+secondi;
+}
