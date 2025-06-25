@@ -7,9 +7,13 @@
 #include "sprite.h"
 #include "altrecose.h"
 
-#define TESTO_CENTRATO(x) mvprintw(LINES/2, COLS/2 - strlen("BENVENUTO!")/2, "BENVENUTO!");
+#define TESTO_CENTRATO(x) mvprintw(LINES/2, COLS/2 - strlen(x)/2, x);
+#define TESTO_COORD_CENTRATO(w, s, x, y) mvwprintw(w, LINES/2, COLS/2 - strlen(s)/2, s, x, y);
+#define TESTO_COORD_CENTRATO2(w, s, x, y) mvwprintw(w, LINES/2+1, COLS/2 - strlen(s)/2, s, x, y);
 
 void spostaSprite(Mittente mittente, Posizione posVecchia, Posizione posAttuale);
+void creaStringaVuota(int n, char stringa[n]);
+void tagliaStringa(char* stringa, int daTagliare);
 void visualizzaTimer(int secondi);
 void visualizzaPunteggio(int punteggio);
 

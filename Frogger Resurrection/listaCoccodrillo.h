@@ -5,10 +5,17 @@
 #include <stdbool.h>
 #include "struttureDati.h"
 
-// Nodo Coccodrillo per una lista doppiamente concatenata
+// Dati per ogni singolo coccodrillo
 typedef struct {
-    NodoCoccodrillo* precedente;
-    NodoCoccodrillo* successivo;
+    pid_t pid;
+    Posizione posAttuale;
+    Flusso flusso;
+} Coccodrillo;
+
+// Nodo Coccodrillo per una lista doppiamente concatenata
+typedef struct nodoCoccodrillo {
+    struct nodoCoccodrillo* precedente;
+    struct nodoCoccodrillo* successivo;
     Coccodrillo dato;
 }NodoCoccodrillo;
 
@@ -17,6 +24,8 @@ typedef struct {
     NodoCoccodrillo* testa;
     NodoCoccodrillo* coda;
 }ListaCoccodrillo;
+
+Coccodrillo assegnaDatiCoccodrillo(pid_t pid, Posizione posAttuale, Flusso flusso);
 
 NodoCoccodrillo* popCoccodrillo(ListaCoccodrillo* lista);
 void pushCoccodrillo(ListaCoccodrillo* lista, NodoCoccodrillo* nodo);

@@ -1,19 +1,26 @@
 #include "listaCoccodrillo.h"
 
+// Inserire i dati di tipo Coccodrillo
+Coccodrillo assegnaDatiCoccodrillo(pid_t pid, Posizione posAttuale, Flusso flusso) {
+    Coccodrillo c;
+    c.pid = pid; c.posAttuale = posAttuale; c.flusso = flusso;
+    return c;
+}
+
 // Rimuove la testa della lista e la restituisce, restituisce NULL se la lista è vuota
 NodoCoccodrillo* popCoccodrillo(ListaCoccodrillo* lista) {
-    if(listaVuotaCoccodrillo) return NULL;
+    if(listaVuotaCoccodrillo(*lista)) return NULL;
     NodoCoccodrillo* temp = malloc(sizeof(NodoCoccodrillo));
     lista->testa = lista->testa->successivo;
     if(lista->testa == NULL) lista->coda = NULL;
     else lista->testa->precedente = NULL;
-    scollega(temp);
+    scollegaCoccodrillo(temp);
     return temp;
 }
 
 // Inserisce un nodo in una lista
 void pushCoccodrillo(ListaCoccodrillo* lista, NodoCoccodrillo* nodo) {
-    scollega(nodo);
+    scollegaCoccodrillo(nodo);
     if(listaVuotaCoccodrillo(*lista)){
         lista->testa = lista->coda = nodo;
     } else {
@@ -54,4 +61,5 @@ NodoCoccodrillo* creaNodoCoccodrillo(Coccodrillo dato){
     nodo->dato = dato;
     nodo->precedente = NULL;
     nodo->successivo = NULL;
+    return nodo;
 }

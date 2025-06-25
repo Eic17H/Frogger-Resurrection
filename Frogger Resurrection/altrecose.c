@@ -5,7 +5,7 @@
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta){
     if(rana.y!=coccodrillo.y) return false;
     int limDestro, limSinistro;
-    if(ledgeDifficolta(difficolta)) { //bassa: basta una casella in comune
+    if(difficolta == 0) { //bassa: basta una casella in comune
         limSinistro = coccodrillo.x-W_RANA+1;
         limDestro = coccodrillo.x+W_COCCODRILLO;
     } else { // alta: deve stare tutta sul coccodrillo
@@ -20,7 +20,7 @@ bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodri
 bool laRanaESuUnaTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolta) {
     int limDestro, limSinistro;
 
-    if(ledgeDifficolta(difficolta)) { //bassa: basta una casella in comune
+    if(difficolta == 0) { //bassa: basta una casella in comune
         limSinistro = tana.xInizio-W_RANA+1;
         limDestro = tana.xFine+W_COCCODRILLO;
     } else { // alta: deve stare tutta sul coccodrillo
