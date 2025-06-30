@@ -15,7 +15,7 @@ void rana(int fdScrittura) {
     time_t start = 0, ora = 0;
     _Bool sparato = false;
 
-    pos.x = X_PARTENZA_RANA, 
+    pos.x = X_PARTENZA_RANA; 
     pos.y = Y_PARTENZA_RANA;
 
     // scrittura primo messaggio

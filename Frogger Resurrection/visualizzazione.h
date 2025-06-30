@@ -12,8 +12,11 @@
 #define TESTO_COORD_CENTRATO2(w, s, x, y) mvwprintw(w, LINES/2+1, COLS/2 - strlen(s)/2, s, x, y);
 
 void spostaSprite(Mittente mittente, Posizione posVecchia, Posizione posAttuale);
-void creaStringaVuota(int n, char stringa[n]);
-void tagliaStringa(char* stringa, int daTagliare);
+void creaStringaVuota(int n, char* stringa);
+void inizializzaColoreSprite(int ySprite);
+int calcolaDaTagliareR(Posizione pos);
+int calcolaDaTagliareL(Posizione pos);
+char* tagliaStringa(char* stringa, int lunghezza);
 void visualizzaTimer(int secondi);
 void visualizzaPunteggio(int punteggio);
 
