@@ -12,6 +12,7 @@ void inizializzaColori();
 void messaggioBenvenuto();
 void inizializzaFinestra();
 void creaCoccodrilliIniziali();
+void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso);
 void creaTane(int nTane, Tana tane[nTane]);
 void disegnaTane(int nTane, Tana tane[nTane]);
 void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]);

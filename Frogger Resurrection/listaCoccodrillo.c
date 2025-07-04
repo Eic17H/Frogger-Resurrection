@@ -1,4 +1,6 @@
 #include "listaCoccodrillo.h"
+#include "costanti.h"
+#include "inizializzazione.h"
 
 // Inserire i dati di tipo Coccodrillo
 Coccodrillo assegnaDatiCoccodrillo(pid_t pid, Posizione posAttuale, Flusso flusso) {
@@ -63,3 +65,48 @@ NodoCoccodrillo* creaNodoCoccodrillo(Coccodrillo dato){
     nodo->successivo = NULL;
     return nodo;
 }
+
+void aggiornaPosInListaCoccodrilli(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo* lista[n]) {
+    int i = 0;
+    NodoCoccodrillo* nodo = NULL;
+
+    while (flussi[i].posIniziale.y != messaggio.posAttuale.y) {
+        i++;
+        if (i >= n) return ;
+    }
+    nodo = lista[i]->testa;
+
+    while (nodo->dato.pid != messaggio.pid) {
+        nodo = nodo->successivo;
+        if (nodo == NULL) return ;
+    }
+
+    nodo->dato.posAttuale = messaggio.posAttuale;
+}
+
+void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[n], int fd[]) {
+    NodoCoccodrillo* temp = NULL, *penultimoNodo = NULL;
+
+    for (int i = 0; i < n; i++) {
+        // Controllare da entrambi i versi
+        if (flussi[i].verso == AVANZAMENTO_DX && lista[i]->testa->dato.posAttuale.x > DIM_COLS - 1 ||
+            flussi[i].verso == AVANZAMENTO_SX && lista[i]->testa->dato.posAttuale.x < -W_COCCODRILLO + 1) {
+            penultimoNodo = lista[i]->testa->successivo;
+            penultimoNodo->precedente = NULL;
+
+            scollegaCoccodrillo(lista[i]->testa);
+
+            temp = lista[i]->testa;
+    
+            lista[i]->testa = penultimoNodo;
+            free(temp); 
+        }
+
+        if (flussi[i].verso == AVANZAMENTO_DX && lista[i]->coda->dato.posAttuale.x >= flussi[i].distanzaCoccodrilli ||
+            flussi[i].verso == AVANZAMENTO_SX && DIM_COLS - lista[i]->coda->dato.posAttuale.x - W_COCCODRILLO >= flussi[i].distanzaCoccodrilli) {
+            creaCoccodrillo(lista[i], fd, flussi[i]);
+        }
+    }
+}
+
+//TODO: deallocaree

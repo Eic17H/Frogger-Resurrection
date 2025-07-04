@@ -159,22 +159,26 @@ void inizializzaListaCoccodrilli(int nFlussi, ListaCoccodrillo* lista[nFlussi]) 
 }
 
 void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFlussi], ListaCoccodrillo* lista[nFlussi]) {
+    for (int i = 0; i < nFlussi; i++) {
+        creaCoccodrillo(lista[i], fd, flussi[i]);
+    }
+}
+
+void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso) {
     pid_t pidCoccodrillo;
     Coccodrillo nuovoCoccodrillo;
     NodoCoccodrillo* nuovoNodo = NULL;
 
-    for (int i = 0; i < nFlussi; i++) {
-        pidCoccodrillo = fork();
-        if (forkFallita(pidCoccodrillo)) { endwin(); perror("chiamata fork() coccodrillo"); _exit(2); };
-        if (processoFiglio(pidCoccodrillo)) {
-            close(fd[0]); // TODO: capire dove chiudere
-            coccodrillo(fd[1], flussi[i]); 
-        }
-        else {
-            nuovoCoccodrillo = assegnaDatiCoccodrillo(pidCoccodrillo, flussi[i].posIniziale, flussi[i]);
-            nuovoNodo = creaNodoCoccodrillo(nuovoCoccodrillo);
-            pushCoccodrillo(lista[i], nuovoNodo);
-        }
+    pidCoccodrillo = fork();
+    if (forkFallita(pidCoccodrillo)) { endwin(); perror("chiamata fork() coccodrillo"); _exit(2); };
+    if (processoFiglio(pidCoccodrillo)) {
+        close(fd[0]); 
+        coccodrillo(fd[1], flusso); 
+    }
+    else {
+        nuovoCoccodrillo = assegnaDatiCoccodrillo(pidCoccodrillo, flusso.posIniziale, flusso);
+        nuovoNodo = creaNodoCoccodrillo(nuovoCoccodrillo);
+        pushCoccodrillo(lista, nuovoNodo);
     }
 }
 

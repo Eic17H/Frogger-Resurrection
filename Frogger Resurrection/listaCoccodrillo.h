@@ -34,4 +34,7 @@ bool listaVuotaCoccodrillo(ListaCoccodrillo lista);
 ListaCoccodrillo* creaListaVuotaCoccodrillo();
 NodoCoccodrillo* creaNodoCoccodrillo(Coccodrillo dato);
 
+void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[n], int fd[]);
+void aggiornaPosInListaCoccodrilli(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo* lista[n]);
+
 #endif /* LISTACOCCODRILLO_H */

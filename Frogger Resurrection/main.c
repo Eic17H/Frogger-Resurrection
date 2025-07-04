@@ -24,7 +24,6 @@ int main() {
     int fd[2], myPipe = pipe(fd), x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO, indiceFlussoCoccodrilloPrimo; 
     Flusso flussi[N_FLUSSI];
     pid_t coccodrilliCreatiPerPrimi[N_FLUSSI];
-    char* spriteCoccodrilloGiu = NULL, *spriteCoccodrillosu = NULL;
     Tana tane[N_TANE];
     ListaCoccodrillo* lista[N_FLUSSI];
     srand(time(NULL));
@@ -58,8 +57,11 @@ int main() {
         while(tempoScaduto(time(&ora), start) && vivo){
             read(fd[0], &messaggio, sizeof(Messaggio));
             spostaSprite(messaggio.mittente, messaggio.posVecchia, messaggio.posAttuale);
-            
+            if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, lista); 
             if(messaggio.mittente == RANA) vivo = !cadutoInAcqua(messaggio.posAttuale);
+            
+            controllaSpawnCoccodrilli(N_FLUSSI, lista, flussi, fd);
+
             time(&ora);
             visualizzaTimer(ora-start);
             visualizzaPunteggio(punteggio);

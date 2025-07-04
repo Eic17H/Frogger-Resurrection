@@ -3,14 +3,14 @@
 #include "ncurses.h"
 #include "sprite.h"
 #include "struttureDati.h"
+#include <string.h>
 
 void spostaSprite(Mittente mittente, Posizione posVecchia, Posizione posAttuale){
     char sprite[20], sprite2[20], daStampare[20], daStampare2[20], stringaVuota[20];
-    int daTagliareL = 0, daTagliareR = 0, lenDaStampare = 0;
+    int daTagliareL = 0, daTagliareR = 0, vecchioDaTagliareL, vecchioDaTagliareR, lenDaStampare = 0;
 
     switch(mittente) {
-        case RANA:
-            // assegna daTagliareL e daTagliareR
+        case RANA: // TOD: aggiungere sprite di sotto?
             strcpy(sprite, SPR_RANA_R0);
             // puntatore+offset per spostare l'inizio, il terzo è la lunghezza che quindi è totale-tagliati
             // anziché definire W_SPR_RANA sprite diversi
@@ -41,8 +41,9 @@ void spostaSprite(Mittente mittente, Posizione posVecchia, Posizione posAttuale)
         
         case COCCO:
             daTagliareR = calcolaDaTagliareR(posAttuale); daTagliareL = calcolaDaTagliareL(posAttuale); 
-            strcpy(sprite, SPR_COCCODRILLO_R0);
-            strcpy(sprite2, SPR_COCCODRILLO_R1);
+            vecchioDaTagliareR = calcolaDaTagliareR(posVecchia); vecchioDaTagliareL = calcolaDaTagliareL(posVecchia);
+            // per assegnare sprite e sprite2 a seconda del verso  
+            assegnaSpriteCoccodrillo(posAttuale, posVecchia, sprite, sprite2);
 
             lenDaStampare = strlen(sprite) - daTagliareL - daTagliareR;
             // puntatore+offset per spostare l'inizio, il terzo è la lunghezza che quindi è totale-tagliati
@@ -53,24 +54,11 @@ void spostaSprite(Mittente mittente, Posizione posVecchia, Posizione posAttuale)
             daStampare[lenDaStampare] = '\0';
             daStampare2[lenDaStampare] = '\0';
 
-            creaStringaVuota(strlen(sprite) - calcolaDaTagliareL(posVecchia) - calcolaDaTagliareR(posVecchia), stringaVuota);
+            creaStringaVuota(strlen(sprite) - vecchioDaTagliareL - vecchioDaTagliareR, stringaVuota);
 
             attron(COLOR_PAIR(COCCODRILLO));
-            if (daTagliareL == 0) {
-                mvprintw(posVecchia.y, posVecchia.x, "%s", stringaVuota);
-                mvprintw(posVecchia.y + 1, posVecchia.x, "%s", stringaVuota);
-
-                mvprintw(posAttuale.y, posAttuale.x, "%s", daStampare);
-                mvprintw(posAttuale.y + 1, posAttuale.x, "%s", daStampare2);            
-            }
-            else {
-                mvprintw(posVecchia.y, 0, "%s", stringaVuota);
-                mvprintw(posVecchia.y + 1, 0, "%s", stringaVuota);
-
-                mvprintw(posAttuale.y, 0, "%s", daStampare);
-                mvprintw(posAttuale.y + 1, 0, "%s", daStampare2);
-            }
-            
+            cancellaCoccodrillo(stringaVuota, posVecchia, vecchioDaTagliareL);
+            stampaCoccodrillo(daStampare, daStampare2, posAttuale, daTagliareL);
             break;
         default:
             break;
@@ -82,6 +70,32 @@ void creaStringaVuota(int n, char* stringa) {
         stringa[i] = ' ';
     }
     stringa[n] = '\0';
+}
+
+void assegnaSpriteCoccodrillo(Posizione posAttuale, Posizione posVecchia, char* sprite1, char* sprite2) {
+    strcpy(sprite1, SPR_COCCODRILLO_R0);
+    strcpy(sprite2, SPR_COCCODRILLO_R1);
+        
+    if (posAttuale.x - posVecchia.x <= AVANZAMENTO_SX) {
+        // se il coccodrillo va a sinistra, si inverte la sprite
+        invertiStringa(sprite1);
+        invertiStringa(sprite2);
+        
+        // nella sprite di sotto, '<' diventa '>'
+        sprite2[0] = '>';
+    }
+}
+
+void invertiStringa(char* stringa) {
+    int i = 0;
+    int j = strlen(stringa) - 1;
+    while (i < j) {
+        char tmp = stringa[i];
+        stringa[i] = stringa[j];
+        stringa[j] = tmp;
+        i++;
+        j--;
+    }
 }
 
 int calcolaDaTagliareR(Posizione pos) {
@@ -119,6 +133,37 @@ void inizializzaColoreSprite(int ySprite) {
     else {
         attron(COLOR_PAIR(ACQUA));
     }
+}
+
+void cancellaCoccodrillo(char stringaVuota[], Posizione posVecchia, int vecchioDaTagliareL) {
+    int xDaStampare;
+    // se il coccodrillo non è uscito completamente, si cancella a partire da x = 0 (perché le coordinate originali sono negative)
+    if(vecchioDaTagliareL != 0) {
+        xDaStampare = 0;
+    }
+    // si segue la x originale
+    else {
+        xDaStampare = posVecchia.x;
+    }
+
+    mvprintw(posVecchia.y, xDaStampare, "%s", stringaVuota);
+    mvprintw(posVecchia.y + 1, xDaStampare, "%s", stringaVuota);
+}
+
+void stampaCoccodrillo(char spriteSu[], char spriteGiu[], Posizione posAttuale, int daTagliareL) {
+    int xDaStampare;
+
+    // se il coccodrillo non è uscito completamente, si stampa a partire da x = 0 (perché le coordinate originali sono negative)
+    if (daTagliareL != 0) {
+        xDaStampare = 0;
+    }
+    // si segue la x originale
+    else {
+        xDaStampare = posAttuale.x;
+    }
+
+    mvprintw(posAttuale.y, xDaStampare, "%s", spriteSu);
+    mvprintw(posAttuale.y + 1, xDaStampare, "%s", spriteGiu);
 }
 
 void visualizzaTimer(int secondi){
