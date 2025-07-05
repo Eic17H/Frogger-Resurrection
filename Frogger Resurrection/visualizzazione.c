@@ -1,16 +1,26 @@
 #include "visualizzazione.h"
 #include "costanti.h"
 #include "ncurses.h"
+#include "regole.h"
 #include "sprite.h"
 #include "struttureDati.h"
+#include "altrecose.h"
+#include <signal.h>
 #include <string.h>
+#include <sys/types.h>
 
-void spostaSprite(Mittente mittente, Posizione posVecchia, Posizione posAttuale){
+void spostaSprite(Messaggio messaggio){
+    Mittente mittente = messaggio.mittente;
+    Posizione posVecchia = messaggio.posVecchia, posAttuale = messaggio.posAttuale;
+    pid_t pid = messaggio.pid;
+
     char sprite[20], sprite2[20], daStampare[20], daStampare2[20], stringaVuota[20];
     int daTagliareL = 0, daTagliareR = 0, vecchioDaTagliareL, vecchioDaTagliareR, lenDaStampare = 0;
 
     switch(mittente) {
-        case RANA: // TOD: aggiungere sprite di sotto?
+        case RANA: { // TODO: aggiungere sprite di sotto?
+            static Posizione posAttualeRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA}, posVecchiaRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA};
+            
             strcpy(sprite, SPR_RANA_R0);
             // puntatore+offset per spostare l'inizio, il terzo è la lunghezza che quindi è totale-tagliati
             // anziché definire W_SPR_RANA sprite diversi
@@ -19,14 +29,19 @@ void spostaSprite(Mittente mittente, Posizione posVecchia, Posizione posAttuale)
             /* stampa(posAttuale, tagliaStringa(posAttuale, SPR_RANA)) */
             creaStringaVuota(W_SPR_RANA, stringaVuota);
             
-            inizializzaColoreSprite(posVecchia.y);
-            mvprintw(posVecchia.y, posVecchia.x, "%s", stringaVuota);
+            inizializzaColoreSprite(posVecchiaRana.y);
+            posVecchiaRana = sommaPosizioni(posVecchiaRana, posVecchia);
+            mvprintw(posVecchiaRana.y, posVecchiaRana.x, "%s", stringaVuota);
 
-            inizializzaColoreSprite(posAttuale.y);
-            mvprintw(posAttuale.y, posAttuale.x, "%s", sprite);
-
+            //if (!fuoriSchermo(sommaPosizioni(posAttualeRana, posAttuale), RANA, 0)) {
+                posAttualeRana = sommaPosizioni(posAttualeRana, posAttuale);
+                inizializzaColoreSprite(posAttualeRana.y);
+                mvprintw(posAttualeRana.y, posAttualeRana.x, "%s", sprite);
+            //}
+            mvprintw(0, 16, "inviato: %d %d + ora: %d %d", posVecchia.x, posVecchia.y, posVecchiaRana.x, posVecchiaRana.y);
+            //mvprintw(0, 16, "vecchia: %d %d nuova: %d %d", posVecchiaRana.x, posVecchiaRana.y, posAttualeRana.x, posAttualeRana.y);
             break;
-        
+        }
         case GRANATA:
             strcpy(sprite, SPR_GRANATA);
             creaStringaVuota(strlen(SPR_GRANATA), stringaVuota);
@@ -34,6 +49,10 @@ void spostaSprite(Mittente mittente, Posizione posVecchia, Posizione posAttuale)
             inizializzaColoreSprite(posVecchia.y);
             mvprintw(posVecchia.y, posVecchia.x, "%s", stringaVuota);
                     
+            if (fuoriSchermo(posAttuale, GRANATA, posAttuale.x - posVecchia.x)) {
+                kill(pid, SIGKILL);
+                return ;
+            }
             inizializzaColoreSprite(posAttuale.y);
             mvprintw(posAttuale.y, posAttuale.x, "%s", sprite);
 

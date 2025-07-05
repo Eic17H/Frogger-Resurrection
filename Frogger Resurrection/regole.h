@@ -8,5 +8,5 @@
 
 bool tempoScaduto(time_t ora, time_t start);
 bool cadutoInAcqua(Posizione pos);
-
+bool fuoriSchermo(Posizione pos, Mittente mittente, int verso);
 #endif /* REGOLE_H */

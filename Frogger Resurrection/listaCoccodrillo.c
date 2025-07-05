@@ -1,6 +1,7 @@
 #include "listaCoccodrillo.h"
 #include "costanti.h"
 #include "inizializzazione.h"
+#include "regole.h"
 #include <signal.h>
 
 // Inserire i dati di tipo Coccodrillo
@@ -93,8 +94,7 @@ void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[
 
     for (int i = 0; i < n; i++) {
         // se la testa è più fuori schermo, si elimina 
-        if (flussi[i].verso == AVANZAMENTO_DX && lista[i]->testa->dato.posAttuale.x > DIM_COLS - 1 ||
-            flussi[i].verso == AVANZAMENTO_SX && lista[i]->testa->dato.posAttuale.x < -W_COCCODRILLO + 1) {
+        if (fuoriSchermo(lista[i]->testa->dato.posAttuale, COCCO, flussi[i].verso)) {
             penultimoNodo = lista[i]->testa->successivo;
             penultimoNodo->precedente = NULL;
 

@@ -11,7 +11,7 @@
 #define TESTO_COORD_CENTRATO(w, s, x, y) mvwprintw(w, LINES/2, COLS/2 - strlen(s)/2, s, x, y);
 #define TESTO_COORD_CENTRATO2(w, s, x, y) mvwprintw(w, LINES/2+1, COLS/2 - strlen(s)/2, s, x, y);
 
-void spostaSprite(Mittente mittente, Posizione posVecchia, Posizione posAttuale);
+void spostaSprite(Messaggio messaggio);
 
 void creaStringaVuota(int n, char* stringa);
 void assegnaSpriteCoccodrillo(Posizione posAttuale, Posizione posVecchia, char* sprite1, char* sprite2);

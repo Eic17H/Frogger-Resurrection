@@ -10,13 +10,10 @@
 
 void rana(int fdScrittura) {
     int kCode, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
-    Posizione pos, posPartenzaGranata;
+    Posizione pos = {0, 0}, posPartenzaGranata;
     Messaggio messaggio;
     time_t start = 0, ora = 0;
     _Bool sparato = false;
-
-    pos.x = X_PARTENZA_RANA; 
-    pos.y = Y_PARTENZA_RANA;
 
     // scrittura primo messaggio
     messaggio.mittente = RANA;
@@ -35,31 +32,19 @@ void rana(int fdScrittura) {
 
         switch(kCode) {
             case KEY_UP:
-                if (pos.y - SALTO_RANA > 0) {
-                    pos.y -= SALTO_RANA;
-                }
+                    pos.y = -SALTO_RANA;
             break;
 
             case KEY_DOWN:
-                if (pos.y + SALTO_RANA < DIM_LINES) {
-                    pos.y += SALTO_RANA;
-                } 
+                    pos.y = SALTO_RANA;
             break;
             
-            /* La x è la posizione della testa della rana. Muovendosi a destra, la nuova posizione della testa sarà in x + spazioNuovaTestaRana.
-            * A sinistra si ha x - spazioNuovaTestaRana. */
             case KEY_RIGHT:
-                // Per evitare di uscire dal bordo destro, la testa dopo il salto + il corpo della rana non devono superare il confine */   
-                if (pos.x + spazioNuovaTestaRana + wRanaSenzaTesta < DIM_COLS) {
-                    pos.x += spazioNuovaTestaRana;
-                }
+                    pos.x = SALTO_RANA + W_RANA;
             break;
             
             case KEY_LEFT:
-                // Per evitare di uscire dal bordo sinistro, la testa dopo il salto non deve superare il confine */   
-                if (pos.x - spazioNuovaTestaRana >= 0) {
-                    pos.x -= spazioNuovaTestaRana;
-                }
+                    pos.x = - SALTO_RANA - W_RANA;
             break;
 
             case KEY_BARRA_SPAZIATRICE:
@@ -80,6 +65,9 @@ void rana(int fdScrittura) {
             break;
         }
 
+        if (messaggio.posVecchia.x == pos.x && messaggio.posVecchia.y == pos.y) {
+            pos.x = 0; pos.y = 0;
+        }
         messaggio.posAttuale = pos;
         write(fdScrittura, &messaggio, sizeof(Messaggio));
 

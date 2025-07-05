@@ -50,3 +50,9 @@ int daSecondiAMinutiSecondi(int tempoInSecondi){
     int minuti = tempoInSecondi/60;
     return minuti*100+secondi;
 }
+
+Posizione sommaPosizioni(Posizione pos1, Posizione pos2) {
+    pos1.x += pos2.x;
+    pos1.y += pos2.y;
+    return pos1;
+}

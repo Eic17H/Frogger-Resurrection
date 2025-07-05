@@ -56,7 +56,7 @@ int main() {
         // Loop della manche
         while(tempoScaduto(time(&ora), start) && vivo){
             read(fd[0], &messaggio, sizeof(Messaggio));
-            spostaSprite(messaggio.mittente, messaggio.posVecchia, messaggio.posAttuale);
+            spostaSprite(messaggio);
             if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, lista); 
             if(messaggio.mittente == RANA) vivo = !cadutoInAcqua(messaggio.posAttuale);
             
