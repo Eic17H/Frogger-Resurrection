@@ -44,6 +44,16 @@ bool laRanaESuUnaTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolt
     }*/
 }
 
+int trovaIndiceFlusso(int n, Flusso flussi[n], int yDesiderata) {
+   int i = 0;
+
+    while (flussi[i].posIniziale.y != yDesiderata) {
+        i++;
+        if (i >= n) return -1;
+    }
+    return i;
+}
+
 // 136 -> 216 (perché è 2:16)
 int daSecondiAMinutiSecondi(int tempoInSecondi){
     int secondi = tempoInSecondi%60;

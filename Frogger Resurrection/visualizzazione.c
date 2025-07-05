@@ -1,5 +1,6 @@
 #include "visualizzazione.h"
 #include "costanti.h"
+#include "listaCoccodrillo.h"
 #include "ncurses.h"
 #include "regole.h"
 #include "sprite.h"
@@ -9,7 +10,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-void spostaSprite(Messaggio messaggio){
+void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo* lista[n]){
     Mittente mittente = messaggio.mittente;
     Posizione posVecchia = messaggio.posVecchia, posAttuale = messaggio.posAttuale;
     pid_t pid = messaggio.pid;
@@ -29,17 +30,27 @@ void spostaSprite(Messaggio messaggio){
             /* stampa(posAttuale, tagliaStringa(posAttuale, SPR_RANA)) */
             creaStringaVuota(W_SPR_RANA, stringaVuota);
             
-            inizializzaColoreSprite(posVecchiaRana.y);
-            posVecchiaRana = sommaPosizioni(posVecchiaRana, posVecchia);
-            mvprintw(posVecchiaRana.y, posVecchiaRana.x, "%s", stringaVuota);
-
-            //if (!fuoriSchermo(sommaPosizioni(posAttualeRana, posAttuale), RANA, 0)) {
+            if (!fuoriSchermo(sommaPosizioni(posVecchiaRana, posVecchia), RANA, 0)) {
+                posVecchiaRana = sommaPosizioni(posVecchiaRana, posVecchia);
+                inizializzaColoreSprite(posVecchiaRana.y);
+                mvprintw(posVecchiaRana.y, posVecchiaRana.x, "%s", stringaVuota);
+            }
+            if (!fuoriSchermo(sommaPosizioni(posAttualeRana, posAttuale), RANA, 0)) {
                 posAttualeRana = sommaPosizioni(posAttualeRana, posAttuale);
                 inizializzaColoreSprite(posAttualeRana.y);
                 mvprintw(posAttualeRana.y, posAttualeRana.x, "%s", sprite);
-            //}
-            mvprintw(0, 16, "inviato: %d %d + ora: %d %d", posVecchia.x, posVecchia.y, posVecchiaRana.x, posVecchiaRana.y);
-            //mvprintw(0, 16, "vecchia: %d %d nuova: %d %d", posVecchiaRana.x, posVecchiaRana.y, posAttualeRana.x, posAttualeRana.y);
+            }
+    
+            if (messaggio.posAttuale.y > H_MARCIAPIEDE && messaggio.posAttuale.y < DIM_LINES - H_SPONDA) {
+                int i = trovaIndiceFlusso(N_FLUSSI, flussi, messaggio.posAttuale.y);
+                if (i == -1) break;
+                NodoCoccodrillo* n = lista[i]->testa;
+                while (n != NULL && !laRanaESuUnCoccodrilloPuntoInterrogativo(messaggio.posAttuale, n->dato.posAttuale, 0)) {
+                    n = n->successivo;
+                }
+                if (n != NULL) {mvprintw(0, 16, "s"); refresh();}
+            }
+        
             break;
         }
         case GRANATA:

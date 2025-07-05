@@ -72,11 +72,8 @@ void aggiornaPosInListaCoccodrilli(Messaggio messaggio, int n, Flusso flussi[n],
     int i = 0;
     NodoCoccodrillo* nodo = NULL;
 
-    // si trova il flusso del coccodrillo mittente
-    while (flussi[i].posIniziale.y != messaggio.posAttuale.y) {
-        i++;
-        if (i >= n) return ;
-    }
+    i = trovaIndiceFlusso(N_FLUSSI, flussi, messaggio.posAttuale.y);
+    if (i == -1) return ;
     nodo = lista[i]->testa;
 
     // si trova il nodo corrispondente al coccodrillo

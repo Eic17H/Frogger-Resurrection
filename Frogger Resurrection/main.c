@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
+#include "altrecose.h"
 #include "sprite.h"
 #include "visualizzazione.h"
 #include "inizializzazione.h"
@@ -56,9 +57,12 @@ int main() {
         // Loop della manche
         while(tempoScaduto(time(&ora), start) && vivo){
             read(fd[0], &messaggio, sizeof(Messaggio));
-            spostaSprite(messaggio);
+            spostaSprite(messaggio, N_FLUSSI, flussi, lista);
             if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, lista); 
-            if(messaggio.mittente == RANA) vivo = !cadutoInAcqua(messaggio.posAttuale);
+            if(messaggio.mittente == RANA){
+                vivo = !cadutoInAcqua(messaggio.posAttuale);
+
+            } 
             
             controllaSpawnCoccodrilli(N_FLUSSI, lista, flussi, fd);
 

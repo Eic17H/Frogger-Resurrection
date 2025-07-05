@@ -4,7 +4,8 @@
 #include "struttureDati.h"
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta);
-int daSecondiAMinutiSecondi(int tempoInSecondi);
 Posizione sommaPosizioni(Posizione pos1, Posizione pos2);
+int trovaIndiceFlusso(int n, Flusso flussi[n], int yDesiderata);
+int daSecondiAMinutiSecondi(int tempoInSecondi);
 
 #endif /* ALTRECOSE_H */
