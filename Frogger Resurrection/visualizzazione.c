@@ -41,14 +41,16 @@ void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo
                 mvprintw(posAttualeRana.y, posAttualeRana.x, "%s", sprite);
             }
     
-            if (messaggio.posAttuale.y > H_MARCIAPIEDE && messaggio.posAttuale.y < DIM_LINES - H_SPONDA) {
-                int i = trovaIndiceFlusso(N_FLUSSI, flussi, messaggio.posAttuale.y);
+            if (posAttualeRana.y < DIM_LINES - H_MARCIAPIEDE && posAttualeRana.y > H_SPONDA) {
+                int i = trovaIndiceFlusso(N_FLUSSI, flussi, posAttualeRana.y);
                 if (i == -1) break;
+                
                 NodoCoccodrillo* n = lista[i]->testa;
-                while (n != NULL && !laRanaESuUnCoccodrilloPuntoInterrogativo(messaggio.posAttuale, n->dato.posAttuale, 0)) {
+                while (n != NULL && !laRanaESuUnCoccodrilloPuntoInterrogativo(posAttualeRana, n->dato.posAttuale, 0)) {
                     n = n->successivo;
                 }
                 if (n != NULL) {mvprintw(0, 16, "s"); refresh();}
+                else {mvprintw(0, 16, " "); refresh();}
             }
         
             break;

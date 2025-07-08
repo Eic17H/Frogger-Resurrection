@@ -3,8 +3,11 @@
 #include "costanti.h"
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta){
-    if(rana.y!=coccodrillo.y) return false;
-    int limDestro, limSinistro;
+    
+    // la seconda condizione è perché la sprite del coccodrillo occupa due y diverse (è composta da
+    // due piani). La rana è sopra al coccodrillo anche se si trova 'al piano di sotto' 
+    if(rana.y!=coccodrillo.y && rana.y-1!=coccodrillo.y) return false;
+    int limDestro, limSinistro; 
     if(difficolta == 0) { //bassa: basta una casella in comune
         limSinistro = coccodrillo.x-W_RANA+1;
         limDestro = coccodrillo.x+W_COCCODRILLO;
@@ -47,7 +50,9 @@ bool laRanaESuUnaTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolt
 int trovaIndiceFlusso(int n, Flusso flussi[n], int yDesiderata) {
    int i = 0;
 
-    while (flussi[i].posIniziale.y != yDesiderata) {
+   // la seconda condizione è perché la sprite del coccodrillo occupa due y diverse (è composta da
+   // due piani). La rana è sopra al coccodrillo anche se si trova 'al piano di sotto' 
+    while (flussi[i].posIniziale.y != yDesiderata && flussi[i].posIniziale.y != yDesiderata-1) {
         i++;
         if (i >= n) return -1;
     }
