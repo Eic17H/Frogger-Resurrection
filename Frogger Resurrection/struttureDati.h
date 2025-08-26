@@ -15,7 +15,7 @@ typedef struct {
     Posizione posVecchia;
     Posizione posAttuale;
     pid_t pid;
-    mittente mittente;
+    Mittente mittente;
 } Messaggio;
 
 typedef struct {

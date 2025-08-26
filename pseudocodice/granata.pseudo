@@ -1,0 +1,5 @@
+procedura movimento:
+    se è la granata destra:
+        si muove sempre a destra;
+    se è la granata sinistra:
+        si muove sempre a sinistra;
