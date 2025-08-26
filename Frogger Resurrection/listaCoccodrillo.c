@@ -1,19 +1,30 @@
 #include "listaCoccodrillo.h"
+#include "costanti.h"
+#include "inizializzazione.h"
+#include "regole.h"
+#include <signal.h>
+
+// Inserire i dati di tipo Coccodrillo
+Coccodrillo assegnaDatiCoccodrillo(pid_t pid, Posizione posAttuale, Flusso flusso) {
+    Coccodrillo c;
+    c.pid = pid; c.posAttuale = posAttuale; c.flusso = flusso;
+    return c;
+}
 
 // Rimuove la testa della lista e la restituisce, restituisce NULL se la lista è vuota
 NodoCoccodrillo* popCoccodrillo(ListaCoccodrillo* lista) {
-    if(listaVuotaCoccodrillo) return NULL;
+    if(listaVuotaCoccodrillo(*lista)) return NULL;
     NodoCoccodrillo* temp = malloc(sizeof(NodoCoccodrillo));
     lista->testa = lista->testa->successivo;
     if(lista->testa == NULL) lista->coda = NULL;
     else lista->testa->precedente = NULL;
-    scollega(temp);
+    scollegaCoccodrillo(temp);
     return temp;
 }
 
 // Inserisce un nodo in una lista
 void pushCoccodrillo(ListaCoccodrillo* lista, NodoCoccodrillo* nodo) {
-    scollega(nodo);
+    scollegaCoccodrillo(nodo);
     if(listaVuotaCoccodrillo(*lista)){
         lista->testa = lista->coda = nodo;
     } else {
@@ -54,4 +65,50 @@ NodoCoccodrillo* creaNodoCoccodrillo(Coccodrillo dato){
     nodo->dato = dato;
     nodo->precedente = NULL;
     nodo->successivo = NULL;
+    return nodo;
 }
+
+void aggiornaPosInListaCoccodrilli(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo* lista[n]) {
+    int i = 0;
+    NodoCoccodrillo* nodo = NULL;
+
+    i = trovaIndiceFlusso(N_FLUSSI, flussi, messaggio.posAttuale.y);
+    if (i == -1) return ;
+    nodo = lista[i]->testa;
+
+    // si trova il nodo corrispondente al coccodrillo
+    while (nodo->dato.pid != messaggio.pid) {
+        nodo = nodo->successivo;
+        if (nodo == NULL) return ;
+    }
+
+    // si aggiornano le coordinate
+    nodo->dato.posAttuale = messaggio.posAttuale;
+}
+
+void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[n], int fd[]) {
+    NodoCoccodrillo* temp = NULL, *penultimoNodo = NULL;
+
+    for (int i = 0; i < n; i++) {
+        // se la testa è più fuori schermo, si elimina 
+        if (fuoriSchermo(lista[i]->testa->dato.posAttuale, COCCO, flussi[i].verso)) {
+            penultimoNodo = lista[i]->testa->successivo;
+            penultimoNodo->precedente = NULL;
+
+            scollegaCoccodrillo(lista[i]->testa);
+            temp = lista[i]->testa;
+    
+            lista[i]->testa = penultimoNodo;
+
+            kill(temp->dato.pid, SIGKILL);
+            free(temp);
+        }
+        // se la coda è fuori schermo, si elimina e si crea un nuovo coccodrillo
+        if (flussi[i].verso == AVANZAMENTO_DX && lista[i]->coda->dato.posAttuale.x >= flussi[i].distanzaCoccodrilli ||
+            flussi[i].verso == AVANZAMENTO_SX && DIM_COLS - lista[i]->coda->dato.posAttuale.x - W_COCCODRILLO >= flussi[i].distanzaCoccodrilli) {
+            creaCoccodrillo(lista[i], fd, flussi[i]);
+        }
+    }
+}
+
+//TODO: deallocaree
