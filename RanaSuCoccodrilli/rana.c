@@ -10,7 +10,7 @@
 
 void rana(int fdScrittura) {
     int kCode, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
-    Posizione pos = {0, 0}, posPartenzaGranata;
+    Posizione pos = {10, 10}, posPartenzaGranata;
     Messaggio messaggio;
     time_t start = 0, ora = 0;
     _Bool sparato = false;
@@ -32,19 +32,19 @@ void rana(int fdScrittura) {
 
         switch(kCode) {
             case KEY_UP:
-                    pos.y = -SALTO_RANA;
+                    pos.y += -SALTO_RANA;
             break;
 
             case KEY_DOWN:
-                    pos.y = SALTO_RANA;
+                    pos.y += SALTO_RANA;
             break;
             
             case KEY_RIGHT:
-                    pos.x = SALTO_RANA + W_RANA;
+                    pos.x += SALTO_RANA + W_RANA;
             break;
             
             case KEY_LEFT:
-                    pos.x = - SALTO_RANA - W_RANA;
+                    pos.x += - SALTO_RANA - W_RANA;
             break;
 
             case KEY_BARRA_SPAZIATRICE:

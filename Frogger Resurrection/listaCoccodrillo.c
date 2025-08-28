@@ -87,6 +87,7 @@ void aggiornaPosInListaCoccodrilli(Messaggio messaggio, int n, Flusso flussi[n],
 }
 
 void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[n], int fd[]) {
+    //TODO: certe volte i flussi si generano con poco spazio tra i coccodrilli
     NodoCoccodrillo* temp = NULL, *penultimoNodo = NULL;
 
     for (int i = 0; i < n; i++) {

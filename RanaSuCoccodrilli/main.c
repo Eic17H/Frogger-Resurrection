@@ -61,7 +61,6 @@ int main() {
             if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, lista); 
             if(messaggio.mittente == RANA){
                 vivo = !cadutoInAcqua(messaggio.posAttuale);
-
             } 
             
             controllaSpawnCoccodrilli(N_FLUSSI, lista, flussi, fd);

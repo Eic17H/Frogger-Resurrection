@@ -94,6 +94,7 @@ void inizializzaFinestra() {
 }
 
 void creaTane(int nTane, Tana tane[nTane]) {
+    // TODO: spazioFraTane deve essere un multiplo del movimento laterale della tana, altrimenti non può stare al centro delle tane
     int wTotTane = W_TANA*nTane, wSpondaLibera = DIM_COLS - wTotTane, spazioFraTane = wSpondaLibera / N_SEPARATORI_TANE; 
     int indiceTane = 0;
     // si sposta il cursore nel punto giusto per disegnare la nuova tana

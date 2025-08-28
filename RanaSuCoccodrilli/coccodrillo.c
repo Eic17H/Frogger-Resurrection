@@ -31,7 +31,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
         messaggio.posAttuale = pos;
         write(fdScrittura, &messaggio, sizeof(Messaggio));
 
-        usleep(1000000);
+        usleep(400000);
     }
 
 }
