@@ -1,5 +1,0 @@
-OBIETTIVI GENERALI:
-* redenere funzionante codice di Lorenzo
-* gestire lista coccodrilli (ricordati di deallocare)
-* modificare processo rana per avere rana su coccodrillo
-* (mettere in ordine alfabetico le funzioni?)

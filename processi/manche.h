@@ -1,0 +1,16 @@
+#ifndef MANCHE_H
+#define MANCHE_H
+
+#include <stdbool.h>
+#include <time.h>
+#include <sys/wait.h>
+#include "struttureDati.h"
+#include "costanti.h"
+#include "listaCoccodrillo.h"
+#include "regole.h"
+#include "visualizzazione.h"
+#include "inizializzazione.h"
+
+int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], pid_t pidRana, Tana tane[N_TANE]);
+
+#endif /* MANCHE_H */
