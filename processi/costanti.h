@@ -9,6 +9,9 @@
 #define X_PARTENZA_RANA (DIM_COLS/2 - W_RANA/2)
 #define Y_PARTENZA_RANA (DIM_LINES - 2)
 
+#define Y_TIMER_MANCHE 0
+#define X_TIMER_MANCHE 16
+
 // dimensioni
 #define SALTO_RANA 3
 #define W_RANA 3

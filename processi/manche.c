@@ -1,4 +1,5 @@
 #include "manche.h"
+#include "costanti.h"
 
 /**
  * LA STRUTTURA DI UNA MANCHE
@@ -25,7 +26,7 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd);
 
         time(&ora);
-        visualizzaTimer(ora-start);
+        visualizzaTimer(DURATA_MANCHE_S - (ora-start));
         visualizzaPunteggio(punteggio);
         refresh();
     }

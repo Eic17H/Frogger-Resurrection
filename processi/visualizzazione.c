@@ -219,6 +219,9 @@ void visualizzaTimer(int secondi){
     // Prende ciascuna cifra, +'0' per avere il codice ASCII, e in mezzo mette i due punti
     char tempo[6] = {tempoInt/1000+'0', tempoInt/100%10+'0', ':', tempoInt/10%10+'0', tempoInt/1%10+'0', '\0'};
     /* stampa, magari usando macro per la posizione */
+    
+    attron(COLOR_PAIR(NERO));
+    mvprintw(Y_TIMER_MANCHE, X_TIMER_MANCHE, "%s", tempo);
 }
 
 void visualizzaPunteggio(int punteggio){
