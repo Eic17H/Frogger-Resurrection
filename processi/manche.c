@@ -1,4 +1,5 @@
 #include "manche.h"
+#include "costanti.h"
 
 void stampaPosPosPosPosPos(Posizione posDaStampare, int xInCuiStampare, int yInCuiStampare) {
     char stringa[9] = {posDaStampare.x%10000/1000+'0', posDaStampare.x%1000/100+'0', posDaStampare.x%100/10+'0', posDaStampare.x%10+'0', ';', posDaStampare.y%10000/1000+'0', posDaStampare.y%1000/100+'0', posDaStampare.y%100/10+'0', posDaStampare.y%10+'0'};
@@ -83,7 +84,7 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd);
 
         time(&ora);
-        visualizzaTimer(ora-start);
+        visualizzaTimer(DURATA_MANCHE_S - (ora-start));
         visualizzaPunteggio(punteggio);
         refresh();
     }
