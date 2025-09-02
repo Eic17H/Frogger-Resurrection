@@ -3,7 +3,7 @@
 #include "struttureDati.h"
 
 bool tempoScaduto(time_t ora, time_t start){
-    return ora-start<DURATA_MANCHE_S;
+    return ora-start>=DURATA_MANCHE_S;
 }
 
 bool cadutoInAcqua(Posizione pos){
@@ -36,3 +36,27 @@ bool fuoriSchermo(Posizione pos, Mittente mittente, int verso) {
 
     return false;
 }
+
+/** 
+bool haiPerso(Posizione posAttualeRana, Posizione posVecchiaRana, Flusso flussi[N_FLUSSI]) {
+    if (!posizioniUguali(posAttualeRana, posVecchiaRana)) {    
+        int i = trovaIndiceFlusso(N_FLUSSI, flussi, posAttualeRana.y);
+        
+        // PROVVISORIO: Perché a questo punto la si perde la partita
+        if (i != -1) {
+            coccodrilloAttuale = trovaCoccodrilloSottoRana(posAttualeRana, coccodrilloAttuale, lista, i);
+        } else {fineRound(); return ;}
+    }
+    if (coccodrilloAttuale != NULL) {                  
+
+        if ((coccodrilloPrecedente == NULL || laRanaESuUnCoccodrilloDiverso(coccodrilloPrecedente, coccodrilloAttuale) ||
+            laRanaSpostataSuStessoCoccodrillo(coccodrilloPrecedente, coccodrilloAttuale, posVecchiaRana, posAttualeRana))) {
+
+            coccodrilloPrecedente = coccodrilloAttuale;
+            px = trovaPosRanaSuCoccodrillo(coccodrilloAttuale->dato.posAttuale.x, posAttualeRana.x);
+        }
+
+        posAttualeRana.x = coccodrilloAttuale->dato.posAttuale.x + px;
+    } else {fineRound(); return ;}
+}
+//*/

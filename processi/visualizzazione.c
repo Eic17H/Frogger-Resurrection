@@ -18,12 +18,9 @@ void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo
     static int px = 0; 
     char sprite[20], sprite2[20], daStampare[20], daStampare2[20], stringaVuota[20];
     int daTagliareL = 0, daTagliareR = 0, vecchioDaTagliareL, vecchioDaTagliareR, lenDaStampare = 0;
-    static NodoCoccodrillo* coccodrilloPrecedente = NULL, *coccodrilloAttuale = NULL;
+    static NodoCoccodrillo *coccodrilloPrecedente = NULL, *coccodrilloAttuale = NULL;
     switch(mittente) {
         case RANA: { // TODO: aggiungere sprite di sotto?
-
-            static Posizione posAttualeRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA}, posVecchiaRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA};
-
 
             strcpy(sprite, SPR_RANA_R0);
             // puntatore+offset per spostare l'inizio, il terzo è la lunghezza che quindi è totale-tagliati
@@ -33,41 +30,16 @@ void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo
             /* stampa(posAttuale, tagliaStringa(posAttuale, SPR_RANA)) */
             creaStringaVuota(W_SPR_RANA, stringaVuota);
 
-            posVecchiaRana.x = posAttualeRana.x;
-            posVecchiaRana.y = posAttualeRana.y;
+            Posizione posVecchiaRana = messaggio.posVecchia;
+            Posizione posAttualeRana = messaggio.posAttuale;
 
-            if (!fuoriSchermo(sommaPosizioni(posAttualeRana, posAttuale), RANA, 0)) {
-                posAttualeRana = sommaPosizioni(posAttualeRana, posAttuale);
-            }
-
-            if (posAttualeRana.y < DIM_LINES - H_MARCIAPIEDE && posAttualeRana.y > H_SPONDA) {
-                
-                if (!posizioniUguali(posAttualeRana, posVecchiaRana)) {    
-                    int i = trovaIndiceFlusso(N_FLUSSI, flussi, posAttualeRana.y);
-                    
-                    // PROVVISORIO: Perché a questo punto la si perde la partita
-                    if (i != -1) {
-                        coccodrilloAttuale = trovaCoccodrilloSottoRana(posAttualeRana, coccodrilloAttuale, lista, i);
-                    } else {fineRound(); return ;}
-                }
-                if (coccodrilloAttuale != NULL) {                  
-
-                    if ((coccodrilloPrecedente == NULL || laRanaESuUnCoccodrilloDiverso(coccodrilloPrecedente, coccodrilloAttuale) ||
-                        laRanaSpostataSuStessoCoccodrillo(coccodrilloPrecedente, coccodrilloAttuale, posVecchiaRana, posAttualeRana))) {
-      
-                        coccodrilloPrecedente = coccodrilloAttuale;
-                        px = trovaPosRanaSuCoccodrillo(coccodrilloAttuale->dato.posAttuale.x, posAttualeRana.x);
-                    }
-
-                    posAttualeRana.x = coccodrilloAttuale->dato.posAttuale.x + px;
-                } else {fineRound(); return ;}
-            }
+            // Se, verticalmente, si trova dentro l'area di gioco
         
             inizializzaColoreSprite(posVecchiaRana.y);
-            mvprintw(posVecchiaRana.y, posVecchiaRana.x, "%s", stringaVuota);
+            mvprintw(messaggio.posVecchia.y, messaggio.posVecchia.x, "%s", stringaVuota);
 
             inizializzaColoreSprite(posAttualeRana.y);
-            mvprintw(posAttualeRana.y, posAttualeRana.x, "%s", sprite);
+            mvprintw(messaggio.posAttuale.y, messaggio.posAttuale.x, "%s", sprite);
             refresh();
             break;
         }
