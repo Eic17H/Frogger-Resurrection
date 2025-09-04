@@ -59,6 +59,10 @@ int main() {
     else if(processoPadre(pidRana)){
         // TODO: non sono ancora davvero indipendenti tra di loro
         manche(fd, flussi, listaCoccodrilli, pidRana, tane);
+    inizializzaNcurses();
+    messaggioBenvenuto();
+    inizializzaFinestra();
+        manche(fd, flussi, listaCoccodrilli, pidRana, tane);
     
         /**
          * Come gestire i coccodrilli

@@ -8,15 +8,19 @@ void stampaPosPosPosPosPos(Posizione posDaStampare, int xInCuiStampare, int yInC
 
 bool fatto = false;
 
-void aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flussi[N_FLUSSI], ListaCoccodrillo* lista[N_FLUSSI]) {
+/**
+ * Aggiorna la posizione della rana in posMain
+ * Restituisce falso se la posizione risulta nella sconfitta
+ */
+bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flussi[N_FLUSSI], ListaCoccodrillo* lista[N_FLUSSI]) {
     Posizione posVecchia = *posMain;
-    stampaPosPosPosPosPos(*posMain, 10, 0);
+    //stampaPosPosPosPosPos(*posMain, 10, 0);
     posMain->x += posInviata.x;
     posMain->y += posInviata.y;
     Posizione posAttuale = *posMain;
     // TODO: A INIZIO PARTITA È 700 PER UN CICLO DI LOGICA????????????'''
     if(!fatto)
-    stampaPosPosPosPosPos(posInviata, 20, 0);
+    //stampaPosPosPosPosPos(posInviata, 20, 0);
     fatto = true;
 
     NodoCoccodrillo *coccodrilloAttuale=NULL, *coccodrilloPrecedente=NULL;
@@ -30,7 +34,7 @@ void aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
             // PROVVISORIO: Perché a questo punto la si perde la partita
             if (i != -1) {;
                 coccodrilloAttuale = trovaCoccodrilloSottoRana(posAttuale, coccodrilloAttuale, lista, i);
-            } else {fineRound(); return ;}
+            } else {fineRound(); return false;}
         }
         if(coccodrilloAttuale != NULL )mvaddch(coccodrilloAttuale->dato.posAttuale.y, coccodrilloAttuale->dato.posAttuale.x, '!');
         else beep();
@@ -45,7 +49,8 @@ void aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
 
             // TODO:  per ora snappa al centro del coccodrillo, non so perché px non funzioni boh
             posMain->x = coccodrilloAttuale->dato.posAttuale.x + W_RANA;
-        } else { return ;}}
+        } else { return false;}}
+        return true;
 }
 
 /**
@@ -71,12 +76,11 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         spostaSprite(messaggio, N_FLUSSI, flussi, listaCoccodrilli);
         if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli); 
         if(messaggio.mittente == RANA){
-            vivo = !cadutoInAcqua(messaggio.posAttuale);
             Messaggio msg;
             msg.mittente = RANA;
             msg.pid = messaggio.pid;
             msg.posVecchia = posRana;
-            aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
+            vivo = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
             msg.posAttuale = posRana;
             spostaSprite(msg, N_FLUSSI, flussi, listaCoccodrilli);
         }
@@ -89,4 +93,14 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         refresh();
     }
     kill(pidRana, SIGTERM);
+
+    for(int i = 0; i<N_FLUSSI; i++) {
+        NodoCoccodrillo* listaCoccodrilliDiQuestoFlusso = listaCoccodrilli[i]->testa;
+        NodoCoccodrillo* successivo = listaCoccodrilliDiQuestoFlusso->successivo;
+        for(NodoCoccodrillo* coccodrillo = listaCoccodrilliDiQuestoFlusso; coccodrillo != NULL; coccodrillo = successivo){
+            kill(coccodrillo->dato.pid, SIGTERM);
+            successivo = coccodrillo->successivo;
+            free(coccodrillo);
+        }
+    }
 }
