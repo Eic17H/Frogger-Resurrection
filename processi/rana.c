@@ -51,6 +51,8 @@ void rana(int fdScrittura) {
                 if (!sparato || ora - start >= TEMPO_RICARICA_GRANATA) {
                     sparato = true;
                     time(&start);
+                    pos.x = CODICE_GRANATA_SPARATA;
+                    pos.y = CODICE_GRANATA_SPARATA;
                     // posizione granata destra
                     posPartenzaGranata.x = pos.x + W_RANA;
                     posPartenzaGranata.y = pos.y;

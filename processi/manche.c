@@ -19,22 +19,22 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
     posMain->y += posInviata.y;
     Posizione posAttuale = *posMain;
     // TODO: A INIZIO PARTITA È 700 PER UN CICLO DI LOGICA????????????'''
-    if(!fatto)
-    //stampaPosPosPosPosPos(posInviata, 20, 0);
-    fatto = true;
-
-    NodoCoccodrillo *coccodrilloAttuale=NULL, *coccodrilloPrecedente=NULL;
-    int px;
+    if(!fatto) {
+        //stampaPosPosPosPosPos(posInviata, 20, 0); 
+        fatto = true;
+    }
+    
+    static NodoCoccodrillo *coccodrilloAttuale=NULL, *coccodrilloPrecedente=NULL;
+    static int offsetSuCoccodrillo = 0;
 
     if (posAttuale.y < DIM_LINES - H_MARCIAPIEDE && posAttuale.y > H_SPONDA) {
         // Se si è mossa
-        if (1) {    
+        if (posVecchia.x != posAttuale.x || posVecchia.y != posAttuale.y) {    
             int i = trovaIndiceFlusso(N_FLUSSI, flussi, posAttuale.y);
             
             // PROVVISORIO: Perché a questo punto la si perde la partita
-            if (i != -1) {;
-                coccodrilloAttuale = trovaCoccodrilloSottoRana(posAttuale, coccodrilloAttuale, lista, i);
-            } else {fineRound(); return false;}
+            if (i == -1) { fineRound(); return false; }
+            coccodrilloAttuale = trovaCoccodrilloSottoRana(posAttuale, coccodrilloAttuale, lista, i);
         }
         if(coccodrilloAttuale != NULL )mvaddch(coccodrilloAttuale->dato.posAttuale.y, coccodrilloAttuale->dato.posAttuale.x, '!');
         else beep();
@@ -44,11 +44,10 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
                 laRanaSpostataSuStessoCoccodrillo(coccodrilloPrecedente, coccodrilloAttuale, posVecchia, posAttuale))) {
 
                 coccodrilloPrecedente = coccodrilloAttuale;
+                offsetSuCoccodrillo = trovaPosRanaSuCoccodrillo(coccodrilloAttuale->dato.posAttuale.x, posAttuale.x);
             }
-                px = trovaPosRanaSuCoccodrillo(coccodrilloAttuale->dato.posAttuale.x, posAttuale.x);
-
-            // TODO:  per ora snappa al centro del coccodrillo, non so perché px non funzioni boh
-            posMain->x = coccodrilloAttuale->dato.posAttuale.x + W_RANA;
+            
+            posMain->x = coccodrilloAttuale->dato.posAttuale.x + offsetSuCoccodrillo;
         } else { return false;}}
         return true;
 }

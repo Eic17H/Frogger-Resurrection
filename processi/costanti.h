@@ -12,6 +12,9 @@
 #define Y_TIMER_MANCHE 0
 #define X_TIMER_MANCHE 16
 
+
+#define CODICE_GRANATA_SPARATA 255
+
 // dimensioni
 #define SALTO_RANA 3
 #define W_RANA 3
