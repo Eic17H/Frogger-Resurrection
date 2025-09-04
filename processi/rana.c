@@ -78,13 +78,3 @@ void rana(int fdScrittura) {
         time(&ora);
     }
 }
-
-void creaProcessoGranata(int fdScrittura, Posizione posPartenza, int direzione) {
-    pid_t pid_granata = fork();
-    if (pid_granata < 0) {perror("Errore fork() granata"); _exit(2);}
-
-    if (pid_granata == 0) { // processo granata (eredita il fd chiuso in lettura)
-        granata(fdScrittura, posPartenza, direzione);
-    }
-    // processo padre continua l'esecuzione
-}

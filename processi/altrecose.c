@@ -102,3 +102,4 @@ Posizione sommaPosizioni(Posizione pos1, Posizione pos2) {
 bool posizioniUguali(Posizione pos1, Posizione pos2) {
     return pos1.x == pos2.x && pos1.y == pos2.y;
 }
+

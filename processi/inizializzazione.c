@@ -7,6 +7,7 @@
 #include "visualizzazione.h"
 #include "costanti.h"
 #include "coccodrillo.h"
+#include "granata.h"
 #include "listaCoccodrillo.h"
    
 void inizializzaNcurses() {
@@ -181,6 +182,16 @@ void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso) {
         nuovoNodo = creaNodoCoccodrillo(nuovoCoccodrillo);
         pushCoccodrillo(lista, nuovoNodo);
     }
+}
+
+void creaProcessoGranata(int fdScrittura, Posizione posPartenza, int direzione) {
+    pid_t pid_granata = fork();
+    if (pid_granata < 0) {perror("Errore fork() granata"); _exit(2);}
+
+    if (pid_granata == 0) { // processo granata (eredita il fd chiuso in lettura)
+        granata(fdScrittura, posPartenza, direzione);
+    }
+    // processo padre continua l'esecuzione
 }
 
 void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* lista[nFlussi], int fd[2]) {

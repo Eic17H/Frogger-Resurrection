@@ -1,4 +1,5 @@
 #include "manche.h"
+#include "altrecose.h"
 #include "costanti.h"
 
 void stampaPosPosPosPosPos(Posizione posDaStampare, int xInCuiStampare, int yInCuiStampare) {
@@ -29,7 +30,7 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
 
     if (posAttuale.y < DIM_LINES - H_MARCIAPIEDE && posAttuale.y > H_SPONDA) {
         // Se si è mossa
-        if (posVecchia.x != posAttuale.x || posVecchia.y != posAttuale.y) {    
+        if (!posizioniUguali(posVecchia, posAttuale)) {    
             int i = trovaIndiceFlusso(N_FLUSSI, flussi, posAttuale.y);
             
             // PROVVISORIO: Perché a questo punto la si perde la partita
@@ -72,16 +73,29 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
     // Loop principale
     while(!tempoScaduto(time(&ora), start) && vivo){
         read(fd[0], &messaggio, sizeof(Messaggio));
-        spostaSprite(messaggio, N_FLUSSI, flussi, listaCoccodrilli);
-        if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli); 
-        if(messaggio.mittente == RANA){
-            Messaggio msg;
-            msg.mittente = RANA;
-            msg.pid = messaggio.pid;
-            msg.posVecchia = posRana;
-            vivo = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
-            msg.posAttuale = posRana;
-            spostaSprite(msg, N_FLUSSI, flussi, listaCoccodrilli);
+        if (messaggio.mittente != RANA) {
+            spostaSprite(messaggio, N_FLUSSI, flussi, listaCoccodrilli);
+            if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli); 
+        }
+        else {
+            if (messaggio.posAttuale.x != CODICE_GRANATA_SPARATA && messaggio.posAttuale.y != CODICE_GRANATA_SPARATA) {
+                Messaggio msg;
+                msg.mittente = RANA;
+                msg.pid = messaggio.pid;
+                msg.posVecchia = posRana;
+                vivo = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
+                msg.posAttuale = posRana;
+                spostaSprite(msg, N_FLUSSI, flussi, listaCoccodrilli);
+            } else {
+                Posizione posPartenzaGranata;
+                posPartenzaGranata.x = posRana.x + W_RANA;
+                posPartenzaGranata.y = posRana.y;
+
+                creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_DX);    
+                // posizione granata sinistra
+                posPartenzaGranata.x = posRana.x - 1;
+                creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_SX);
+            }
         }
         
         controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd);

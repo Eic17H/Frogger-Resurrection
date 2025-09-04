@@ -2,6 +2,7 @@
 #define INIZIALIZZAZIONE_H
 
 #include <ncurses.h>
+#include "rana.h"
 #include "visualizzazione.h"
 #include "listaCoccodrillo.h"
 
@@ -13,6 +14,7 @@ void messaggioBenvenuto();
 void inizializzaFinestra();
 void creaCoccodrilliIniziali();
 void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso);
+void creaProcessoGranata(int fdScrittura, Posizione posPartenza, int direzione);
 void creaTane(int nTane, Tana tane[nTane]);
 void disegnaTane(int nTane, Tana tane[nTane]);
 void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]);
