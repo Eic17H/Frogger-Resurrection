@@ -1,4 +1,6 @@
 #include "main.h"
+
+#include <signal.h>
 #include <stdbool.h>
 #include <ncurses.h>
 #include <stdio.h>
@@ -30,7 +32,7 @@ int main() {
     int x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO;
     int indiceFlussoCoccodrilloPrimo; 
     Flusso flussi[N_FLUSSI];
-    pid_t coccodrilliCreatiPerPrimi[N_FLUSSI];
+    pid_t pidRana;
     Tana tane[N_TANE];
     ListaCoccodrillo* listaCoccodrilli[N_FLUSSI];
 
@@ -42,28 +44,35 @@ int main() {
     messaggioBenvenuto();
     inizializzaFinestra();
 
-    pid_t pidRana = fork();
-
-    // ERRORE
-    if (forkFallita(pidRana)){
-        endwin();
-        perror("chiamata fork() rana");
-        _exit(2);
-    }
-    // RANA
-    else if(processoFiglio(pidRana)){
-        close(fd[0]);
-        rana(fd[1]);
-    }
-    // MAIN
-    else if(processoPadre(pidRana)){
-        // TODO: non sono ancora davvero indipendenti tra di loro
-        manche(fd, flussi, listaCoccodrilli, pidRana, tane);
+    pidRana = creaRana(2, fd);
+    manche(fd, flussi, listaCoccodrilli, pidRana, tane);
     inizializzaNcurses();
     messaggioBenvenuto();
     inizializzaFinestra();
-        manche(fd, flussi, listaCoccodrilli, pidRana, tane);
-    
+    pidRana = creaRana(2, fd);
+    manche(fd, flussi, listaCoccodrilli, pidRana, tane);
+//    pid_t pidRana = fork();
+//
+//    // ERRORE
+//    if (forkFallita(pidRana)){
+//        endwin();
+//        perror("chiamata fork() rana");
+//        _exit(2);
+//    }
+//    // RANA
+//    else if(processoFiglio(pidRana)){
+//        close(fd[0]);
+//        rana(fd[1]);
+//    }
+//    // MAIN
+//    else if(processoPadre(pidRana)){
+//        // TODO: non sono ancora davvero indipendenti tra di loro
+//        manche(fd, flussi, listaCoccodrilli, pidRana, tane);
+//        inizializzaNcurses();
+//        messaggioBenvenuto();
+//        inizializzaFinestra();
+//        manche(fd, flussi, listaCoccodrilli, pidRana, tane);
+        
         /**
          * Come gestire i coccodrilli
          * DISTMAX è la distanza tra due coccodrilli diciamo
@@ -72,7 +81,7 @@ int main() {
          * Questo è consistente anche col fatto di creare un solo coccodrillo per riga all'inizio e far creare tutti gli altri in automatico
          */
          
-    }
+//    }
 
     endwin();
     return 0;

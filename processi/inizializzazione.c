@@ -184,11 +184,29 @@ void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso) {
     }
 }
 
+pid_t creaRana(int n, int fd[n]) {
+    pid_t pidRana = fork();
+
+    // ERRORE
+    if (forkFallita(pidRana)){
+        endwin();
+        perror("chiamata fork() rana");
+        _exit(2);
+    }
+    // RANA
+    else if(processoFiglio(pidRana)){
+        close(fd[0]);
+        rana(fd[1]);
+    }
+    // MAIN
+    return pidRana;
+}
+
 void creaProcessoGranata(int fdScrittura, Posizione posPartenza, int direzione) {
     pid_t pid_granata = fork();
-    if (pid_granata < 0) {perror("Errore fork() granata"); _exit(2);}
+    if (forkFallita(pid_granata)) {perror("Errore fork() granata"); _exit(2);}
 
-    if (pid_granata == 0) { // processo granata (eredita il fd chiuso in lettura)
+    if (processoFiglio(pid_granata)) { // processo granata (eredita il fd chiuso in lettura)
         granata(fdScrittura, posPartenza, direzione);
     }
     // processo padre continua l'esecuzione

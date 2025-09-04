@@ -14,6 +14,7 @@ void messaggioBenvenuto();
 void inizializzaFinestra();
 void creaCoccodrilliIniziali();
 void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso);
+pid_t creaRana(int n, int fd[n]);
 void creaProcessoGranata(int fdScrittura, Posizione posPartenza, int direzione);
 void creaTane(int nTane, Tana tane[nTane]);
 void disegnaTane(int nTane, Tana tane[nTane]);
