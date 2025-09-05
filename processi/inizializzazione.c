@@ -34,12 +34,11 @@ void inizializzaColori() {
     init_pair(COCCODRILLO, COLOR_GREEN, COLOR_BLUE);
     init_pair(RANA_SU_COCCODRILLO, COLOR_WHITE, COLOR_GREEN);
     init_pair(NERO, COLOR_WHITE, COLOR_BLACK);
+    // sfondo blu
+    bkgd(COLOR_PAIR(ACQUA));
 }
 
 void coloraAmbienteGioco() {
-    // sfondo blu
-    attron(COLOR_PAIR(ACQUA));
-    bkgd(COLOR_PAIR(ACQUA));
     // barra superiore        
     attron(COLOR_PAIR(NERO));
     for(int i=0; i<DIM_COLS+1; i++){
@@ -89,7 +88,7 @@ void adattaFinestra() {
 
 void inizializzaFinestra() {
     if (LINES != DIM_LINES || COLS != DIM_COLS) adattaFinestra();
-    inizializzaColori();
+    //inizializzaColori();
     coloraAmbienteGioco();
     refresh();
 }

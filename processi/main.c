@@ -1,5 +1,3 @@
-#include "main.h"
-
 #include <signal.h>
 #include <stdbool.h>
 #include <ncurses.h>
@@ -10,16 +8,9 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
-#include "altrecose.h"
-#include "sprite.h"
-#include "visualizzazione.h"
 #include "inizializzazione.h"
-#include "processi.h"
-#include "rana.h"
-#include "coccodrillo.h"
 #include "struttureDati.h"
 #include "costanti.h"
-#include "regole.h"
 #include "listaCoccodrillo.h"
 #include "manche.h"
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
@@ -42,47 +33,19 @@ int main() {
     srand(time(NULL));
     inizializzaNcurses();
     messaggioBenvenuto();
+    inizializzaColori();
     inizializzaFinestra();
 
     pidRana = creaRana(2, fd);
     manche(fd, flussi, listaCoccodrilli, pidRana, tane);
-    inizializzaNcurses();
-    messaggioBenvenuto();
+
+    clear();
     inizializzaFinestra();
+
     pidRana = creaRana(2, fd);
     manche(fd, flussi, listaCoccodrilli, pidRana, tane);
-//    pid_t pidRana = fork();
-//
-//    // ERRORE
-//    if (forkFallita(pidRana)){
-//        endwin();
-//        perror("chiamata fork() rana");
-//        _exit(2);
-//    }
-//    // RANA
-//    else if(processoFiglio(pidRana)){
-//        close(fd[0]);
-//        rana(fd[1]);
-//    }
-//    // MAIN
-//    else if(processoPadre(pidRana)){
-//        // TODO: non sono ancora davvero indipendenti tra di loro
-//        manche(fd, flussi, listaCoccodrilli, pidRana, tane);
-//        inizializzaNcurses();
-//        messaggioBenvenuto();
-//        inizializzaFinestra();
-//        manche(fd, flussi, listaCoccodrilli, pidRana, tane);
-        
-        /**
-         * Come gestire i coccodrilli
-         * DISTMAX è la distanza tra due coccodrilli diciamo
-         * Se la testa (della lista) è fuori dallo schermo, pop e dealloca
-         * Se la coda (della lista)  è lontana >DISTMAX dal bordo dell'area di gioco, crea coccodrillo e push
-         * Questo è consistente anche col fatto di creare un solo coccodrillo per riga all'inizio e far creare tutti gli altri in automatico
-         */
-         
-//    }
 
+    clear(); refresh();
     endwin();
     return 0;
 }

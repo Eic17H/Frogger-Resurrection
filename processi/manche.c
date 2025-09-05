@@ -1,6 +1,9 @@
 #include "manche.h"
 #include "altrecose.h"
 #include "costanti.h"
+#include "inizializzazione.h"
+#include "struttureDati.h"
+#include <ncurses.h>
 
 void stampaPosPosPosPosPos(Posizione posDaStampare, int xInCuiStampare, int yInCuiStampare) {
     char stringa[9] = {posDaStampare.x%10000/1000+'0', posDaStampare.x%1000/100+'0', posDaStampare.x%100/10+'0', posDaStampare.x%10+'0', ';', posDaStampare.y%10000/1000+'0', posDaStampare.y%1000/100+'0', posDaStampare.y%100/10+'0', posDaStampare.y%10+'0'};
@@ -34,7 +37,7 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
             int i = trovaIndiceFlusso(N_FLUSSI, flussi, posAttuale.y);
             
             // PROVVISORIO: Perché a questo punto la si perde la partita
-            if (i == -1) { fineRound(); return false; }
+            if (i == -1) { return false; }
             coccodrilloAttuale = trovaCoccodrilloSottoRana(posAttuale, coccodrilloAttuale, lista, i);
         }
         if(coccodrilloAttuale != NULL )mvaddch(coccodrilloAttuale->dato.posAttuale.y, coccodrilloAttuale->dato.posAttuale.x, '!');
@@ -56,7 +59,7 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
 /**
  * LA STRUTTURA DI UNA MANCHE
  */
-int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], pid_t pidRana, Tana tane[N_TANE]) {
+void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], pid_t pidRana, Tana tane[N_TANE]) {
     inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, fd);
 
     // Inizializzazione variabili e timer
@@ -105,15 +108,17 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         visualizzaPunteggio(punteggio);
         refresh();
     }
-    kill(pidRana, SIGTERM);
+
+    kill(pidRana, SIGKILL);
 
     for(int i = 0; i<N_FLUSSI; i++) {
         NodoCoccodrillo* listaCoccodrilliDiQuestoFlusso = listaCoccodrilli[i]->testa;
         NodoCoccodrillo* successivo = listaCoccodrilliDiQuestoFlusso->successivo;
         for(NodoCoccodrillo* coccodrillo = listaCoccodrilliDiQuestoFlusso; coccodrillo != NULL; coccodrillo = successivo){
-            kill(coccodrillo->dato.pid, SIGTERM);
+            kill(coccodrillo->dato.pid, SIGKILL);
             successivo = coccodrillo->successivo;
             free(coccodrillo);
         }
     }
+
 }
