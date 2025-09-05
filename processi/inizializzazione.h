@@ -11,7 +11,6 @@ void adattaFinestra();
 void coloraAmbienteGioco();
 void inizializzaColori();
 void messaggioBenvenuto();
-void inizializzaFinestra();
 void creaCoccodrilliIniziali();
 void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso);
 pid_t creaRana(int n, int fd[n]);

@@ -61,6 +61,8 @@ void coloraAmbienteGioco() {
 }
 
 void adattaFinestra() {
+    if (LINES == DIM_LINES && COLS == DIM_COLS) return ;
+
     int dim1 = strlen("TU: LINES = xx COLS = yy")/2;  
     int dim2 = strlen("DIM: LINES = xx COLS = yy")/2;
 
@@ -84,13 +86,6 @@ void adattaFinestra() {
     }
     usleep(10000);
     clear();
-}
-
-void inizializzaFinestra() {
-    if (LINES != DIM_LINES || COLS != DIM_COLS) adattaFinestra();
-    //inizializzaColori();
-    coloraAmbienteGioco();
-    refresh();
 }
 
 void creaTane(int nTane, Tana tane[nTane]) {

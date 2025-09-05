@@ -10,8 +10,6 @@ void stampaPosPosPosPosPos(Posizione posDaStampare, int xInCuiStampare, int yInC
     mvaddstr(yInCuiStampare, xInCuiStampare, stringa);
 }
 
-bool fatto = false;
-
 /**
  * Aggiorna la posizione della rana in posMain
  * Restituisce falso se la posizione risulta nella sconfitta
@@ -22,11 +20,6 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
     posMain->x += posInviata.x;
     posMain->y += posInviata.y;
     Posizione posAttuale = *posMain;
-    // TODO: A INIZIO PARTITA È 700 PER UN CICLO DI LOGICA????????????'''
-    if(!fatto) {
-        //stampaPosPosPosPosPos(posInviata, 20, 0); 
-        fatto = true;
-    }
     
     static NodoCoccodrillo *coccodrilloAttuale=NULL, *coccodrilloPrecedente=NULL;
     static int offsetSuCoccodrillo = 0;
@@ -36,7 +29,6 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
         if (!posizioniUguali(posVecchia, posAttuale)) {    
             int i = trovaIndiceFlusso(N_FLUSSI, flussi, posAttuale.y);
             
-            // PROVVISORIO: Perché a questo punto la si perde la partita
             if (i == -1) { return false; }
             coccodrilloAttuale = trovaCoccodrilloSottoRana(posAttuale, coccodrilloAttuale, lista, i);
         }
@@ -63,15 +55,15 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
     inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, fd);
 
     // Inizializzazione variabili e timer
-        bool vivo = true;
-        time_t start, ora = 0;
-        Posizione predefinita = {0,0};
-        Messaggio messaggio = {predefinita, predefinita, -1, -1};
-        time(&start);
-        int punteggio;
+    bool vivo = true;
+    time_t start, ora = 0;
+    Posizione predefinita = {0,0};
+    Messaggio messaggio = {predefinita, predefinita, -1, -1};
+    time(&start);
+    int punteggio;
 
     // Variabili relative alla singola manche
-        Posizione posRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA};
+    Posizione posRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA};
 
     // Loop principale
     while(!tempoScaduto(time(&ora), start) && vivo){
@@ -121,4 +113,14 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
         }
     }
 
+    messaggioAltroRound(vivo);
+}
+
+void messaggioAltroRound(bool vivo) {
+    if (vivo) {TESTO_CENTRATO("TEMPO SCADUTO!");}
+    else {TESTO_CENTRATO("CADUTO IN ACQUA!");} 
+    
+    refresh();
+    sleep(2);
+    clear();
 }

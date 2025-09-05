@@ -33,14 +33,14 @@ int main() {
     srand(time(NULL));
     inizializzaNcurses();
     messaggioBenvenuto();
+    adattaFinestra();
     inizializzaColori();
-    inizializzaFinestra();
+    coloraAmbienteGioco();
 
     pidRana = creaRana(2, fd);
     manche(fd, flussi, listaCoccodrilli, pidRana, tane);
-
-    clear();
-    inizializzaFinestra();
+    
+    coloraAmbienteGioco();
 
     pidRana = creaRana(2, fd);
     manche(fd, flussi, listaCoccodrilli, pidRana, tane);
