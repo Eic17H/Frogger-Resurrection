@@ -12,7 +12,7 @@
 #define TESTO_COORD_CENTRATO(w, s, x, y) mvwprintw(w, LINES/2, COLS/2 - strlen(s)/2, s, x, y);
 #define TESTO_COORD_CENTRATO2(w, s, x, y) mvwprintw(w, LINES/2+1, COLS/2 - strlen(s)/2, s, x, y);
 
-void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo* lista[n]);
+void spostaSprite(Messaggio messaggio);
 
 void creaStringaVuota(int n, char* stringa);
 void assegnaSpriteCoccodrillo(Posizione posAttuale, Posizione posVecchia, char* sprite1, char* sprite2);
@@ -26,12 +26,12 @@ int calcolaDaTagliareL(Posizione pos);
 
 char* tagliaStringa(char* stringa, int lunghezza);
 
+void selezionaColoreCoccodrillo(int versoCoccodrillo);
+
 void cancellaCoccodrillo(char stringaVuota[], Posizione posVecchia, int vecchioDaTagliareL);
 void stampaCoccodrillo(char spriteSu[], char spriteGiu[], Posizione posAttuale, int daTagliareL);
 
 void visualizzaTimer(int secondi);
 void visualizzaPunteggio(int punteggio);
-
-void fineRound();
 
 #endif /* VISUALIZZAZIONE_H */

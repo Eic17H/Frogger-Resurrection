@@ -72,7 +72,7 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
     while(!tempoScaduto(time(&ora), start) && vivo){
         read(fd[0], &messaggio, sizeof(Messaggio));
         if (messaggio.mittente != RANA) {
-            spostaSprite(messaggio, N_FLUSSI, flussi, listaCoccodrilli);
+            spostaSprite(messaggio);
             if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli); 
         }
         else {
@@ -83,7 +83,7 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
                 msg.posVecchia = posRana;
                 vivo = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
                 msg.posAttuale = posRana;
-                spostaSprite(msg, N_FLUSSI, flussi, listaCoccodrilli);
+                spostaSprite(msg);
             } else {
                 Posizione posPartenzaGranata;
                 posPartenzaGranata.x = posRana.x + W_RANA;

@@ -11,7 +11,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo* lista[n]){
+void spostaSprite(Messaggio messaggio){
     Mittente mittente = messaggio.mittente;
     Posizione posVecchia = messaggio.posVecchia, posAttuale = messaggio.posAttuale;
     pid_t pid = messaggio.pid;
@@ -79,7 +79,7 @@ void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo
 
             creaStringaVuota(strlen(sprite) - vecchioDaTagliareL - vecchioDaTagliareR, stringaVuota);
 
-            attron(COLOR_PAIR(COCCODRILLO));
+            selezionaColoreCoccodrillo(posAttuale.x - posVecchia.x);
             cancellaCoccodrillo(stringaVuota, posVecchia, vecchioDaTagliareL);
             stampaCoccodrillo(daStampare, daStampare2, posAttuale, daTagliareL);
             break;
@@ -158,6 +158,16 @@ void inizializzaColoreSprite(int ySprite) {
     }
 }
 
+void selezionaColoreCoccodrillo(int versoCoccodrillo) {
+    // se il coccodrillo va da sx a dx
+    if (versoCoccodrillo > 0) {
+        attron(COLOR_PAIR(COCCODRILLO_VERDE));
+        return;
+    }
+    // altrimenti
+    attron(COLOR_PAIR(COCCODRILLO_GIALLO));
+}
+
 void cancellaCoccodrillo(char stringaVuota[], Posizione posVecchia, int vecchioDaTagliareL) {
     int xDaStampare;
     // se il coccodrillo non è uscito completamente, si cancella a partire da x = 0 (perché le coordinate originali sono negative)
@@ -201,9 +211,4 @@ void visualizzaTimer(int secondi){
 
 void visualizzaPunteggio(int punteggio){
     
-}
-
-void fineRound() {
-    clear();
-    refresh();
 }

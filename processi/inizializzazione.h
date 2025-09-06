@@ -17,6 +17,7 @@ pid_t creaRana(int n, int fd[n]);
 void creaProcessoGranata(int fdScrittura, Posizione posPartenza, int direzione);
 void creaTane(int nTane, Tana tane[nTane]);
 void disegnaTane(int nTane, Tana tane[nTane]);
+int generaVersoFlussoIniziale();
 void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]);
 void inizializzaListaCoccodrilli(int nFlussi, ListaCoccodrillo* lista[nFlussi]);
 void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFlussi], ListaCoccodrillo* lista[nFlussi]);

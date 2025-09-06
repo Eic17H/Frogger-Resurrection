@@ -31,7 +31,8 @@ void inizializzaColori() {
     init_pair(MARCIAPIEDE, COLOR_BLACK, COLOR_WHITE);
     init_pair(ACQUA, COLOR_WHITE, COLOR_BLUE);
     init_pair(SPONDA, COLOR_BLACK, COLOR_GREEN);
-    init_pair(COCCODRILLO, COLOR_GREEN, COLOR_BLUE);
+    init_pair(COCCODRILLO_VERDE, COLOR_GREEN, COLOR_BLUE);
+    init_pair(COCCODRILLO_GIALLO, COLOR_YELLOW, COLOR_BLUE);
     init_pair(RANA_SU_COCCODRILLO, COLOR_WHITE, COLOR_GREEN);
     init_pair(NERO, COLOR_WHITE, COLOR_BLACK);
     // sfondo blu
@@ -125,18 +126,25 @@ void disegnaTane(int nTane, Tana tane[nTane]) {
     }
 }
 
+int generaVersoFlussoIniziale() {
+    // generato numero casuale: 0 o 1
+    if (rand() % (AVANZAMENTO_DX + 1) == AVANZAMENTO_DX) return AVANZAMENTO_DX;
+    return AVANZAMENTO_SX;  
+}
+
 void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]) {
     int yPartenza = DIM_LINES - H_MARCIAPIEDE - 1 - 1;
+    int versoFlusso = generaVersoFlussoIniziale();
+
     //il primo -1 è perché il coccodrillo ha anche una sprite inferiore, il secondo è perché non deve partire a un pixel di distanza rispetto al marciapiede 
     for (int i = 0; i < nFlussi; i++) {
-        // la metà dei flussi andrà da destra verso sinistra, l'altra in verso contrario
-        if (i % 2 == 0) {
-            flussi[i].verso = AVANZAMENTO_DX;
+        flussi[i].verso = versoFlusso;
+
+        if (versoFlusso == AVANZAMENTO_DX) {
             // per far si che il coccodrillo si mostri grdualmente (senza essere disegnato fuori schermo)
             flussi[i].posIniziale.x = -W_COCCODRILLO+1;  
         }
         else {
-            flussi[i].verso = AVANZAMENTO_SX;
             flussi[i].posIniziale.x = DIM_COLS - 1;
         }
         flussi[i].posIniziale.y = yPartenza;
@@ -145,6 +153,9 @@ void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]) {
         flussi[i].velocità = MIN_VELOCITA_COCCO + rand() % (MAX_VELOCITA_COCCO - MIN_VELOCITA_COCCO + 1);
         flussi[i].distanzaCoccodrilli = MIN_SPAZIO_FRA_COCCO + rand() % (MAX_SPAZIO_FRA_COCCO - MIN_SPAZIO_FRA_COCCO + 1);
         yPartenza -= DISTANZA_FLUSSI + 1; // +1 per la sprite inferiore del coccodrillo 
+    
+        // i versi si alternano
+        versoFlusso *= -1;
     }
 }
 
