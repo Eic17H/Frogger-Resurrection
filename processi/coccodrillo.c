@@ -10,7 +10,6 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
     Messaggio messaggio;
     time_t start = 0, ora = 0;
     _Bool sparato = false;
-
     pos = flussoAttuale.posIniziale;
 
     // scrittura primo messaggio

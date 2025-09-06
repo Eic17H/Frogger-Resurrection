@@ -5,6 +5,7 @@
 #include "struttureDati.h"
 #include <ncurses.h>
 
+
 void stampaPosPosPosPosPos(Posizione posDaStampare, int xInCuiStampare, int yInCuiStampare) {
     char stringa[8] = {posDaStampare.x%1000/100+'0', posDaStampare.x%100/10+'0', posDaStampare.x%10+'0', ';', posDaStampare.y%1000/100+'0', posDaStampare.y%100/10+'0', posDaStampare.y%10+'0', '\0'};
     mvaddstr(yInCuiStampare, xInCuiStampare, stringa);
@@ -24,6 +25,8 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
     static NodoCoccodrillo *coccodrilloAttuale=NULL, *coccodrilloPrecedente=NULL;
     static int offsetSuCoccodrillo = 0;
 
+    if (posAttuale.x < 0 || posAttuale.x + W_RANA > DIM_COLS) return false;
+    
     if (posAttuale.y < DIM_LINES - H_MARCIAPIEDE && posAttuale.y > H_SPONDA) {
         // Se si è mossa
         if (!posizioniUguali(posVecchia, posAttuale)) {    
@@ -53,7 +56,7 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
  */
 void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], pid_t pidRana, Tana tane[N_TANE]) {
     inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, fd);
-
+    
     // Inizializzazione variabili e timer
     bool vivo = true;
     time_t start, ora = 0;

@@ -58,6 +58,7 @@ void coloraAmbienteGioco() {
     		mvaddch(LINES-1 -j, i, ' ');
     	}
     }
+    refresh();
 }
 
 void adattaFinestra() {

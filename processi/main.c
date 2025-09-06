@@ -9,19 +9,18 @@
 #include <sys/types.h>
 
 #include "inizializzazione.h"
+#include "processi.h"
 #include "struttureDati.h"
 #include "costanti.h"
 #include "listaCoccodrillo.h"
 #include "manche.h"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+
 int main() {
     // ======== ==== ==== ========
     // ======== VARIABILI ========
     // ======== ==== ==== ========
     int fd[2];
-    int myPipe = pipe(fd);
     int x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO;
-    int indiceFlussoCoccodrilloPrimo; 
     Flusso flussi[N_FLUSSI];
     pid_t pidRana;
     Tana tane[N_TANE];
@@ -37,10 +36,14 @@ int main() {
     inizializzaColori();
     coloraAmbienteGioco();
 
+    creaPipe(fd);
     pidRana = creaRana(2, fd);
     manche(fd, flussi, listaCoccodrilli, pidRana, tane);
     
     coloraAmbienteGioco();
+    
+    chiudiPipe(fd);
+    creaPipe(fd);
 
     pidRana = creaRana(2, fd);
     manche(fd, flussi, listaCoccodrilli, pidRana, tane);

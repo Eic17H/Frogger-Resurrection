@@ -8,4 +8,6 @@ bool forkFallita(pid_t pid);
 bool processoFiglio(pid_t pid);
 bool processoPadre(pid_t pid);
 
+void creaPipe(int fd[]);
+void chiudiPipe(int fd[]);
 #endif /* PROCESSI_H */

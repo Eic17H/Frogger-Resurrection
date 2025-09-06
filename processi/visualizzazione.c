@@ -10,7 +10,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <sys/types.h>
-#include "manche.h" //TODO: togliere
 
 void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo* lista[n]){
     Mittente mittente = messaggio.mittente;
