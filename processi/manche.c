@@ -116,6 +116,7 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
     messaggioAltroRound(vivo);
 }
 
+// TODO: cambiare il parametro per includere i proiettili
 void messaggioAltroRound(bool vivo) {
     if (vivo) {TESTO_CENTRATO("TEMPO SCADUTO!");}
     else {
