@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <sys/types.h>
+#include "manche.h" //TODO: togliere
 
 void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo* lista[n]){
     Mittente mittente = messaggio.mittente;
@@ -20,9 +21,10 @@ void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo
     int daTagliareL = 0, daTagliareR = 0, vecchioDaTagliareL, vecchioDaTagliareR, lenDaStampare = 0;
     static NodoCoccodrillo *coccodrilloPrecedente = NULL, *coccodrilloAttuale = NULL;
     switch(mittente) {
-        case RANA: { // TODO: aggiungere sprite di sotto?
+        case RANA: {
 
             strcpy(sprite, SPR_RANA_R0);
+            strcpy(sprite2, SPR_RANA_R1);
             // puntatore+offset per spostare l'inizio, il terzo è la lunghezza che quindi è totale-tagliati
             // anziché definire W_SPR_RANA sprite diversi
             strncpy(daStampare, sprite+daTagliareL, W_SPR_RANA-daTagliareR-daTagliareL);
@@ -36,10 +38,12 @@ void spostaSprite(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo
             // Se, verticalmente, si trova dentro l'area di gioco
         
             inizializzaColoreSprite(posVecchiaRana.y);
+            mvprintw(messaggio.posVecchia.y-1, messaggio.posVecchia.x, "%s", stringaVuota);
             mvprintw(messaggio.posVecchia.y, messaggio.posVecchia.x, "%s", stringaVuota);
 
             inizializzaColoreSprite(posAttualeRana.y);
-            mvprintw(messaggio.posAttuale.y, messaggio.posAttuale.x, "%s", sprite);
+            mvprintw(messaggio.posAttuale.y-1, messaggio.posAttuale.x, "%s", sprite);
+            mvprintw(messaggio.posAttuale.y, messaggio.posAttuale.x, "%s", sprite2);
             refresh();
             break;
         }
