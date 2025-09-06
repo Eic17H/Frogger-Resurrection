@@ -33,7 +33,6 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
             coccodrilloAttuale = trovaCoccodrilloSottoRana(posAttuale, coccodrilloAttuale, lista, i);
         }
         if(coccodrilloAttuale != NULL )mvaddch(coccodrilloAttuale->dato.posAttuale.y, coccodrilloAttuale->dato.posAttuale.x, '!');
-        else beep();
         if (coccodrilloAttuale != NULL) {        
 
             if ((coccodrilloPrecedente == NULL || laRanaESuUnCoccodrilloDiverso(coccodrilloPrecedente, coccodrilloAttuale) ||
@@ -119,9 +118,14 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
 
 void messaggioAltroRound(bool vivo) {
     if (vivo) {TESTO_CENTRATO("TEMPO SCADUTO!");}
-    else {TESTO_CENTRATO("CADUTO IN ACQUA!");} 
-    
+    else {
+        TESTO_CENTRATO("CADUTO IN ACQUA!");
+    } 
     refresh();
-    sleep(2);
+    for(int i=0; i<4; i++){
+        beep();
+        usleep(150000);
+    }
+    sleep(1);
     clear();
 }
