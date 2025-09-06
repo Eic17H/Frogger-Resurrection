@@ -6,11 +6,6 @@ bool tempoScaduto(time_t ora, time_t start){
     return ora-start>=DURATA_MANCHE_S;
 }
 
-bool cadutoInAcqua(Posizione pos){
-    // TODO
-    return false;
-}
-
 bool fuoriSchermo(Posizione pos, Mittente mittente, int verso) {
     switch(mittente) {
         case GRANATA:
@@ -60,3 +55,23 @@ bool haiPerso(Posizione posAttualeRana, Posizione posVecchiaRana, Flusso flussi[
     } else {fineRound(); return ;}
 }
 //*/
+
+// TODO: punteggio
+/**
+ * mettiamo nel main una cosa che gestisce tutti i tipi di messaggio
+ * mettiamo nel messaggio un campo che ne specifica il tipo
+ * un messaggio può essere di questi tipi:
+ * * movimento
+ * * creazione proiettile
+ * * assegnazione punti
+ * si crea una subroutine con switch(mittente) per movimento e proiettili
+ * per l'assegnazione dei punti non serve controllare il mittente
+ * 
+ * game design dei punti:
+ * * un salto in avanti vale 10 punti
+ * * un salto indietro vale 3 punti
+ * * un salto laterale vale 5 punti
+ * * rompere un proiettile vale 20 punti
+ * * raggiungere una tana non so se debba valere punti visto che è un requisito
+ * * ciascun secondo rimasto nel timer vale 5 punti
+ */
