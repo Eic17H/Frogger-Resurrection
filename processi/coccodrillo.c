@@ -24,6 +24,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
     write(fdScrittura, &messaggio, sizeof(Messaggio));
 
     while (1) {
+        // TODO: ok ho provato a fargli sparare una granata ad ogni passo e funziona, aggiungere i proiettili sarà facile
         messaggio.posVecchia = pos;
 
         pos.x += flussoAttuale.velocità * flussoAttuale.verso;
@@ -33,5 +34,4 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
 
         usleep(400000);
     }
-
 }

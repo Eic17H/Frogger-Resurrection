@@ -110,5 +110,3 @@ void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[
         }
     }
 }
-
-//TODO: deallocaree

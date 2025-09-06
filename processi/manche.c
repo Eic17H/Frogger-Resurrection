@@ -6,7 +6,7 @@
 #include <ncurses.h>
 
 void stampaPosPosPosPosPos(Posizione posDaStampare, int xInCuiStampare, int yInCuiStampare) {
-    char stringa[9] = {posDaStampare.x%10000/1000+'0', posDaStampare.x%1000/100+'0', posDaStampare.x%100/10+'0', posDaStampare.x%10+'0', ';', posDaStampare.y%10000/1000+'0', posDaStampare.y%1000/100+'0', posDaStampare.y%100/10+'0', posDaStampare.y%10+'0'};
+    char stringa[8] = {posDaStampare.x%1000/100+'0', posDaStampare.x%100/10+'0', posDaStampare.x%10+'0', ';', posDaStampare.y%1000/100+'0', posDaStampare.y%100/10+'0', posDaStampare.y%10+'0', '\0'};
     mvaddstr(yInCuiStampare, xInCuiStampare, stringa);
 }
 
@@ -42,7 +42,8 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
                 coccodrilloPrecedente = coccodrilloAttuale;
                 offsetSuCoccodrillo = trovaPosRanaSuCoccodrillo(coccodrilloAttuale->dato.posAttuale.x, posAttuale.x);
             }
-            
+            // TODO: Ancora non funziona :(. Ora snappa o al lato destro o a quello sinistro. Boh.
+            // TODO: La rana viene renderizzata due volte, lasciando un buco sul coccodrillo a seconda della direzione.
             posMain->x = coccodrilloAttuale->dato.posAttuale.x + offsetSuCoccodrillo;
         } else { return false;}}
         return true;
