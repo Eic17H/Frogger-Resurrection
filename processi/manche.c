@@ -28,7 +28,7 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
     static NodoCoccodrillo *coccodrilloAttuale=NULL, *coccodrilloPrecedente=NULL;
     static int offsetSuCoccodrillo = 0;
 
-    if (posAttuale.x < 0 || posAttuale.x + W_RANA > DIM_COLS) return false;
+    if (posAttuale.x < 0 || posAttuale.x + W_RANA > DIM_COLS - 1) return false;
     
     if (posAttuale.y < DIM_LINES - H_MARCIAPIEDE && posAttuale.y > H_SPONDA) {
         // Se si è mossa
