@@ -21,7 +21,8 @@ bool fuoriSchermo(Posizione pos, Mittente mittente, int verso) {
 
         break;
         case RANA:
-            if (pos.x + W_RANA > DIM_COLS -1 || pos.x < 0 || pos.y > DIM_LINES -1 || pos.y < 0)
+            // la rana non può avere y = 0 perché la riga 0 è dedicata a punteggio e timer
+            if (pos.x + W_RANA > DIM_COLS -1 || pos.x < 0 || pos.y > DIM_LINES -1 || pos.y <= 0)
             return true;
 
         break;

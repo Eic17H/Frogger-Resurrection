@@ -2,6 +2,7 @@
 #include "altrecose.h"
 #include "costanti.h"
 #include "inizializzazione.h"
+#include "regole.h"
 #include "struttureDati.h"
 #include <ncurses.h>
 
@@ -18,8 +19,10 @@ void stampaPosPosPosPosPos(Posizione posDaStampare, int xInCuiStampare, int yInC
 bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flussi[N_FLUSSI], ListaCoccodrillo* lista[N_FLUSSI]) {
     Posizione posVecchia = *posMain;
     //stampaPosPosPosPosPos(*posMain, 10, 0);
-    posMain->x += posInviata.x;
-    posMain->y += posInviata.y;
+    if (!fuoriSchermo(sommaPosizioni(*posMain, posInviata), RANA, 0)) {
+        posMain->x += posInviata.x;
+        posMain->y += posInviata.y;
+    }
     Posizione posAttuale = *posMain;
     
     static NodoCoccodrillo *coccodrilloAttuale=NULL, *coccodrilloPrecedente=NULL;
