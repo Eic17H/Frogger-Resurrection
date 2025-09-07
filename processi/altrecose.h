@@ -5,6 +5,9 @@
 #include "struttureDati.h"
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta);
+bool laRanaESuTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolta);
+bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bool* vivo);
+bool ranaSuTanaSbagliata(Posizione rana, bool );
 NodoCoccodrillo* trovaCoccodrilloSottoRana(Posizione posAttualeRana, NodoCoccodrillo* coccodrilloAttuale, ListaCoccodrillo** lista, int indiceFlusso);
 int trovaPosRanaSuCoccodrillo(int xCoccodrillo, int xRana);
 bool laRanaESuUnCoccodrilloDiverso(NodoCoccodrillo* precedente, NodoCoccodrillo* attuale);

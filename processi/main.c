@@ -35,10 +35,11 @@ int main() {
     adattaFinestra();
     inizializzaColori();
     coloraAmbienteGioco();
-
+    creaTane(N_TANE, tane);
+    
     creaPipe(fd);
     pidRana = creaRana(2, fd);
-    manche(fd, flussi, listaCoccodrilli, pidRana, tane);
+    manche(fd, flussi, listaCoccodrilli, pidRana, tane, 0);
     
     coloraAmbienteGioco();
     
@@ -46,7 +47,7 @@ int main() {
     creaPipe(fd);
 
     pidRana = creaRana(2, fd);
-    manche(fd, flussi, listaCoccodrilli, pidRana, tane);
+    manche(fd, flussi, listaCoccodrilli, pidRana, tane, 0);
 
     clear(); refresh();
     endwin();

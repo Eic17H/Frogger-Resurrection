@@ -39,31 +39,39 @@ int trovaPosRanaSuCoccodrillo(int xCoccodrillo, int xRana) {
     return xRana - xCoccodrillo;
 }
 
-bool laRanaESuUnaTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolta) {
+bool laRanaESuTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolta) {
     int limDestro, limSinistro;
 
     if(difficolta == 0) { //bassa: basta una casella in comune
         limSinistro = tana.xInizio-W_RANA+1;
-        limDestro = tana.xFine+W_COCCODRILLO;
-    } else { // alta: deve stare tutta sul coccodrillo
+        limDestro = tana.xFine;
+    }
+    else { // alta: deve stare tutta sul coccodrillo
         limSinistro = tana.xInizio;
-        limDestro = tana.xFine+W_COCCODRILLO-W_RANA+1;
+        limDestro = tana.xFine-W_RANA+1;
     }
     if(rana.x < limSinistro) return false;
     if(rana.x > limDestro) return false;
     return true;
+}
 
-    /* chiamante potrebbe funzionare così:
-    if (rana.y <= altezzaSponda()) {
-        int i = 0;
-        bool inTana = false;
-        while (i < N_TANE && !inTana) {
-                inTana = laRanaESuUnaTanaPuntoInterrogativo(messaggio.posAttuale, tane[i], 0);
-                i++;
-        }
-        if (inTana) tane[i-1].chiusa = true;
-        else hai perso la manche
-    }*/
+bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bool* vivo) {
+    if (rana.y > H_SPONDA) return false;
+
+    int i = 0;
+    bool inTana = false;
+
+    while (i < N_TANE && !inTana) {
+        inTana = laRanaESuTanaPuntoInterrogativo(rana, tane[i], 0);
+        i++;
+    }
+
+    if (inTana && !tane[i-1].chiusa) {
+        tane[i-1].chiusa = true;
+        return true;
+    }
+    vivo = false;
+    return false;
 }
 
 bool laRanaESuUnCoccodrilloDiverso(NodoCoccodrillo* precedente, NodoCoccodrillo* attuale) {

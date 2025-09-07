@@ -4,6 +4,7 @@
 #include "inizializzazione.h"
 #include "regole.h"
 #include "struttureDati.h"
+#include "visualizzazione.h"
 #include <ncurses.h>
 
 
@@ -28,14 +29,14 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
     static NodoCoccodrillo *coccodrilloAttuale=NULL, *coccodrilloPrecedente=NULL;
     static int offsetSuCoccodrillo = 0;
 
-    if (posAttuale.x < 0 || posAttuale.x + W_RANA > DIM_COLS - 1) return false;
+    if (posAttuale.x < 0 || posAttuale.x + W_RANA > DIM_COLS - 1) return true;
     
     if (posAttuale.y < DIM_LINES - H_MARCIAPIEDE && posAttuale.y > H_SPONDA) {
         // Se si è mossa
         if (!posizioniUguali(posVecchia, posAttuale)) {    
             int i = trovaIndiceFlusso(N_FLUSSI, flussi, posAttuale.y);
             
-            if (i == -1) { return false; }
+            if (i == -1) { return true; }
             coccodrilloAttuale = trovaCoccodrilloSottoRana(posAttuale, coccodrilloAttuale, lista, i);
         }
         if(coccodrilloAttuale != NULL )mvaddch(coccodrilloAttuale->dato.posAttuale.y, coccodrilloAttuale->dato.posAttuale.x, '!');
@@ -50,18 +51,18 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
             // TODO: Ancora non funziona :(. Ora snappa o al lato destro o a quello sinistro. Boh.
             // TODO: La rana viene renderizzata due volte, lasciando un buco sul coccodrillo a seconda della direzione.
             posMain->x = coccodrilloAttuale->dato.posAttuale.x + offsetSuCoccodrillo;
-        } else { return false;}}
-        return true;
+        } else { return true;}}
+        return false;
 }
 
 /**
  * LA STRUTTURA DI UNA MANCHE
  */
-void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], pid_t pidRana, Tana tane[N_TANE]) {
+void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], pid_t pidRana, Tana tane[N_TANE], int difficolta) {
     inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, fd);
     
     // Inizializzazione variabili e timer
-    bool vivo = true;
+    bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false, tanaOccupata = false;
     time_t start, ora = 0;
     Posizione predefinita = {0,0};
     Messaggio messaggio = {predefinita, predefinita, -1, -1};
@@ -72,7 +73,7 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
     Posizione posRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA};
 
     // Loop principale
-    while(!tempoScaduto(time(&ora), start) && vivo){
+    while(!tempoScaduto(time(&ora), start) && vivo && !tanaOccupata){
         read(fd[0], &messaggio, sizeof(Messaggio));
         if (messaggio.mittente != RANA) {
             spostaSprite(messaggio);
@@ -84,7 +85,12 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
                 msg.mittente = RANA;
                 msg.pid = messaggio.pid;
                 msg.posVecchia = posRana;
-                vivo = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
+                
+                inAcqua = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
+                
+                tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &vivo);
+                if (posRana.y <= H_SPONDA && !tanaOccupata) tanaSbagliata = true;
+
                 msg.posAttuale = posRana;
                 spostaSprite(msg);
             } else {
@@ -98,7 +104,7 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
                 creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_SX);
             }
         }
-        
+        vivo = ancoraViva(inAcqua, colpito, tanaSbagliata);
         controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd);
 
         time(&ora);
@@ -119,15 +125,27 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
         }
     }
 
-    messaggioAltroRound(vivo);
+    messaggioAltroRound(inAcqua, colpito, tanaSbagliata, tanaOccupata);
 }
 
 // TODO: cambiare il parametro per includere i proiettili
-void messaggioAltroRound(bool vivo) {
-    if (vivo) {TESTO_CENTRATO("TEMPO SCADUTO!");}
-    else {
+void messaggioAltroRound(bool inAcqua, bool colpito, bool tanaSbagliata, bool tanaOccupata) {
+    if (tanaOccupata) {
+        TESTO_CENTRATO("TANA CONQUISTATA!"); 
+    }
+    else if (inAcqua) {
         TESTO_CENTRATO("CADUTO IN ACQUA!");
+    }
+    else if (colpito) {
+        TESTO_CENTRATO("COLPITO!"); 
     } 
+    else if (tanaSbagliata) {
+        TESTO_CENTRATO("TANA NON VALIDA!");
+    }
+    else {
+        TESTO_CENTRATO("TEMPO SCADUTO!"); 
+    }
+
     refresh();
     for(int i=0; i<4; i++){
         beep();

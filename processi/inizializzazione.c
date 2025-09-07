@@ -218,7 +218,6 @@ void creaProcessoGranata(int fdScrittura, Posizione posPartenza, int direzione) 
 }
 
 void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* lista[nFlussi], int fd[2]) {
-    creaTane(N_TANE, tane);
     disegnaTane(N_TANE, tane);
     inizializzaArrayFlussi(N_FLUSSI, flussi);
     inizializzaListaCoccodrilli(nFlussi, lista);

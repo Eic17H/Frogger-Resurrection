@@ -8,4 +8,5 @@
 
 bool tempoScaduto(time_t ora, time_t start);
 bool fuoriSchermo(Posizione pos, Mittente mittente, int verso);
+bool ancoraViva(bool inAcqua, bool colpito, bool tanaSbagliata);
 #endif /* REGOLE_H */

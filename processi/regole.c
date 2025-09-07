@@ -33,6 +33,10 @@ bool fuoriSchermo(Posizione pos, Mittente mittente, int verso) {
     return false;
 }
 
+bool ancoraViva(bool inAcqua, bool colpito, bool tanaSbagliata) {
+    return !(inAcqua || colpito || tanaSbagliata);
+}
+
 /** 
 bool haiPerso(Posizione posAttualeRana, Posizione posVecchiaRana, Flusso flussi[N_FLUSSI]) {
     if (!posizioniUguali(posAttualeRana, posVecchiaRana)) {    
