@@ -212,3 +212,50 @@ void visualizzaTimer(int secondi){
 void visualizzaPunteggio(int punteggio){
     
 }
+
+void visualizzaVite(int vite) {
+    if (vite < 1) return;
+    int x = X_PARTENZA_STAMPA_VITE;
+
+    // eliminazione vecchie icone (fino a max vite * 2 perché ogni icona è separata da uno spazio)
+    char stringaVuota[N_VITE*2];
+    creaStringaVuota(strlen(stringaVuota), stringaVuota);
+    
+    attron(COLOR_PAIR(NERO));
+    mvprintw(Y_STAMPA_VITE, X_PARTENZA_STAMPA_VITE, "%s", stringaVuota);
+    
+    for (int i = 0; i < vite; i++) {
+        mvprintw(Y_STAMPA_VITE, x, "*");
+        // ogni icona è seguita da uno spazio
+        x+=2;
+    }
+    refresh();
+}
+
+void visualizzaRoundRimasti(int roundRimasti) {
+    char messaggioDaStampare[] = "Round rimasti: ";
+    int lunghezzaMsgDaStampare = strlen(messaggioDaStampare);
+    char stringaVuota[lunghezzaMsgDaStampare + 2];
+    // eliminazione messaggio + vecchio numero (fino a max 2 cifre: difficile che i round arrivino alle centinaia)
+    creaStringaVuota(strlen(stringaVuota), stringaVuota);
+    
+    attron(COLOR_PAIR(NERO));
+    mvprintw(Y_STAMPA_ROUND_RIMASTI, X_STAMPA_ROUND_RIMASTI, "%s", stringaVuota);
+    
+    mvprintw(Y_STAMPA_ROUND_RIMASTI, X_STAMPA_ROUND_RIMASTI, "%s%d", messaggioDaStampare, roundRimasti);
+
+    refresh();
+}
+
+void messaggioFinePartita(int nTaneOccupate) {
+    if (nTaneOccupate != N_TANE) {
+        TESTO_CENTRATO("HAI PERSO :(");
+    }
+    else {
+        TESTO_CENTRATO("HAI VINTO!!");
+    }
+    
+    refresh();
+    sleep(2);
+        
+}

@@ -14,6 +14,7 @@
 #include "costanti.h"
 #include "listaCoccodrillo.h"
 #include "manche.h"
+#include "visualizzazione.h"
 
 int main() {
     // ======== ==== ==== ========
@@ -21,11 +22,13 @@ int main() {
     // ======== ==== ==== ========
     int fd[2];
     int x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO;
+    int round = 1, vite = N_VITE, nTaneOccupate = 0;
+    bool tanaOccupata; 
     Flusso flussi[N_FLUSSI];
     pid_t pidRana;
     Tana tane[N_TANE];
     ListaCoccodrillo* listaCoccodrilli[N_FLUSSI];
-
+    
     // ======== ==== = == = ==== ========
     // ======== INIZIALIZZAZIONE ========
     // ======== ==== = == = ==== ========
@@ -34,20 +37,27 @@ int main() {
     messaggioBenvenuto();
     adattaFinestra();
     inizializzaColori();
-    coloraAmbienteGioco();
     creaTane(N_TANE, tane);
     
-    creaPipe(fd);
-    pidRana = creaRana(2, fd);
-    manche(fd, flussi, listaCoccodrilli, pidRana, tane, 0);
-    
-    coloraAmbienteGioco();
-    
-    chiudiPipe(fd);
-    creaPipe(fd);
+    while (round <= N_MANCHE && vite > 0 && nTaneOccupate < N_TANE) {
+        tanaOccupata = false;
 
-    pidRana = creaRana(2, fd);
-    manche(fd, flussi, listaCoccodrilli, pidRana, tane, 0);
+        coloraAmbienteGioco();
+        visualizzaVite(vite);
+        visualizzaRoundRimasti(N_MANCHE - round);
+        
+        if (round > 1) chiudiPipe(fd);
+        
+        creaPipe(fd);
+        pidRana = creaRana(2, fd);
+        
+        manche(fd, flussi, listaCoccodrilli, pidRana, tane, 0, &tanaOccupata);
+        if (!tanaOccupata) vite--;
+        else nTaneOccupate++;
+
+        round++;
+    }
+    messaggioFinePartita(nTaneOccupate);
 
     clear(); refresh();
     endwin();

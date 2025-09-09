@@ -33,5 +33,8 @@ void stampaCoccodrillo(char spriteSu[], char spriteGiu[], Posizione posAttuale, 
 
 void visualizzaTimer(int secondi);
 void visualizzaPunteggio(int punteggio);
+void visualizzaVite(int vite);
+void visualizzaRoundRimasti(int roundRimasti);
 
+void messaggioFinePartita(int nTaneOccupate);
 #endif /* VISUALIZZAZIONE_H */

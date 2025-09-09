@@ -58,11 +58,11 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
 /**
  * LA STRUTTURA DI UNA MANCHE
  */
-void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], pid_t pidRana, Tana tane[N_TANE], int difficolta) {
+void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata) {
     inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, fd);
     
     // Inizializzazione variabili e timer
-    bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false, tanaOccupata = false;
+    bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false;
     time_t start, ora = 0;
     Posizione predefinita = {0,0};
     Messaggio messaggio = {predefinita, predefinita, -1, -1};
@@ -73,7 +73,7 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
     Posizione posRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA};
 
     // Loop principale
-    while(!tempoScaduto(time(&ora), start) && vivo && !tanaOccupata){
+    while(!tempoScaduto(time(&ora), start) && vivo && !*tanaOccupata){
         read(fd[0], &messaggio, sizeof(Messaggio));
         if (messaggio.mittente != RANA) {
             spostaSprite(messaggio);
@@ -88,8 +88,8 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
                 
                 inAcqua = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
                 
-                tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &vivo);
-                if (posRana.y <= H_SPONDA && !tanaOccupata) tanaSbagliata = true;
+                *tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &vivo);
+                if (posRana.y <= H_SPONDA && !*tanaOccupata) tanaSbagliata = true;
 
                 msg.posAttuale = posRana;
                 spostaSprite(msg);
@@ -125,7 +125,7 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
         }
     }
 
-    messaggioAltroRound(inAcqua, colpito, tanaSbagliata, tanaOccupata);
+    messaggioAltroRound(inAcqua, colpito, tanaSbagliata, *tanaOccupata);
 }
 
 // TODO: cambiare il parametro per includere i proiettili
