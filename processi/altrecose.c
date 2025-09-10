@@ -5,6 +5,7 @@
 #include "costanti.h"
 #include "listaCoccodrillo.h"
 #include "listaGranate.h"
+#include <ncurses.h>
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta){
     
@@ -42,17 +43,34 @@ int trovaPosRanaSuCoccodrillo(int xCoccodrillo, int xRana) {
     return xRana - xCoccodrillo;
 }
 
-void gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* listaGranate) {
+void gestisciCollisioneConRana(Messaggio messaggioProiettile, Posizione posRana, bool* colpito) {
+    if(posizioniUguali(messaggioProiettile.posAttuale, posRana)) {
+        *colpito = true;
+    }
+}
+
+/**
+ * messaggioProiettile: il messaggio di un solo proiettile
+ * listaGranate: tutte le granate
+ * return:  true - se c'è stata una collisione
+ *          false - se non c'è stata una collisione
+ */
+bool gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* listaGranate) {
     NodoGranata* granata = listaGranate->testa, *granataColpita = NULL;
 
     while (granata != NULL && granataColpita == NULL) {
-        if (posizioniUguali(granata->dato.posAttuale, messaggioProiettile.posAttuale)) granataColpita = granata;
+        if (posizioniUguali(granata->dato.posAttuale, messaggioProiettile.posAttuale)) {
+            granataColpita = granata;
+            beep();
+        }
         granata = granata->successivo;
     }
     if (granataColpita != NULL) {
         kill(granataColpita->dato.pid, SIGKILL);
         kill(messaggioProiettile.pid, SIGKILL);
+        return true;
     }
+    return false;
 }
 
 bool laRanaESuTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolta) {
