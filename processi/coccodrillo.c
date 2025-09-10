@@ -49,7 +49,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
             posPartenzaSparo.x = pos.x + offsetSparo;
             creaProcessoProiettile(PROIETTILE, fdScrittura, posPartenzaSparo, flussoAttuale.verso);
             
-            timerSparo = ATTESA_MIN_PROIETTILE_S + rand() % (ATTESA_MAX_PROIETTILE_S - ATTESA_MIN_PROIETTILE_S + 1);
+            timerSparo = RAND_TRA(ATTESA_MIN_PROIETTILE_S, ATTESA_MAX_PROIETTILE_S);
 
             time(&start);
         }
