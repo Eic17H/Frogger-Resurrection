@@ -32,7 +32,7 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
 
     if (posAttuale.x < 0 || posAttuale.x + W_RANA > DIM_COLS - 1) return true;
     
-    if (posAttuale.y < DIM_LINES - H_MARCIAPIEDE && posAttuale.y > H_SPONDA) {
+    if (NELL_AREA_DI_GIOCO(posAttuale)) {
         // Se si è mossa
         if (!posizioniUguali(posVecchia, posAttuale)) {    
             int i = trovaIndiceFlusso(N_FLUSSI, flussi, posAttuale.y);
@@ -88,6 +88,14 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
                     msg.mittente = RANA;
                     msg.pid = messaggio.pid;
                     msg.posVecchia = posRana;
+
+                    // TODO: rendi funzione o macro, è già usata altrove
+                    // Se si trova nell'area d'acqua diciamo
+                    if(NELL_AREA_DI_GIOCO(posRana)){
+                        if(messaggio.posAttuale.x != 0) punteggioManche += 5;
+                        if(messaggio.posAttuale.y > 0) punteggioManche += 3;
+                        if(messaggio.posAttuale.y < 0) punteggioManche += 10;
+                    }
                     
                     inAcqua = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
                     
