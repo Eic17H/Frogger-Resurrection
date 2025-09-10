@@ -6,6 +6,7 @@
 
 typedef enum{ BASE, MARCIAPIEDE, ACQUA, SPONDA, COCCODRILLO_VERDE, COCCODRILLO_GIALLO, RANA_SU_COCCODRILLO, NERO } colori; // Probabilmente da rifare in vista delle skin
 typedef enum { RANA, GRANATA, COCCO } Mittente;
+typedef enum { POSIZIONE, PUNTEGGIO } TipoMessaggio;
 
 typedef struct {
     int x;
@@ -13,10 +14,12 @@ typedef struct {
 } Posizione;
 
 typedef struct {
-    Posizione posVecchia;
-    Posizione posAttuale;
+    TipoMessaggio tipo;
     pid_t pid;
     Mittente mittente;
+    Posizione posVecchia;
+    Posizione posAttuale;
+    int punteggio;
 } Messaggio;
 
 struct flusso {

@@ -16,6 +16,7 @@ void rana(int fdScrittura) {
     _Bool sparato = false;
 
     // scrittura primo messaggio
+    messaggio.tipo = POSIZIONE;
     messaggio.mittente = RANA;
     messaggio.pid = getpid();
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
@@ -25,25 +26,37 @@ void rana(int fdScrittura) {
 
     write(fdScrittura, &messaggio, sizeof(Messaggio));
 
+    // TODO: forse no, forse direttamente la manchee legge il messaggio e aggiorna il punteggio così può usare altre informazioni
+    Messaggio punti;
+    punti.tipo = PUNTEGGIO;
+    punti.mittente = RANA;
+    punti.pid = getpid();
+    punti.punteggio = 0;
+
     while (1) {
+        punti.punteggio = 0;
         messaggio.posVecchia = pos;
 
         kCode = getch();
 
         switch(kCode) {
             case KEY_UP:
+                    punti.punteggio = 10;
                     pos.y = -SALTO_RANA;
             break;
 
             case KEY_DOWN:
+                    punti.punteggio = 3;
                     pos.y = SALTO_RANA;
             break;
             
             case KEY_RIGHT:
+                    punti.punteggio = 5;
                     pos.x = SALTO_RANA + W_RANA;
             break;
             
             case KEY_LEFT:
+                    punti.punteggio = 5;
                     pos.x = - SALTO_RANA - W_RANA;
             break;
 
@@ -72,6 +85,7 @@ void rana(int fdScrittura) {
         }
         messaggio.posAttuale = pos;
         write(fdScrittura, &messaggio, sizeof(Messaggio));
+        write(fdScrittura, &punti, sizeof(Messaggio));
 
         usleep(1000);
 

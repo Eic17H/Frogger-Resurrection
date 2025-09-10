@@ -69,6 +69,7 @@ NodoCoccodrillo* creaNodoCoccodrillo(Coccodrillo dato){
 }
 
 void aggiornaPosInListaCoccodrilli(Messaggio messaggio, int n, Flusso flussi[n], ListaCoccodrillo* lista[n]) {
+    if (messaggio.tipo != POSIZIONE) return;
     int i = 0;
     NodoCoccodrillo* nodo = NULL;
 

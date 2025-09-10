@@ -13,6 +13,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
     pos = flussoAttuale.posIniziale;
 
     // scrittura primo messaggio
+    messaggio.tipo = POSIZIONE;
     messaggio.mittente = COCCO;
     messaggio.pid = getpid();
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}

@@ -7,6 +7,7 @@
 
 void granata(int fdScrittura, Posizione posPartenza, int direzione) {
     Messaggio messaggio;
+    messaggio.tipo = POSIZIONE;
     Posizione pos = posPartenza;
 
     messaggio.mittente = GRANATA;

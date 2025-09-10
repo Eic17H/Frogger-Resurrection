@@ -65,9 +65,15 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
     bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false;
     time_t start, ora = 0;
     Posizione predefinita = {0,0};
-    Messaggio messaggio = {predefinita, predefinita, -1, -1};
+    Messaggio messaggio;
+    messaggio.tipo = -1;
+    messaggio.posAttuale = predefinita;
+    messaggio.posVecchia = predefinita;
+    messaggio.mittente = -1;
+    messaggio.pid = -1;
+    messaggio.punteggio = 0;
     time(&start);
-    int punteggio;
+    int punteggio = 0;
 
     // Variabili relative alla singola manche
     Posizione posRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA};
@@ -75,34 +81,41 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
     // Loop principale
     while(!tempoScaduto(time(&ora), start) && vivo && !*tanaOccupata){
         read(fd[0], &messaggio, sizeof(Messaggio));
-        if (messaggio.mittente != RANA) {
-            spostaSprite(messaggio);
-            if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli); 
-        }
-        else {
-            if (messaggio.posAttuale.x != CODICE_GRANATA_SPARATA && messaggio.posAttuale.y != CODICE_GRANATA_SPARATA) {
-                Messaggio msg;
-                msg.mittente = RANA;
-                msg.pid = messaggio.pid;
-                msg.posVecchia = posRana;
-                
-                inAcqua = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
-                
-                *tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &vivo);
-                if (posRana.y <= H_SPONDA && !*tanaOccupata) tanaSbagliata = true;
+        switch(messaggio.tipo) {
+            case POSIZIONE:
+                if (messaggio.mittente != RANA) {
+                    spostaSprite(messaggio);
+                    if (messaggio.mittente == COCCO) aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli); 
+                }
+                else {
+                    if (messaggio.posAttuale.x != CODICE_GRANATA_SPARATA && messaggio.posAttuale.y != CODICE_GRANATA_SPARATA) {
+                        Messaggio msg;
+                        msg.tipo = POSIZIONE;
+                        msg.mittente = RANA;
+                        msg.pid = messaggio.pid;
+                        msg.posVecchia = posRana;
+                        
+                        inAcqua = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
+                        
+                        *tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &vivo);
+                        if (posRana.y <= H_SPONDA && !*tanaOccupata) tanaSbagliata = true;
 
-                msg.posAttuale = posRana;
-                spostaSprite(msg);
-            } else {
-                Posizione posPartenzaGranata;
-                posPartenzaGranata.x = posRana.x + W_RANA;
-                posPartenzaGranata.y = posRana.y;
+                        msg.posAttuale = posRana;
+                        spostaSprite(msg);
+                    } else {
+                        Posizione posPartenzaGranata;
+                        posPartenzaGranata.x = posRana.x + W_RANA;
+                        posPartenzaGranata.y = posRana.y;
 
-                creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_DX);    
-                // posizione granata sinistra
-                posPartenzaGranata.x = posRana.x - 1;
-                creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_SX);
-            }
+                        creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_DX);    
+                        // posizione granata sinistra
+                        posPartenzaGranata.x = posRana.x - 1;
+                        creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_SX);
+                    }
+                }
+                break;
+                case PUNTEGGIO:
+                punteggio += messaggio.punteggio;
         }
         vivo = ancoraViva(inAcqua, colpito, tanaSbagliata);
         controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd);
