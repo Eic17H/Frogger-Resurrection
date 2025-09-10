@@ -23,6 +23,7 @@ int main() {
     int fd[2];
     int x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO;
     int round = 1, vite = N_VITE, nTaneOccupate = 0;
+    int punteggioTotale = 0;
     bool tanaOccupata; 
     Flusso flussi[N_FLUSSI];
     pid_t pidRana;
@@ -51,13 +52,13 @@ int main() {
         creaPipe(fd);
         pidRana = creaRana(2, fd);
         
-        manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata);
+        punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata);
         if (!tanaOccupata) vite--;
         else nTaneOccupate++;
 
         round++;
     }
-    messaggioFinePartita(nTaneOccupate);
+    messaggioFinePartita(nTaneOccupate, punteggioTotale);
 
     clear(); refresh();
     endwin();

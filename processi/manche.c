@@ -58,12 +58,13 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
 
 /**
  * LA STRUTTURA DI UNA MANCHE
+ * return:  il punteggio della manche
  */
-void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata) {
+int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata) {
     inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, listaGranate, fd);
     
     // Inizializzazione variabili e timer
-    bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false;
+    bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false, collisioneGranata = false;
     time_t start, ora = 0;
     Posizione predefinita = {0,0};
     Messaggio messaggio = {predefinita, predefinita, -1, -1};
@@ -122,7 +123,9 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
                 break;
             case PROIETTILE:
                 spostaSprite(messaggio);
-                gestisciCollisioneConGranate(messaggio, *listaGranate);
+                collisioneGranata = gestisciCollisioneConGranate(messaggio, *listaGranate);
+                if(collisioneGranata) punteggioManche += 20;
+                gestisciCollisioneConRana(messaggio, posRana, &colpito);
                 break;
             default:
                 spostaSprite(messaggio);
