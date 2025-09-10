@@ -210,7 +210,9 @@ void visualizzaTimer(int secondi){
 }
 
 void visualizzaPunteggio(int punteggio){
-    
+    char punteg[5] = {punteggio/1000+'0', punteggio/100%10+'0', punteggio/10%10+'0', punteggio%10+'0', '\0'};
+    attron(COLOR_PAIR(NERO));
+    mvprintw(Y_TIMER_MANCHE, X_TIMER_MANCHE+10, "%s", punteg);
 }
 
 void visualizzaVite(int vite) {

@@ -67,7 +67,7 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
     Posizione predefinita = {0,0};
     Messaggio messaggio = {predefinita, predefinita, -1, -1};
     time(&start);
-    int punteggio;
+    int punteggioManche = 0;
 
     // Variabili relative alla singola manche
     Posizione posRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA};
