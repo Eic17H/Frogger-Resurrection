@@ -82,6 +82,7 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
                 break;
             case RANA:
                 if (messaggio.posAttuale.x != CODICE_GRANATA_SPARATA && messaggio.posAttuale.y != CODICE_GRANATA_SPARATA) {
+                    // TODO: ma che cazzo
                     Messaggio msg;
                     msg.mittente = RANA;
                     msg.pid = messaggio.pid;
