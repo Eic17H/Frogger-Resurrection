@@ -7,6 +7,7 @@
 #include "costanti.h"
 #include "inizializzazione.h"
 #include "struttureDati.h"
+#include "altrecose.h"
 
 void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
     Posizione pos, posPartenzaSparo; 
@@ -17,7 +18,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
     srand(time(NULL));
 
     pos = flussoAttuale.posIniziale;
-    posPartenzaSparo.y = pos.y;
+    posPartenzaSparo.y = pos.y + 1; // +1 perché deve la bocca è sotto
 
     // scrittura primo messaggio
     messaggio.mittente = COCCO;
@@ -31,7 +32,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
     if (flussoAttuale.verso == AVANZAMENTO_DX) offsetSparo = W_COCCODRILLO + flussoAttuale.velocità;
     else offsetSparo = - flussoAttuale.velocità - 1;
 
-    timerSparo = ATTESA_MIN_PROIETTILE_S + rand() % (ATTESA_MAX_PROIETTILE_S - ATTESA_MIN_PROIETTILE_S + 1);
+    timerSparo = RAND_TRA(ATTESA_MIN_PROIETTILE_S, ATTESA_MAX_PROIETTILE_S);
     // si parte sincronizzati
     time(&start);
     time(&ora);
