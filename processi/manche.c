@@ -90,7 +90,6 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                     msg.pid = messaggio.pid;
                     msg.posVecchia = posRana;
 
-                    // TODO: rendi funzione o macro, è già usata altrove
                     // Se si trova nell'area d'acqua diciamo
                     if(NELL_AREA_DI_GIOCO(posRana)){
                         if(messaggio.posAttuale.x != 0) punteggioManche += 5;
@@ -152,10 +151,11 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         }
     }
 
+    punteggioManche += (ora-start)*5; // 5 punti per secondo rimasto
     messaggioAltroRound(inAcqua, colpito, tanaSbagliata, *tanaOccupata);
+    return punteggioManche;
 }
 
-// TODO: cambiare il parametro per includere i proiettili
 void messaggioAltroRound(bool inAcqua, bool colpito, bool tanaSbagliata, bool tanaOccupata) {
     if (tanaOccupata) {
         TESTO_CENTRATO("TANA CONQUISTATA!"); 
