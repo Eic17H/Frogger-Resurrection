@@ -4,12 +4,14 @@
 #include "inizializzazione.h"
 #include "listaCoccodrillo.h"
 #include "processi.h"
+#include "struttureDati.h"
 #include "visualizzazione.h"
 #include "costanti.h"
 #include "coccodrillo.h"
-#include "granata.h"
+#include "sparo.h"
 #include "listaCoccodrillo.h"
-   
+#include "listaGranate.h"
+
 void inizializzaNcurses() {
     initscr();
     keypad(stdscr, true);
@@ -208,20 +210,41 @@ pid_t creaRana(int n, int fd[n]) {
     return pidRana;
 }
 
-void creaProcessoGranata(int fdScrittura, Posizione posPartenza, int direzione) {
-    pid_t pid_granata = fork();
-    if (forkFallita(pid_granata)) {perror("Errore fork() granata"); _exit(2);}
+void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, ListaGranata* listaGranate) {
+    Granata nuovaGranata;
+    NodoGranata* nuovoNodo = NULL;
+    pid_t pid_sparo = fork();
 
-    if (processoFiglio(pid_granata)) { // processo granata (eredita il fd chiuso in lettura)
-        granata(fdScrittura, posPartenza, direzione);
+    if (forkFallita(pid_sparo)) {endwin(); perror("Errore fork() sparo"); _exit(2);}
+    
+    if (processoFiglio(pid_sparo)) { // processo granata (eredita il fd chiuso in lettura)
+        sparo(mittente, fdScrittura, posPartenza, direzione);
+    }
+    else {
+        nuovaGranata = assegnaDatiGranata(pid_sparo, posPartenza);
+        nuovoNodo = creaNodoGranata(nuovaGranata);
+        pushGranata(listaGranate, nuovoNodo);
+    }
+}
+
+void creaProcessoProiettile(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione) {
+    Granata nuovaGranata;
+    NodoGranata* nuovoNodo = NULL;
+    pid_t pid_sparo = fork();
+
+    if (forkFallita(pid_sparo)) {endwin(); perror("Errore fork() sparo"); _exit(2);}
+    
+    if (processoFiglio(pid_sparo)) { // processo granata (eredita il fd chiuso in lettura)
+        sparo(mittente, fdScrittura, posPartenza, direzione);
     }
     // processo padre continua l'esecuzione
 }
 
-void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* lista[nFlussi], int fd[2]) {
+void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* listaCocco[nFlussi], ListaGranata** listaGranate, int fd[2]) {
     disegnaTane(N_TANE, tane);
     inizializzaArrayFlussi(N_FLUSSI, flussi);
-    inizializzaListaCoccodrilli(nFlussi, lista);
-    creaCoccodrilliIniziali(2, fd, N_FLUSSI, flussi, lista);
+    inizializzaListaCoccodrilli(nFlussi, listaCocco);
+    *listaGranate = creaListaVuotaGranata();
+    creaCoccodrilliIniziali(2, fd, N_FLUSSI, flussi, listaCocco);
     refresh();
 }

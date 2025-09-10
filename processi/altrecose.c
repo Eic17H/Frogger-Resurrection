@@ -1,7 +1,10 @@
+#include "altrecose.h"
+#include <signal.h>
 #include <stdbool.h>
 #include "struttureDati.h"
 #include "costanti.h"
 #include "listaCoccodrillo.h"
+#include "listaGranate.h"
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta){
     
@@ -37,6 +40,19 @@ NodoCoccodrillo* trovaCoccodrilloSottoRana(Posizione posAttualeRana, NodoCoccodr
 int trovaPosRanaSuCoccodrillo(int xCoccodrillo, int xRana) {
     //if (xRana - xCoccodrillo < 0) return -(xRana - xCoccodrillo);
     return xRana - xCoccodrillo;
+}
+
+void gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* listaGranate) {
+    NodoGranata* granata = listaGranate->testa, *granataColpita = NULL;
+
+    while (granata != NULL && granataColpita == NULL) {
+        if (posizioniUguali(granata->dato.posAttuale, messaggioProiettile.posAttuale)) granataColpita = granata;
+        granata = granata->successivo;
+    }
+    if (granataColpita != NULL) {
+        kill(granataColpita->dato.pid, SIGKILL);
+        kill(messaggioProiettile.pid, SIGKILL);
+    }
 }
 
 bool laRanaESuTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolta) {

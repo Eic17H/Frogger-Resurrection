@@ -46,7 +46,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
 
         if (ora - start >= timerSparo) {
             posPartenzaSparo.x = pos.x + offsetSparo;
-            creaProcessoGranata(fdScrittura, posPartenzaSparo, flussoAttuale.verso);
+            creaProcessoProiettile(PROIETTILE, fdScrittura, posPartenzaSparo, flussoAttuale.verso);
             
             timerSparo = ATTESA_MIN_PROIETTILE_S + rand() % (ATTESA_MAX_PROIETTILE_S - ATTESA_MIN_PROIETTILE_S + 1);
 

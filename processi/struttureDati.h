@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 typedef enum{ BASE, MARCIAPIEDE, ACQUA, SPONDA, COCCODRILLO_VERDE, COCCODRILLO_GIALLO, COCCODRILLO_ROSSO, RANA_SU_COCCODRILLO, NERO } colori; // Probabilmente da rifare in vista delle skin
-typedef enum { RANA, GRANATA, COCCO } Mittente;
+typedef enum { RANA, GRANATA, PROIETTILE, COCCO } Mittente;
 
 typedef struct {
     int x;

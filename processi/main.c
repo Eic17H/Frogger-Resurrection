@@ -28,7 +28,7 @@ int main() {
     pid_t pidRana;
     Tana tane[N_TANE];
     ListaCoccodrillo* listaCoccodrilli[N_FLUSSI];
-    
+    ListaGranata* listaGranate;
     // ======== ==== = == = ==== ========
     // ======== INIZIALIZZAZIONE ========
     // ======== ==== = == = ==== ========
@@ -51,7 +51,7 @@ int main() {
         creaPipe(fd);
         pidRana = creaRana(2, fd);
         
-        manche(fd, flussi, listaCoccodrilli, pidRana, tane, 0, &tanaOccupata);
+        manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata);
         if (!tanaOccupata) vite--;
         else nTaneOccupate++;
 

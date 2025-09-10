@@ -5,11 +5,11 @@
 
 #include "struttureDati.h"
 
-void granata(int fdScrittura, Posizione posPartenza, int direzione) {
+void sparo(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione) {
     Messaggio messaggio;
     Posizione pos = posPartenza;
 
-    messaggio.mittente = GRANATA;
+    messaggio.mittente = mittente;
     
     messaggio.posAttuale = pos;
     // inizialmente la posizione vecchia è la stessa di quella di partenza

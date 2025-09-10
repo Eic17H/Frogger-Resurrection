@@ -2,6 +2,7 @@
 #include "altrecose.h"
 #include "costanti.h"
 #include "inizializzazione.h"
+#include "listaGranate.h"
 #include "regole.h"
 #include "struttureDati.h"
 #include "visualizzazione.h"
@@ -58,8 +59,8 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
 /**
  * LA STRUTTURA DI UNA MANCHE
  */
-void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata) {
-    inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, fd);
+void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata) {
+    inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, listaGranate, fd);
     
     // Inizializzazione variabili e timer
     bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false;
@@ -100,17 +101,20 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
                     posPartenzaGranata.x = posRana.x + W_RANA;
                     posPartenzaGranata.y = posRana.y;
 
-                    creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_DX);    
+                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_DX, *listaGranate);    
+                    
                     // posizione granata sinistra
                     posPartenzaGranata.x = posRana.x - 1;
-                    creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_SX);
+                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_SX, *listaGranate);
                 }
                 break;
             case GRANATA:
                 spostaSprite(messaggio);
-                if (messaggio.posAttuale.y == posRana.y - 1 && messaggio.posAttuale.x == posRana.x - 1) {
-                    //sleep(2);
-                    colpito = true;}
+                aggiornaPosInListaGranate(messaggio,*listaGranate);
+                break;
+            case PROIETTILE:
+                spostaSprite(messaggio);
+                gestisciCollisioneConGranate(messaggio, *listaGranate);
                 break;
             default:
                 spostaSprite(messaggio);

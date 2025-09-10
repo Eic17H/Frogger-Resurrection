@@ -2,6 +2,7 @@
 #define ALTRECOSE_H
 
 #include "listaCoccodrillo.h"
+#include "listaGranate.h"
 #include "struttureDati.h"
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta);
@@ -10,6 +11,7 @@ bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bo
 bool ranaSuTanaSbagliata(Posizione rana, bool );
 NodoCoccodrillo* trovaCoccodrilloSottoRana(Posizione posAttualeRana, NodoCoccodrillo* coccodrilloAttuale, ListaCoccodrillo** lista, int indiceFlusso);
 int trovaPosRanaSuCoccodrillo(int xCoccodrillo, int xRana);
+void gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* listaGranate);
 bool laRanaESuUnCoccodrilloDiverso(NodoCoccodrillo* precedente, NodoCoccodrillo* attuale);
 bool laRanaSpostataSuStessoCoccodrillo(NodoCoccodrillo* precedente, NodoCoccodrillo* attuale, Posizione posVecchiaRana, Posizione posNuovaRana);
 Posizione sommaPosizioni(Posizione pos1, Posizione pos2);

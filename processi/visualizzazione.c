@@ -46,6 +46,7 @@ void spostaSprite(Messaggio messaggio){
             refresh();
             break;
         }
+        case PROIETTILE:
         case GRANATA:
             strcpy(sprite, SPR_GRANATA);
             creaStringaVuota(strlen(SPR_GRANATA), stringaVuota);
@@ -53,7 +54,7 @@ void spostaSprite(Messaggio messaggio){
             inizializzaColoreSprite(posVecchia.y);
             mvprintw(posVecchia.y, posVecchia.x, "%s", stringaVuota);
                     
-            if (fuoriSchermo(posAttuale, GRANATA, posAttuale.x - posVecchia.x)) {
+            if (fuoriSchermo(posAttuale, mittente, posAttuale.x - posVecchia.x)) {
                 kill(pid, SIGKILL);
                 return ;
             }

@@ -1,19 +1,16 @@
 #include <ncurses.h>
-#include <signal.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
 #include "costanti.h"
 #include "rana.h"
-#include "granata.h"
 
 void rana(int fdScrittura) {
     int kCode, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
     Posizione pos = {0, 0}, posPartenzaGranata;
     Messaggio messaggio;
     time_t start = 0, ora = 0;
-    _Bool sparato = false;
 
     // scrittura primo messaggio
     messaggio.mittente = RANA;
@@ -49,7 +46,6 @@ void rana(int fdScrittura) {
 
             case KEY_BARRA_SPAZIATRICE:
                 if (ora - start >= TEMPO_RICARICA_GRANATA) {
-                    sparato = true;
                     time(&start);
                     pos.x = CODICE_GRANATA_SPARATA;
                     pos.y = CODICE_GRANATA_SPARATA;
@@ -73,7 +69,7 @@ void rana(int fdScrittura) {
         messaggio.posAttuale = pos;
         write(fdScrittura, &messaggio, sizeof(Messaggio));
 
-        usleep(1000);
+        usleep(4000);
 
         time(&ora);
     }
