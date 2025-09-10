@@ -255,12 +255,13 @@ void visualizzaRoundRimasti(int roundRimasti) {
     refresh();
 }
 
-void messaggioFinePartita(int nTaneOccupate) {
+void messaggioFinePartita(int nTaneOccupate, int punteggio) {
     if (nTaneOccupate != N_TANE) {
         TESTO_CENTRATO("HAI PERSO :(");
     }
     else {
         TESTO_CENTRATO("HAI VINTO!!");
+        // TODO: mostra punteggio
     }
     
     refresh();

@@ -36,5 +36,5 @@ void visualizzaPunteggio(int punteggio);
 void visualizzaVite(int vite);
 void visualizzaRoundRimasti(int roundRimasti);
 
-void messaggioFinePartita(int nTaneOccupate);
+void messaggioFinePartita(int nTaneOccupate, int punteggio);
 #endif /* VISUALIZZAZIONE_H */
