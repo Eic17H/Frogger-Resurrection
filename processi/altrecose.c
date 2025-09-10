@@ -89,7 +89,7 @@ bool laRanaESuTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolta) 
     return true;
 }
 
-bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bool* vivo) {
+bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bool* tanaSbagliata) {
     if (rana.y > H_SPONDA) return false;
 
     int i = 0;
@@ -100,11 +100,14 @@ bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bo
         i++;
     }
 
-    if (inTana && !tane[i-1].chiusa) {
-        tane[i-1].chiusa = true;
-        return true;
+    if (inTana) {
+        if (!tane[i-1].chiusa) {
+            tane[i-1].chiusa = true;
+            return true;
+        }
+        else *tanaSbagliata = true;
     }
-    vivo = false;
+    
     return false;
 }
 

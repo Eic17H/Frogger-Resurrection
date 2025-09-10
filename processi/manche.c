@@ -99,8 +99,7 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                     
                     inAcqua = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
                     
-                    *tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &vivo);
-                    if (posRana.y <= H_SPONDA && !*tanaOccupata) tanaSbagliata = true;
+                    *tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &tanaSbagliata);
 
                     msg.posAttuale = posRana;
                     spostaSprite(msg);

@@ -9,7 +9,7 @@
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta);
 bool laRanaESuTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolta);
-bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bool* vivo);
+bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bool* tanaSbagliata);
 bool ranaSuTanaSbagliata(Posizione rana, bool );
 NodoCoccodrillo* trovaCoccodrilloSottoRana(Posizione posAttualeRana, NodoCoccodrillo* coccodrilloAttuale, ListaCoccodrillo** lista, int indiceFlusso);
 int trovaPosRanaSuCoccodrillo(int xCoccodrillo, int xRana);
