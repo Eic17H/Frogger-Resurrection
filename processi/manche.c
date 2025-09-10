@@ -106,6 +106,12 @@ void manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodril
                     creaProcessoGranata(fd[1], posPartenzaGranata, AVANZAMENTO_SX);
                 }
                 break;
+            case GRANATA:
+                spostaSprite(messaggio);
+                if (messaggio.posAttuale.y == posRana.y - 1 && messaggio.posAttuale.x == posRana.x - 1) {
+                    //sleep(2);
+                    colpito = true;}
+                break;
             default:
                 spostaSprite(messaggio);
                 break;

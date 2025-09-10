@@ -21,14 +21,6 @@ void granata(int fdScrittura, Posizione posPartenza, int direzione) {
     write(fdScrittura, &messaggio, sizeof(Messaggio));
 
     while (1) {
-
-            char stringa[5];
-            stringa[0] = posPartenza.x %100 /10 +'0';
-            stringa[1] = posPartenza.x %10 /1 +'0';
-            stringa[2] = ';';
-            stringa[3] = posPartenza.y %100 /10 +'0';
-            stringa[4] = posPartenza.y %10 /1 +'0';
-            mvaddstr(0,7,stringa);
         messaggio.posVecchia = pos;
 
         pos.x += direzione;

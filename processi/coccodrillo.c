@@ -1,29 +1,58 @@
+#include <stdlib.h>
 #include <ncurses.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <time.h>
 
+#include "costanti.h"
+#include "inizializzazione.h"
 #include "struttureDati.h"
 
 void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
-    Posizione pos; 
+    Posizione pos, posPartenzaSparo; 
     Messaggio messaggio;
-    time_t start = 0, ora = 0;
+    time_t start, ora;
     _Bool sparato = false;
+    int timerSparo, offsetSparo = 0;
+    srand(time(NULL));
+
     pos = flussoAttuale.posIniziale;
+    posPartenzaSparo.y = pos.y;
 
     // scrittura primo messaggio
     messaggio.mittente = COCCO;
     messaggio.pid = getpid();
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
     messaggio.posAttuale = pos;
-
     messaggio.posVecchia = pos;
-
     write(fdScrittura, &messaggio, sizeof(Messaggio));
 
+    // offsetSparo usato per far partire il proiettile dalla giusta x. +3 usato per prevedere lo spostamento del coccodrillo
+    if (flussoAttuale.verso == AVANZAMENTO_DX) offsetSparo = W_COCCODRILLO + flussoAttuale.velocità;
+    else offsetSparo = - flussoAttuale.velocità - 1;
+
+    timerSparo = ATTESA_MIN_PROIETTILE_S + rand() % (ATTESA_MAX_PROIETTILE_S - ATTESA_MIN_PROIETTILE_S + 1);
+    // si parte sincronizzati
+    time(&start);
+    time(&ora);
+
     while (1) {
-        // TODO: ok ho provato a fargli sparare una granata ad ogni passo e funziona, aggiungere i proiettili sarà facile
+        messaggio.staPerSparare = false;
+
+        time(&ora);
+        if (timerSparo - (ora - start) <= PREAVVISO_SPARO_S) {
+            messaggio.staPerSparare = true;
+        }
+
+        if (ora - start >= timerSparo) {
+            posPartenzaSparo.x = pos.x + offsetSparo;
+            creaProcessoGranata(fdScrittura, posPartenzaSparo, flussoAttuale.verso);
+            
+            timerSparo = ATTESA_MIN_PROIETTILE_S + rand() % (ATTESA_MAX_PROIETTILE_S - ATTESA_MIN_PROIETTILE_S + 1);
+
+            time(&start);
+        }
+        
         messaggio.posVecchia = pos;
 
         pos.x += flussoAttuale.velocità * flussoAttuale.verso;

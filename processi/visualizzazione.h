@@ -26,7 +26,7 @@ int calcolaDaTagliareL(Posizione pos);
 
 char* tagliaStringa(char* stringa, int lunghezza);
 
-void selezionaColoreCoccodrillo(int versoCoccodrillo);
+void selezionaColoreCoccodrillo(int versoCoccodrillo, bool staPerSparare);
 
 void cancellaCoccodrillo(char stringaVuota[], Posizione posVecchia, int vecchioDaTagliareL);
 void stampaCoccodrillo(char spriteSu[], char spriteGiu[], Posizione posAttuale, int daTagliareL);

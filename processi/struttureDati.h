@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 
-typedef enum{ BASE, MARCIAPIEDE, ACQUA, SPONDA, COCCODRILLO_VERDE, COCCODRILLO_GIALLO, RANA_SU_COCCODRILLO, NERO } colori; // Probabilmente da rifare in vista delle skin
+typedef enum{ BASE, MARCIAPIEDE, ACQUA, SPONDA, COCCODRILLO_VERDE, COCCODRILLO_GIALLO, COCCODRILLO_ROSSO, RANA_SU_COCCODRILLO, NERO } colori; // Probabilmente da rifare in vista delle skin
 typedef enum { RANA, GRANATA, COCCO } Mittente;
 
 typedef struct {
@@ -17,6 +17,7 @@ typedef struct {
     Posizione posAttuale;
     pid_t pid;
     Mittente mittente;
+    bool staPerSparare;
 } Messaggio;
 
 struct flusso {

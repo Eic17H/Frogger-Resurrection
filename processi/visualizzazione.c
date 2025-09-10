@@ -79,7 +79,7 @@ void spostaSprite(Messaggio messaggio){
 
             creaStringaVuota(strlen(sprite) - vecchioDaTagliareL - vecchioDaTagliareR, stringaVuota);
 
-            selezionaColoreCoccodrillo(posAttuale.x - posVecchia.x);
+            selezionaColoreCoccodrillo(posAttuale.x - posVecchia.x, messaggio.staPerSparare);
             cancellaCoccodrillo(stringaVuota, posVecchia, vecchioDaTagliareL);
             stampaCoccodrillo(daStampare, daStampare2, posAttuale, daTagliareL);
             break;
@@ -158,7 +158,12 @@ void inizializzaColoreSprite(int ySprite) {
     }
 }
 
-void selezionaColoreCoccodrillo(int versoCoccodrillo) {
+void selezionaColoreCoccodrillo(int versoCoccodrillo, bool staPerSparare) {
+    if (staPerSparare) {
+        attron(COLOR_PAIR(COCCODRILLO_ROSSO));
+        return;
+    }
+    
     // se il coccodrillo va da sx a dx
     if (versoCoccodrillo > 0) {
         attron(COLOR_PAIR(COCCODRILLO_VERDE));

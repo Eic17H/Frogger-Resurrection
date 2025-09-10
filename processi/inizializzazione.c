@@ -33,6 +33,7 @@ void inizializzaColori() {
     init_pair(SPONDA, COLOR_BLACK, COLOR_GREEN);
     init_pair(COCCODRILLO_VERDE, COLOR_GREEN, COLOR_BLUE);
     init_pair(COCCODRILLO_GIALLO, COLOR_YELLOW, COLOR_BLUE);
+    init_pair(COCCODRILLO_ROSSO, COLOR_RED, COLOR_BLUE);
     init_pair(RANA_SU_COCCODRILLO, COLOR_WHITE, COLOR_GREEN);
     init_pair(NERO, COLOR_WHITE, COLOR_BLACK);
     // sfondo blu

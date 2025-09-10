@@ -48,7 +48,7 @@ void rana(int fdScrittura) {
             break;
 
             case KEY_BARRA_SPAZIATRICE:
-                if (!sparato || ora - start >= TEMPO_RICARICA_GRANATA) {
+                if (ora - start >= TEMPO_RICARICA_GRANATA) {
                     sparato = true;
                     time(&start);
                     pos.x = CODICE_GRANATA_SPARATA;
@@ -56,10 +56,10 @@ void rana(int fdScrittura) {
                     // posizione granata destra
                     posPartenzaGranata.x = pos.x + W_RANA;
                     posPartenzaGranata.y = pos.y;
-                    creaProcessoGranata(fdScrittura, posPartenzaGranata, AVANZAMENTO_DX);    
+                    //creaProcessoGranata(fdScrittura, posPartenzaGranata, AVANZAMENTO_DX);    
                     // posizione granata sinistra
                     posPartenzaGranata.x = pos.x - 1;
-                    creaProcessoGranata(fdScrittura, posPartenzaGranata, AVANZAMENTO_SX);
+                    //creaProcessoGranata(fdScrittura, posPartenzaGranata, AVANZAMENTO_SX);
                 }
                 break;
 
