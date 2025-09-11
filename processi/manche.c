@@ -145,7 +145,16 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
             successivo = coccodrillo->successivo;
             free(coccodrillo);
         }
+        free(listaCoccodrilli[i]);
     }
+
+    NodoGranata* granata = (*listaGranate)->testa, *temp = NULL;
+    while (granata != NULL) {
+        temp = granata;
+        granata = granata->successivo;
+        free(temp);
+    }
+    free(*listaGranate);
 
     punteggioManche += (ora-start)*5; // 5 punti per secondo rimasto
     messaggioAltroRound(inAcqua, colpito, tanaSbagliata, *tanaOccupata);
