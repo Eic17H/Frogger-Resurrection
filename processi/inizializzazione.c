@@ -116,7 +116,7 @@ void disegnaTane(int nTane, Tana tane[nTane]) {
     for (int i = 0; i < nTane; i++) {
         indiceTana = 0;
         // si disegna la tana partendo dall'alto fino ad arrivare alla riva
-        for (int j = H_SPONDA - H_TANA + 1; j <= H_SPONDA; j++) {
+        for (int j = 1; j <= H_TANA; j++) {
             attron(COLOR_PAIR(SPONDA));
             if (!tane[i].chiusa) {
                 mvaddstr(j, tane[i].xInizio, spriteTanaAperta[indiceTana]);

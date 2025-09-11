@@ -90,7 +90,7 @@ bool laRanaESuTanaPuntoInterrogativo(Posizione rana, Tana tana, int difficolta) 
 }
 
 bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bool* tanaSbagliata) {
-    if (rana.y > H_SPONDA) return false;
+    if (rana.y > H_TANA+1) return false;
 
     int i = 0;
     bool inTana = false;
