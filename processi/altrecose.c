@@ -6,6 +6,7 @@
 #include "listaCoccodrillo.h"
 #include "listaGranate.h"
 #include <ncurses.h>
+#include "regole.h"
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta){
     
@@ -26,6 +27,7 @@ bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodri
 }
 
 NodoCoccodrillo* trovaCoccodrilloSottoRana(Posizione posAttualeRana, NodoCoccodrillo* coccodrilloAttuale, ListaCoccodrillo** lista, int indiceFlusso) {
+    if(!NELL_AREA_DI_GIOCO(posAttualeRana)) return NULL;
     coccodrilloAttuale = lista[indiceFlusso]->testa;
     while (coccodrilloAttuale != NULL && !laRanaESuUnCoccodrilloPuntoInterrogativo(posAttualeRana, coccodrilloAttuale->dato.posAttuale, 0)) {
         coccodrilloAttuale = coccodrilloAttuale->successivo;

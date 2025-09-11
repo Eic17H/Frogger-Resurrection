@@ -8,19 +8,12 @@
 #include "visualizzazione.h"
 #include <ncurses.h>
 
-
-void stampaPosPosPosPosPos(Posizione posDaStampare, int xInCuiStampare, int yInCuiStampare) {
-    char stringa[8] = {posDaStampare.x%1000/100+'0', posDaStampare.x%100/10+'0', posDaStampare.x%10+'0', ';', posDaStampare.y%1000/100+'0', posDaStampare.y%100/10+'0', posDaStampare.y%10+'0', '\0'};
-    mvaddstr(yInCuiStampare, xInCuiStampare, stringa);
-}
-
 /**
  * Aggiorna la posizione della rana in posMain
  * Restituisce falso se la posizione risulta nella sconfitta
  */
 bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flussi[N_FLUSSI], ListaCoccodrillo* lista[N_FLUSSI]) {
     Posizione posVecchia = *posMain;
-    //stampaPosPosPosPosPos(*posMain, 10, 0);
     if (!fuoriSchermo(sommaPosizioni(*posMain, posInviata), RANA, 0)) {
         posMain->x += posInviata.x;
         posMain->y += posInviata.y;
@@ -29,6 +22,8 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
     
     static NodoCoccodrillo *coccodrilloAttuale=NULL, *coccodrilloPrecedente=NULL;
     static int offsetSuCoccodrillo = 0;
+
+    if(!NELL_AREA_DI_GIOCO(posAttuale)) coccodrilloAttuale = coccodrilloPrecedente = NULL;
 
     if (posAttuale.x < 0 || posAttuale.x + W_RANA > DIM_COLS - 1) return true;
     
@@ -44,13 +39,11 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
         if (coccodrilloAttuale != NULL) {        
 
             if ((coccodrilloPrecedente == NULL || laRanaESuUnCoccodrilloDiverso(coccodrilloPrecedente, coccodrilloAttuale) ||
-                laRanaSpostataSuStessoCoccodrillo(coccodrilloPrecedente, coccodrilloAttuale, posVecchia, posAttuale))) {
+                laRanaSpostataSuStessoCoccodrillo(coccodrilloPrecedente, coccodrilloAttuale, posVecchia, posAttuale) || coccodrilloAttuale == NULL)) {
 
                 coccodrilloPrecedente = coccodrilloAttuale;
                 offsetSuCoccodrillo = trovaPosRanaSuCoccodrillo(coccodrilloAttuale->dato.posAttuale.x, posAttuale.x);
             }
-            // TODO: Ancora non funziona :(. Ora snappa o al lato destro o a quello sinistro. Boh.
-            // TODO: La rana viene renderizzata due volte, lasciando un buco sul coccodrillo a seconda della direzione.
             posMain->x = coccodrilloAttuale->dato.posAttuale.x + offsetSuCoccodrillo;
         } else { return true;}}
         return false;
