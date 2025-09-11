@@ -8,6 +8,7 @@ bool tempoScaduto(time_t ora, time_t start){
 
 bool fuoriSchermo(Posizione pos, Mittente mittente, int verso) {
     switch(mittente) {
+        case PROIETTILE:
         case GRANATA:
             if (verso >= AVANZAMENTO_DX && pos.x > DIM_COLS - 1 ||
                 verso <= AVANZAMENTO_DX && pos.x < 0) 

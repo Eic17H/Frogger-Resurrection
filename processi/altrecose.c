@@ -153,6 +153,8 @@ bool posizioniUguali(Posizione pos1, Posizione pos2) {
 
 bool ricominciaPartita() {
     int ch;
+    // per ripulire il buffer di input
+    flushinp();
 
     clear();
     TESTO_CENTRATO("NUOVA PARTITA? [s/n]")

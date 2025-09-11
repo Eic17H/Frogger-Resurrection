@@ -122,9 +122,6 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                 if(collisioneGranata) punteggioManche += 20;
                 gestisciCollisioneConRana(messaggio, posRana, &colpito);
                 break;
-            default:
-                spostaSprite(messaggio);
-                break;
         }
         vivo = ancoraViva(inAcqua, colpito, tanaSbagliata);
         controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd);

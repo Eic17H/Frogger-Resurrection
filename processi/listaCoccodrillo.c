@@ -103,7 +103,7 @@ void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[
             kill(temp->dato.pid, SIGKILL);
             free(temp);
         }
-        // se la coda è fuori schermo, si elimina e si crea un nuovo coccodrillo
+        // se la coda è alla giusta distanza, si crea un nuovo coccodrillo
         if (flussi[i].verso == AVANZAMENTO_DX && lista[i]->coda->dato.posAttuale.x >= flussi[i].distanzaCoccodrilli ||
             flussi[i].verso == AVANZAMENTO_SX && DIM_COLS - lista[i]->coda->dato.posAttuale.x - W_COCCODRILLO >= flussi[i].distanzaCoccodrilli) {
             creaCoccodrillo(lista[i], fd, flussi[i]);

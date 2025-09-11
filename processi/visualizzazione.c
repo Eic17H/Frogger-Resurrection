@@ -59,6 +59,7 @@ void spostaSprite(Messaggio messaggio){
                 return ;
             }
             inizializzaColoreSprite(posAttuale.y);
+            if(mittente == PROIETTILE) attron(COLOR_PAIR(COCCODRILLO_ROSSO));
             mvprintw(posAttuale.y, posAttuale.x, "%s", sprite);
 
             break;
@@ -82,6 +83,8 @@ void spostaSprite(Messaggio messaggio){
 
             selezionaColoreCoccodrillo(posAttuale.x - posVecchia.x, messaggio.staPerSparare);
             cancellaCoccodrillo(stringaVuota, posVecchia, vecchioDaTagliareL);
+            
+            if (fuoriSchermo(posAttuale, COCCO, posAttuale.x - posVecchia.x)) return ;
             stampaCoccodrillo(daStampare, daStampare2, posAttuale, daTagliareL);
             break;
         default:
