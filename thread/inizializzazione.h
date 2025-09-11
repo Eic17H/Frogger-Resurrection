@@ -7,7 +7,6 @@
 #include "visualizzazione.h"
 #include "listaCoccodrillo.h"
 
-void inizializzaBufferSemafori(sem_t* semLiberi, sem_t* semOccupati, Messaggio** buffer);
 void inizializzaNcurses();
 void adattaFinestra();
 void coloraAmbienteGioco();
@@ -15,7 +14,7 @@ void inizializzaColori();
 void messaggioBenvenuto();
 void creaCoccodrilliIniziali();
 void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso);
-pid_t creaRana(int id, int n, int fd[n]);
+pid_t creaRana(int n, int fd[n]);
 void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, ListaGranata* listaGranate);
 void creaProcessoProiettile(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione);
 void creaTane(int nTane, Tana tane[nTane]);

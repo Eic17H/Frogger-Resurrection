@@ -5,6 +5,6 @@
 #include "struttureDati.h"
 #include <sys/wait.h>
 
-void* rana(void* args);
+void rana(int fdScrittura);
 
 #endif

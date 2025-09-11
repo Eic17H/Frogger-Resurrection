@@ -1,4 +1,3 @@
-#include <pthread.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <ncurses.h>
@@ -27,36 +26,20 @@ int main() {
     int punteggioTotale;
     bool tanaOccupata; 
     Flusso flussi[N_FLUSSI];
-    pthread_t idRana;
+    pid_t pidRana;
     Tana tane[N_TANE];
     ListaCoccodrillo* listaCoccodrilli[N_FLUSSI];
     ListaGranata* listaGranate;
-    
-    Messaggio* buff = NULL;
-    sem_t semLiberi;
-    sem_t semOccupati;
-    pthread_mutex_t mutex;
-    int indiceScrittura = 0, indiceLettura = 0;
-
-    inizializzaBufferSemafori(&semLiberi,&semOccupati, &buff);
-    ParamRana paramRana = {.buff = buff, .semLiberi = &semLiberi, .semOccupati = &semOccupati, .mutex = &mutex, .indiceScrittura = &indiceScrittura};
-
     // ======== ==== = == = ==== ========
     // ======== INIZIALIZZAZIONE ========
     // ======== ==== = == = ==== ========
     srand(time(NULL));
     inizializzaNcurses();
-    if (pthread_create(&idRana, NULL, &rana, &paramRana) != 0) {
-        endwin();
-        perror("Errore creazione rana\n");
-        return -1;
-    }
-
     messaggioBenvenuto();
     adattaFinestra();
     inizializzaColori();
     creaTane(N_TANE, tane);
-
+    
     do {
         round = 1, vite = N_VITE, nTaneOccupate = 0;
         punteggioTotale = 0;
@@ -67,7 +50,12 @@ int main() {
             visualizzaVite(vite);
             visualizzaRoundRimasti(N_MANCHE - round);
 
-            punteggioTotale += manche(buff, &indiceLettura, &semLiberi, &semOccupati, fd, flussi, listaCoccodrilli, &listaGranate, idRana, tane, 0, &tanaOccupata);
+            if (round > 1) chiudiPipe(fd);
+
+            creaPipe(fd);
+            pidRana = creaRana(2, fd);
+
+            punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata);
             if (!tanaOccupata) vite--;
             else nTaneOccupate++;
 

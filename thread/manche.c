@@ -7,7 +7,6 @@
 #include "struttureDati.h"
 #include "visualizzazione.h"
 #include <ncurses.h>
-#include <pthread.h>
 
 /**
  * Aggiorna la posizione della rana in posMain
@@ -54,86 +53,105 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
  * LA STRUTTURA DI UNA MANCHE
  * return:  il punteggio della manche
  */
-int manche(Messaggio* buff, int* indiceLettura, sem_t* semLiberi, sem_t* semOccupati, int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata) {
+int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata) {
     inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, listaGranate, fd);
     
     // Inizializzazione variabili e timer
     bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false, collisioneGranata = false;
     time_t start, ora = 0;
+    Posizione predefinita = {0,0};
+    Messaggio messaggio = {predefinita, predefinita, -1, -1};
     time(&start);
     int punteggioManche = 0;
-    Messaggio messaggio, messaggioThread;
+
     // Variabili relative alla singola manche
     Posizione posRana = {X_PARTENZA_RANA, Y_PARTENZA_RANA};
-    pthread_t idRana;
-    
+
     // Loop principale
     while(!tempoScaduto(time(&ora), start) && vivo && !*tanaOccupata){
-        //read(fd[0], &messaggio, sizeof(Messaggio));
+        read(fd[0], &messaggio, sizeof(Messaggio));
+        switch(messaggio.mittente) {
+            case COCCO:
+                aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli);
+                spostaSprite(messaggio);
+                break;
+            case RANA:
+                if (messaggio.posAttuale.x != CODICE_GRANATA_SPARATA && messaggio.posAttuale.y != CODICE_GRANATA_SPARATA) {
 
-        sem_wait(semOccupati); 
-        messaggioThread = buff[*indiceLettura];
-        sem_post(semLiberi); 
+                    // La rana manda lo spostamento, non la posizione
+                    // Inoltriamo a spostaSprite() una versione modificata del messaggio che contiene la posizione assoluta
+                    Messaggio msg;
+                    msg.mittente = RANA;
+                    msg.pid = messaggio.pid;
+                    msg.posVecchia = posRana;
 
-        // possibile problema
-        *indiceLettura = (*indiceLettura + 1) % DIM_BUFFER;
+                    // Assegnazione punteggio sulla base del movimento
+                    if(NELL_AREA_DI_GIOCO(posRana)){
+                        if(messaggio.posAttuale.x != 0) punteggioManche += 5;
+                        if(messaggio.posAttuale.y > 0) punteggioManche += 3;
+                        if(messaggio.posAttuale.y < 0) punteggioManche += 10;
+                    }
+                    
+                    // Aggiorniamo la posizione della rana e nel mentre controlliamo se è caduta in acqua
+                    inAcqua = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
+                    
+                    *tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &tanaSbagliata);
 
-        //mvprintw(0, 40, "%d %d", messaggio)
-        if (messaggioThread.mittente == RANA) {
-            idRana = messaggioThread.pid;
-            if (messaggioThread.posAttuale.x != CODICE_GRANATA_SPARATA && messaggioThread.posAttuale.y != CODICE_GRANATA_SPARATA) {
-                // La rana manda lo spostamento, non la posizione
-                // Inoltriamo a spostaSprite() una versione modificata del messaggio che contiene la posizione assoluta
-                Messaggio msg;
-                msg.mittente = RANA;
-                msg.pid = messaggio.pid;
-                msg.posVecchia = posRana;
-                // Assegnazione punteggio sulla base del movimento
-                if(NELL_AREA_DI_GIOCO(posRana)){
-                    if(messaggioThread.posAttuale.x != 0) punteggioManche += 5;
-                    if(messaggioThread.posAttuale.y > 0) punteggioManche += 3;
-                    if(messaggioThread.posAttuale.y < 0) punteggioManche += 10;
+                    // Trovata la posizione, possiamo metterla nel messaggio modificato e inviarla
+                    msg.posAttuale = posRana;
+                    spostaSprite(msg);
+                } else {
+                    Posizione posPartenzaGranata;
+                    posPartenzaGranata.x = posRana.x + W_RANA;
+                    posPartenzaGranata.y = posRana.y;
+
+                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_DX, *listaGranate);    
+                    
+                    // posizione granata sinistra
+                    posPartenzaGranata.x = posRana.x - 1;
+                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_SX, *listaGranate);
                 }
-                
-                // Aggiorniamo la posizione della rana e nel mentre controlliamo se è caduta in acqua
-                inAcqua = aggiornaPosizioneRana(&posRana, messaggioThread.posAttuale, flussi, listaCoccodrilli);
-                
-                *tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &tanaSbagliata);
-                // Trovata la posizione, possiamo metterla nel messaggio modificato e inviarla
-                msg.posAttuale = posRana;
-                spostaSprite(msg);
-            }
+                break;
+            case GRANATA:
+                spostaSprite(messaggio);
+                aggiornaPosInListaGranate(messaggio,*listaGranate);
+                break;
+            case PROIETTILE:
+                spostaSprite(messaggio);
+                collisioneGranata = gestisciCollisioneConGranate(messaggio, *listaGranate);
+                if(collisioneGranata) punteggioManche += 20;
+                gestisciCollisioneConRana(messaggio, posRana, &colpito);
+                break;
         }
-
         vivo = ancoraViva(inAcqua, colpito, tanaSbagliata);
-        //controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd);
+        controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd);
 
         time(&ora);
         visualizzaTimer(DURATA_MANCHE_S - (ora-start));
         visualizzaPunteggio(punteggioManche);
         refresh();
     }
-    mvprintw(0,40,"qui"); refresh(); sleep(2);
-    //kill(pidRana, SIGKILL);
 
-    //for(int i = 0; i<N_FLUSSI; i++) {
-    //    NodoCoccodrillo* listaCoccodrilliDiQuestoFlusso = listaCoccodrilli[i]->testa;
-    //    NodoCoccodrillo* successivo = listaCoccodrilliDiQuestoFlusso->successivo;
-    //    for(NodoCoccodrillo* coccodrillo = listaCoccodrilliDiQuestoFlusso; coccodrillo != NULL; coccodrillo = successivo){
-    //        kill(coccodrillo->dato.pid, SIGKILL);
-    //        successivo = coccodrillo->successivo;
-    //        free(coccodrillo);
-    //    }
-    //    free(listaCoccodrilli[i]);
-    //}
-//
-    //NodoGranata* granata = (*listaGranate)->testa, *temp = NULL;
-    //while (granata != NULL) {
-    //    temp = granata;
-    //    granata = granata->successivo;
-    //    free(temp);
-    //}
-    //free(*listaGranate);
+    kill(pidRana, SIGKILL);
+
+    for(int i = 0; i<N_FLUSSI; i++) {
+        NodoCoccodrillo* listaCoccodrilliDiQuestoFlusso = listaCoccodrilli[i]->testa;
+        NodoCoccodrillo* successivo = listaCoccodrilliDiQuestoFlusso->successivo;
+        for(NodoCoccodrillo* coccodrillo = listaCoccodrilliDiQuestoFlusso; coccodrillo != NULL; coccodrillo = successivo){
+            kill(coccodrillo->dato.pid, SIGKILL);
+            successivo = coccodrillo->successivo;
+            free(coccodrillo);
+        }
+        free(listaCoccodrilli[i]);
+    }
+
+    NodoGranata* granata = (*listaGranate)->testa, *temp = NULL;
+    while (granata != NULL) {
+        temp = granata;
+        granata = granata->successivo;
+        free(temp);
+    }
+    free(*listaGranate);
 
     punteggioManche += (ora-start)*5; // 5 punti per secondo rimasto
     messaggioAltroRound(inAcqua, colpito, tanaSbagliata, *tanaOccupata);

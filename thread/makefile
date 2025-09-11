@@ -1,5 +1,5 @@
 out: main.o altrecose.o coccodrillo.o sparo.o inizializzazione.o listaCoccodrillo.o listaGranate.o processi.o rana.o regole.o visualizzazione.o manche.o
-	gcc main.o altrecose.o coccodrillo.o sparo.o inizializzazione.o listaCoccodrillo.o listaGranate.o processi.o rana.o regole.o visualizzazione.o manche.o -l ncurses -l pthread -o Frogger
+	gcc main.o altrecose.o coccodrillo.o sparo.o inizializzazione.o listaCoccodrillo.o listaGranate.o processi.o rana.o regole.o visualizzazione.o manche.o -l ncurses -o Frogger
 	rm -f *.o
 main.o: main.h costanti.h struttureDati.h main.c
 	gcc -c main.c

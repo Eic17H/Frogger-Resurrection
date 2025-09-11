@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <ncurses.h>
-#include <pthread.h>
 
 #include "inizializzazione.h"
 #include "listaCoccodrillo.h"
@@ -12,17 +11,6 @@
 #include "sparo.h"
 #include "listaCoccodrillo.h"
 #include "listaGranate.h"
-
-void inizializzaBufferSemafori(sem_t* semLiberi, sem_t* semOccupati, Messaggio** buffer) {
-    *buffer = (Messaggio*)malloc(sizeof(Messaggio) * DIM_BUFFER); 
-    if (buffer == NULL) {
-        perror("Error generating buffer\n");
-        return ;
-    } 
-
-    sem_init(semLiberi, 0, DIM_BUFFER);
-    sem_init(semOccupati, 0, 0);
-}
 
 void inizializzaNcurses() {
     initscr();
@@ -204,6 +192,23 @@ void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso) {
     }
 }
 
+pid_t creaRana(int n, int fd[n]) {
+    pid_t pidRana = fork();
+
+    // ERRORE
+    if (forkFallita(pidRana)){
+        endwin();
+        perror("chiamata fork() rana");
+        _exit(2);
+    }
+    // RANA
+    else if(processoFiglio(pidRana)){
+        close(fd[0]);
+        rana(fd[1]);
+    }
+    // MAIN
+    return pidRana;
+}
 
 void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, ListaGranata* listaGranate) {
     Granata nuovaGranata;
@@ -237,9 +242,9 @@ void creaProcessoProiettile(Mittente mittente, int fdScrittura, Posizione posPar
 
 void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* listaCocco[nFlussi], ListaGranata** listaGranate, int fd[2]) {
     disegnaTane(N_TANE, tane);
-    //inizializzaArrayFlussi(N_FLUSSI, flussi);
-    //inizializzaListaCoccodrilli(nFlussi, listaCocco);
-    //*listaGranate = creaListaVuotaGranata();
-    //creaCoccodrilliIniziali(2, fd, N_FLUSSI, flussi, listaCocco);
+    inizializzaArrayFlussi(N_FLUSSI, flussi);
+    inizializzaListaCoccodrilli(nFlussi, listaCocco);
+    *listaGranate = creaListaVuotaGranata();
+    creaCoccodrilliIniziali(2, fd, N_FLUSSI, flussi, listaCocco);
     refresh();
 }

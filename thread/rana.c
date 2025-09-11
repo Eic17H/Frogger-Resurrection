@@ -3,41 +3,24 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
-#include <pthread.h>
-#include "struttureDati.h"
 #include "costanti.h"
 #include "rana.h"
 
-void* rana(void* args) {
-    ParamRana* argomenti = (ParamRana*)args; 
-
-    int kCode, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1), *i = NULL;
+void rana(int fdScrittura) {
+    int kCode, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
     Posizione pos = {0, 0}, posPartenzaGranata;
-    time_t start = 0, ora = 0;
     Messaggio messaggio;
+    time_t start = 0, ora = 0;
 
     // scrittura primo messaggio
     messaggio.mittente = RANA;
-    messaggio.pid = pthread_self();
+    messaggio.pid = getpid();
+    if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
     messaggio.posAttuale = pos;
     // all'inizio la vecchia posizione è la stessa di quella attuale
     messaggio.posVecchia = pos;
 
-    // aspetto per spazio libero e poi semLiberi--
-    sem_wait(argomenti->semLiberi); 
-    // mutex per accedere a indice di scrittura
-    pthread_mutex_lock(argomenti->mutex); 
-    
-    // per leggibilità
-    i = argomenti->indiceScrittura; 
-    // writing coordintes into buffer (index = read_index)
-    argomenti->buff[*i] = messaggio;
-    *argomenti->indiceScrittura = (*argomenti->indiceScrittura + 1) % DIM_BUFFER; // incrementing circular buffer
-    
-    // rilascio l'accesso all'indice di scrittura
-    pthread_mutex_unlock(argomenti->mutex);
-    // segnalo nuovo spazio occupato
-    sem_post(argomenti->semOccupati); 
+    write(fdScrittura, &messaggio, sizeof(Messaggio));
 
     while (1) {
         messaggio.posVecchia = pos;
@@ -84,16 +67,7 @@ void* rana(void* args) {
             pos.x = 0; pos.y = 0;
         }
         messaggio.posAttuale = pos;
-
-        sem_wait(argomenti->semLiberi); 
-        pthread_mutex_lock(argomenti->mutex); 
-        
-        i = argomenti->indiceScrittura; 
-        argomenti->buff[*i] = messaggio;
-        *argomenti->indiceScrittura = (*argomenti->indiceScrittura + 1) % DIM_BUFFER; // incrementing circular buffer
-        
-        pthread_mutex_unlock(argomenti->mutex);
-        sem_post(argomenti->semOccupati); 
+        write(fdScrittura, &messaggio, sizeof(Messaggio));
 
         usleep(4000);
 

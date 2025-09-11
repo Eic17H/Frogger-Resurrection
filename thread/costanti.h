@@ -21,8 +21,6 @@
 #define CODICE_GRANATA_SPARATA 255
 
 // dimensioni
-#define DIM_BUFFER 4
-
 #define SALTO_RANA 2
 #define W_RANA 3
 #define W_COCCODRILLO 8
