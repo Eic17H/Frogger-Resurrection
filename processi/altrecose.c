@@ -7,6 +7,7 @@
 #include "listaGranate.h"
 #include <ncurses.h>
 #include "regole.h"
+#include "visualizzazione.h"
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta){
     
@@ -150,3 +151,19 @@ bool posizioniUguali(Posizione pos1, Posizione pos2) {
     return pos1.x == pos2.x && pos1.y == pos2.y;
 }
 
+bool ricominciaPartita() {
+    int ch;
+
+    clear();
+    TESTO_CENTRATO("NUOVA PARTITA? [s/n]")
+    refresh();
+    
+    do {
+        ch = getch();
+    } while (ch != 's' && ch != 'n');
+    
+    clear();
+    
+    if (ch == 's') return true;
+    return false;
+}

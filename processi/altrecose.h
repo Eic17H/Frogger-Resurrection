@@ -21,4 +21,5 @@ Posizione sommaPosizioni(Posizione pos1, Posizione pos2);
 bool posizioniUguali(Posizione pos1, Posizione pos2);
 int trovaIndiceFlusso(int n, Flusso flussi[n], int yDesiderata);
 int daSecondiAMinutiSecondi(int tempoInSecondi);
+bool ricominciaPartita();
 #endif /* ALTRECOSE_H */

@@ -22,8 +22,8 @@ int main() {
     // ======== ==== ==== ========
     int fd[2];
     int x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO;
-    int round = 1, vite = N_VITE, nTaneOccupate = 0;
-    int punteggioTotale = 0;
+    int round, vite, nTaneOccupate;
+    int punteggioTotale;
     bool tanaOccupata; 
     Flusso flussi[N_FLUSSI];
     pid_t pidRana;
@@ -40,25 +40,30 @@ int main() {
     inizializzaColori();
     creaTane(N_TANE, tane);
     
-    while (round <= N_MANCHE && vite > 0 && nTaneOccupate < N_TANE) {
-        tanaOccupata = false;
+    do {
+        round = 1, vite = N_VITE, nTaneOccupate = 0;
+        punteggioTotale = 0;
+        while (round <= N_MANCHE && vite > 0 && nTaneOccupate < N_TANE) {
+            tanaOccupata = false;
 
-        coloraAmbienteGioco();
-        visualizzaVite(vite);
-        visualizzaRoundRimasti(N_MANCHE - round);
-        
-        if (round > 1) chiudiPipe(fd);
-        
-        creaPipe(fd);
-        pidRana = creaRana(2, fd);
-        
-        punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata);
-        if (!tanaOccupata) vite--;
-        else nTaneOccupate++;
+            coloraAmbienteGioco();
+            visualizzaVite(vite);
+            visualizzaRoundRimasti(N_MANCHE - round);
 
-        round++;
-    }
-    messaggioFinePartita(nTaneOccupate, punteggioTotale);
+            if (round > 1) chiudiPipe(fd);
+
+            creaPipe(fd);
+            pidRana = creaRana(2, fd);
+
+            punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata);
+            if (!tanaOccupata) vite--;
+            else nTaneOccupate++;
+
+            round++;
+        }
+        chiudiPipe(fd);
+        messaggioFinePartita(nTaneOccupate, punteggioTotale);
+    } while(ricominciaPartita());
 
     clear(); refresh();
     endwin();
