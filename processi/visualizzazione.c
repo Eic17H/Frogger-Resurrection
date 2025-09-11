@@ -255,13 +255,23 @@ void visualizzaRoundRimasti(int roundRimasti) {
     refresh();
 }
 
-void messaggioFinePartita(int nTaneOccupate, int punteggio) {
+void messaggioFinePartita(int nTaneOccupate, int punti) {
     if (nTaneOccupate != N_TANE) {
         TESTO_CENTRATO("HAI PERSO :(");
     }
     else {
         TESTO_CENTRATO("HAI VINTO!!");
-        // TODO: mostra punteggio
+        char punteggio[15] = "Punteggio: 0000";
+        punteggio[11] = punti/1000%10+'0';
+        punteggio[12] = punti/100%10+'0';
+        punteggio[13] = punti/10%10+'0';
+        punteggio[14] = punti/1%10+'0';
+        // Il testo compare gradualmente
+        for(int i=0; i<15; i++) {
+            mvaddch(LINES/2+1, COLS/2-7+i, punteggio[i]);
+            usleep(100000);
+            refresh();
+        }
     }
     
     refresh();

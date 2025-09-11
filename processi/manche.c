@@ -77,23 +77,27 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                 break;
             case RANA:
                 if (messaggio.posAttuale.x != CODICE_GRANATA_SPARATA && messaggio.posAttuale.y != CODICE_GRANATA_SPARATA) {
-                    // TODO: ma che cazzo
+
+                    // La rana manda lo spostamento, non la posizione
+                    // Inoltriamo a spostaSprite() una versione modificata del messaggio che contiene la posizione assoluta
                     Messaggio msg;
                     msg.mittente = RANA;
                     msg.pid = messaggio.pid;
                     msg.posVecchia = posRana;
 
-                    // Se si trova nell'area d'acqua diciamo
+                    // Assegnazione punteggio sulla base del movimento
                     if(NELL_AREA_DI_GIOCO(posRana)){
                         if(messaggio.posAttuale.x != 0) punteggioManche += 5;
                         if(messaggio.posAttuale.y > 0) punteggioManche += 3;
                         if(messaggio.posAttuale.y < 0) punteggioManche += 10;
                     }
                     
+                    // Aggiorniamo la posizione della rana e nel mentre controlliamo se è caduta in acqua
                     inAcqua = aggiornaPosizioneRana(&posRana, messaggio.posAttuale, flussi, listaCoccodrilli);
                     
                     *tanaOccupata = laRanaConquistatoTanaChiusa(posRana, tane, difficolta, &tanaSbagliata);
 
+                    // Trovata la posizione, possiamo metterla nel messaggio modificato e inviarla
                     msg.posAttuale = posRana;
                     spostaSprite(msg);
                 } else {

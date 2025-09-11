@@ -8,17 +8,6 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
-// TODO: MANCA LA SPONDA D'ERBA SUPERIORE IN CUI LA RANA SI PUÒ MUOVERE PRIMA DI ENTRARE IN UNA TANA !!!!!!!!!!!!
-/**
- * La sponda dell’argine di arrivo (quello presente al margine superiore del
-fiume) è costituita da un prato d’erba, rappresentato da un'area rettangolare
-spaziosa a sufficienza, di larghezza pari all’area di gioco orizzontale
-(assegnata tramite libreria ncurses) e altezza almeno pari all’altezza della
-rana;
- */
-
-
-
 #include "inizializzazione.h"
 #include "processi.h"
 #include "struttureDati.h"
