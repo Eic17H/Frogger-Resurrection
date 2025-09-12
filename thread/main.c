@@ -22,14 +22,13 @@
 
 
 Messaggio bufferArray[BUFFER_SIZE];
-int buffer_i_head;
-int buffer_i_tail;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+TuttoBuffer buffer = {bufferArray, 0, 0};
 
 int main() {
+    pthread_mutex_init(&buffer.mutex, NULL);
     srand(time(0));
     
-    TuttoBuffer buffer = {bufferArray, &buffer_i_head, &buffer_i_tail, &mutex};
+    
     // ======== ==== ==== ========
     // ======== VARIABILI ========
     // ======== ==== ==== ========

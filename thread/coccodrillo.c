@@ -23,7 +23,8 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale, TuttoBuffer* buffer) {
 
     // scrittura primo messaggio
     messaggio.mittente = COCCO;
-    messaggio.pid = getpid();
+    pid_t test;
+    //messaggio.pid = test;
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
     messaggio.posAttuale = pos;
     messaggio.posVecchia = pos;
@@ -48,7 +49,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale, TuttoBuffer* buffer) {
 
         if (ora - start >= timerSparo) {
             posPartenzaSparo.x = pos.x + offsetSparo;
-            creaProcessoProiettile(PROIETTILE, fdScrittura, posPartenzaSparo, flussoAttuale.verso, buffer);
+            //creaProcessoProiettile(PROIETTILE, fdScrittura, posPartenzaSparo, flussoAttuale.verso, buffer);
             
             timerSparo = RAND_TRA(ATTESA_MIN_PROIETTILE_S, ATTESA_MAX_PROIETTILE_S);
 
@@ -60,7 +61,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale, TuttoBuffer* buffer) {
         pos.x += flussoAttuale.velocità * flussoAttuale.verso;
         // aggiornamento coordinate
         messaggio.posAttuale = pos;
-        invia(buffer, messaggio);
+        //invia(buffer, messaggio);
 
         //usleep(400000);
         usleep(150000);

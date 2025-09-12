@@ -174,22 +174,29 @@ void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFluss
     }
 }
 
+typedef struct 
+{
+    int fdScrittura;
+    Flusso flussoAttuale;
+    TuttoBuffer* buffer;
+}Args_thread_coccodrillo;
+
+void* thread_coccodrillo(void* arg) {
+    Args_thread_coccodrillo args = *(Args_thread_coccodrillo*) arg;
+    coccodrillo(args.fdScrittura, args.flussoAttuale, args.buffer);
+}
+
 void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso, TuttoBuffer* buffer) {
     pid_t pidCoccodrillo;
     Coccodrillo nuovoCoccodrillo;
     NodoCoccodrillo* nuovoNodo = NULL;
 
-    pidCoccodrillo = fork();
-    if (forkFallita(pidCoccodrillo)) { endwin(); perror("chiamata fork() coccodrillo"); _exit(2); };
-    if (processoFiglio(pidCoccodrillo)) {
-        close(fd[0]); 
-        coccodrillo(fd[1], flusso, buffer); 
-    }
-    else {
-        nuovoCoccodrillo = assegnaDatiCoccodrillo(pidCoccodrillo, flusso.posIniziale, flusso);
-        nuovoNodo = creaNodoCoccodrillo(nuovoCoccodrillo);
-        pushCoccodrillo(lista, nuovoNodo);
-    }
+    Args_thread_coccodrillo argsThreadCoccodrillo = {fd[1], flusso, buffer};
+    pthread_t tid;
+    if(pthread_create(tid, NULL, thread_coccodrillo, &argsThreadCoccodrillo) != 0) { endwin(); perror("fallito thread coccodrillo"); _exit(2); };
+    nuovoCoccodrillo = assegnaDatiCoccodrillo(tid, flusso.posIniziale, flusso);
+    nuovoNodo = creaNodoCoccodrillo(nuovoCoccodrillo);
+    pushCoccodrillo(lista, nuovoNodo);
 }
 
 pid_t creaRana(int n, int fd[n], TuttoBuffer* buffer) {

@@ -136,7 +136,7 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         refresh();
     }
 
-    kill(pidRana, SIGKILL);
+    //kill(pidRana, SIGKILL);
 
     for(int i = 0; i<N_FLUSSI; i++) {
         NodoCoccodrillo* listaCoccodrilliDiQuestoFlusso = listaCoccodrilli[i]->testa;
