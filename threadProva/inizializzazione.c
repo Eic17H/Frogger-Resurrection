@@ -169,6 +169,7 @@ int generaVersoFlussoIniziale() {
     return AVANZAMENTO_SX;  
 }
 
+// TODO: si è rotto l'rng, molti flussi hanno la stessa velocità
 void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]) {
     int yPartenza = DIM_LINES - H_MARCIAPIEDE - 1 - 1;
     int versoFlusso = generaVersoFlussoIniziale();
@@ -195,6 +196,7 @@ void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]) {
         versoFlusso *= -1;
     }
 }
+
 
 void inizializzaListaCoccodrilli(int nFlussi, ListaCoccodrillo* lista[nFlussi]) {
     for (int i = 0; i < nFlussi; i++) {

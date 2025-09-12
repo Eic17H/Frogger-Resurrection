@@ -27,7 +27,7 @@ void inizializzaBufferSemaforiMutex(Messaggio** buffer, sem_t* semLiberi, sem_t*
 //    return ret;
 //    }
 //
-// TODO: fa segmentation fault e non capisco perché
+
 void invia(TuttoBuffer* buffer, Messaggio msg) {
     sem_wait(buffer->semLiberi);
     pthread_mutex_lock(buffer->mutex);
