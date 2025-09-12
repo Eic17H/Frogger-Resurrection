@@ -3,6 +3,6 @@
 
 #include "struttureDati.h"
 
-void sparo(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, TuttoBuffer* buffer);
+void sparo(Mittente mittente, Posizione posPartenza, int direzione, TuttoBuffer* buffer);
 
 #endif

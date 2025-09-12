@@ -253,35 +253,56 @@ void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso, TuttoBuff
 //    return pidRana;
 //}
 
+typedef struct 
+{
+    Mittente mittente;
+    int fdScrittura;
+    Posizione posPartenza;
+    int direzione;
+    TuttoBuffer* buffer;
+}ArgsThreadSparo;
+
+void* thread_sparo(void* arg) {
+    ArgsThreadSparo args = *(ArgsThreadSparo*) arg;
+    free(arg);
+    sparo(args.mittente, args.posPartenza, args.direzione, args.buffer);
+    return NULL;
+}
+
 void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, ListaGranata* listaGranate, TuttoBuffer* buffer) {
     Granata nuovaGranata;
     NodoGranata* nuovoNodo = NULL;
-    //pid_t pid_sparo = fork();
-
-    //if (forkFallita(pid_sparo)) {endwin(); perror("Errore fork() sparo"); _exit(2);}
     
-    //if (processoFiglio(pid_sparo)) { // processo granata (eredita il fd chiuso in lettura)
-    //    sparo(mittente, fdScrittura, posPartenza, direzione, buffer);
-    //}
-    //else {
-    //    nuovaGranata = assegnaDatiGranata(pid_sparo, posPartenza);
-    //    nuovoNodo = creaNodoGranata(nuovaGranata);
-    //    pushGranata(listaGranate, nuovoNodo);
-    //}
+    ArgsThreadSparo* argsThreadSparo = malloc(sizeof(ArgsThreadSparo));
+    if (argsThreadSparo == NULL) {endwin(); perror("Errore allocazione ArgsThreadSparo"); return ;}
+    argsThreadSparo->buffer = buffer;
+    argsThreadSparo->direzione = direzione;
+    argsThreadSparo->fdScrittura = fdScrittura;
+    argsThreadSparo->mittente = mittente;
+    argsThreadSparo->posPartenza = posPartenza;
+    pthread_t tid;
+
+    if(pthread_create(&tid, NULL, thread_sparo, argsThreadSparo) != 0) {endwin(); perror("fallito thread sparo"); _exit(2);}
+    nuovaGranata = assegnaDatiGranata(tid, posPartenza);
+    nuovoNodo = creaNodoGranata(nuovaGranata);
+    pushGranata(listaGranate, nuovoNodo);
 }
 
-//void creaProcessoProiettile(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, TuttoBuffer* buffer) {
-//    Granata nuovaGranata;
-//    NodoGranata* nuovoNodo = NULL;
-//    pid_t pid_sparo = fork();
-//
-//    if (forkFallita(pid_sparo)) {endwin(); perror("Errore fork() sparo"); _exit(2);}
-//    
-//    if (processoFiglio(pid_sparo)) { // processo granata (eredita il fd chiuso in lettura)
-//        sparo(mittente, fdScrittura, posPartenza, direzione, buffer);
-//    }
-//    // processo padre continua l'esecuzione
-//}
+void creaProcessoProiettile(Mittente mittente, Posizione posPartenza, int direzione, TuttoBuffer* buffer) {
+    Granata nuovaGranata;
+    NodoGranata* nuovoNodo = NULL;
+    
+
+    ArgsThreadSparo* argsThreadSparo = malloc(sizeof(ArgsThreadSparo));
+    if (argsThreadSparo == NULL) {endwin(); perror("Errore allocazione ArgsThreadSparo"); return ;}
+    argsThreadSparo->buffer = buffer;
+    argsThreadSparo->direzione = direzione;
+    argsThreadSparo->mittente = mittente;
+    argsThreadSparo->posPartenza = posPartenza;
+    pthread_t tid;
+    if(pthread_create(&tid, NULL, thread_sparo, argsThreadSparo) != 0) {endwin(); perror("fallito thread sparo"); _exit(2);}
+    // processo padre continua l'esecuzione
+}
 
 void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* listaCocco[nFlussi], ListaGranata** listaGranate, int fd[2], TuttoBuffer* buffer) {
     disegnaTane(buffer, nTane, tane);

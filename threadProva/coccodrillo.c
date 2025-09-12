@@ -7,6 +7,7 @@
 #include "struttureDati.h"
 #include "altrecose.h"
 #include "thread.h"
+#include "inizializzazione.h"
 
 void coccodrillo(Flusso flussoAttuale, TuttoBuffer* buffer) {
     Posizione pos, posPartenzaSparo; 
@@ -45,7 +46,7 @@ void coccodrillo(Flusso flussoAttuale, TuttoBuffer* buffer) {
 
         if (ora - start >= timerSparo) {
             posPartenzaSparo.x = pos.x + offsetSparo;
-            //creaProcessoProiettile(PROIETTILE, fdScrittura, posPartenzaSparo, flussoAttuale.verso, buffer);
+            creaProcessoProiettile(PROIETTILE, posPartenzaSparo, flussoAttuale.verso, buffer);
             
             timerSparo = RAND_TRA(ATTESA_MIN_PROIETTILE_S, ATTESA_MAX_PROIETTILE_S);
 

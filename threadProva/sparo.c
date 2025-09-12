@@ -6,7 +6,7 @@
 #include "struttureDati.h"
 #include "thread.h"
 
-void sparo(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, TuttoBuffer* buffer) {
+void sparo(Mittente mittente, Posizione posPartenza, int direzione, TuttoBuffer* buffer) {
     Messaggio messaggio;
     Posizione pos = posPartenza;
 
