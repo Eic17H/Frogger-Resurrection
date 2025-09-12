@@ -62,7 +62,7 @@ void spostaSprite(TuttoBuffer* buffer, Messaggio messaggio){
             mvprintw(posVecchia.y, posVecchia.x, "%s", stringaVuota);
                     
             if (fuoriSchermo(posAttuale, mittente, posAttuale.x - posVecchia.x)) {
-                //kill(pid, SIGKILL);
+                //TODO: kill(pid, SIGKILL);
                 return ;
             }
             inizializzaColoreSprite(posAttuale.y);

@@ -79,7 +79,6 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                 spostaSprite(buffer, messaggio);
                 break;
             case RANA:
-            beep();
                 if (messaggio.posAttuale.x != CODICE_GRANATA_SPARATA && messaggio.posAttuale.y != CODICE_GRANATA_SPARATA) {
 
                     // La rana manda lo spostamento, non la posizione
@@ -108,10 +107,7 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                     Posizione posPartenzaGranata;
                     posPartenzaGranata.x = posRana.x + W_RANA;
                     posPartenzaGranata.y = posRana.y;
-
-            beep();
                     creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_DX, *listaGranate, buffer);    
-                    
                     // posizione granata sinistra
                     posPartenzaGranata.x = posRana.x - 1;
                     creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_SX, *listaGranate, buffer);
@@ -145,13 +141,13 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         
     }
 
-    //kill(pidRana, SIGKILL);
+    //TODO: kill(pidRana, SIGKILL);
 
     for(int i = 0; i<N_FLUSSI; i++) {
         NodoCoccodrillo* listaCoccodrilliDiQuestoFlusso = listaCoccodrilli[i]->testa;
         NodoCoccodrillo* successivo = listaCoccodrilliDiQuestoFlusso->successivo;
         for(NodoCoccodrillo* coccodrillo = listaCoccodrilliDiQuestoFlusso; coccodrillo != NULL; coccodrillo = successivo){
-            //kill(coccodrillo->dato.pid, SIGKILL);
+            //TODO: kill(coccodrillo->dato.pid, SIGKILL);
             successivo = coccodrillo->successivo;
             free(coccodrillo);
         }

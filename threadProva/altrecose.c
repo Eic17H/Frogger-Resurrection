@@ -69,8 +69,8 @@ bool gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* l
         granata = granata->successivo;
     }
     if (granataColpita != NULL) {
-        //kill(granataColpita->dato.pid, SIGKILL);
-        //kill(messaggioProiettile.pid, SIGKILL);
+        //TODO: kill(granataColpita->dato.pid, SIGKILL);
+        //TODO: kill(messaggioProiettile.pid, SIGKILL);
         return true;
     }
     return false;
