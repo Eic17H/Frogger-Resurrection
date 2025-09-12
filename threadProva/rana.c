@@ -69,6 +69,7 @@ void* rana(void* args) {
             pos.x = 0; pos.y = 0;
         }
         messaggio.posAttuale = pos;
+
         invia(argomenti, messaggio);
 
         usleep(4000);

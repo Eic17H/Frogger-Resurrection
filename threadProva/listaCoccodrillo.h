@@ -26,7 +26,7 @@ typedef struct {
     NodoCoccodrillo* coda;
 }ListaCoccodrillo;
 
-Coccodrillo assegnaDatiCoccodrillo(pthread_t pid, Posizione posAttuale, Flusso flusso);
+Coccodrillo assegnaDatiCoccodrillo(pthread_t id, Posizione posAttuale, Flusso flusso);
 
 NodoCoccodrillo* popCoccodrillo(ListaCoccodrillo* lista);
 void pushCoccodrillo(ListaCoccodrillo* lista, NodoCoccodrillo* nodo);

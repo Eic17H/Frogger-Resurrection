@@ -71,7 +71,8 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
     // Loop principale
     while(!tempoScaduto(time(&ora), start) && vivo && !*tanaOccupata){
         messaggio = ricevi(buffer);
-        mvaddch(0,0,messaggio.mittente+'0');
+        
+
         switch(messaggio.mittente) {
             case COCCO:
                 aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli);

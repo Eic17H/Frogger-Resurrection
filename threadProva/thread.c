@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include <ncurses.h>
 #include <semaphore.h>
+#include "costanti.h"
 
 void inizializzaBufferSemaforiMutex(Messaggio** buffer, sem_t* semLiberi, sem_t* semOccupati, pthread_mutex_t* mutex) {
     *buffer = (Messaggio*)malloc(sizeof(Messaggio) * BUFFER_SIZE);
@@ -9,6 +10,8 @@ void inizializzaBufferSemaforiMutex(Messaggio** buffer, sem_t* semLiberi, sem_t*
 
     sem_init(semLiberi, 0, BUFFER_SIZE);
     sem_init(semOccupati, 0, 0);
+
+    pthread_mutex_init(mutex, NULL);
 }
 
 //bool bufferVuoto(TuttoBuffer* buffer) {
@@ -40,11 +43,10 @@ Messaggio ricevi(TuttoBuffer* buffer) {
     static int iLettura = 0;
 
     sem_wait(buffer->semOccupati);
-    
     msg = buffer->buffer[iLettura];
-    iLettura = (iLettura + 1)  % BUFFER_SIZE;
-
     sem_post(buffer->semLiberi);
+
+    iLettura = (iLettura + 1)  % BUFFER_SIZE;
 
     return msg;
 }

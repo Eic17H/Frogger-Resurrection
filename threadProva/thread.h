@@ -5,8 +5,6 @@
 #include <semaphore.h>
 #include "struttureDati.h"
 
-#define BUFFER_SIZE 255
-
 typedef struct {
     Messaggio* buffer;
     sem_t* semLiberi;
@@ -17,7 +15,6 @@ typedef struct {
 
 typedef struct 
 {
-    int fdScrittura;
     Flusso flussoAttuale;
     TuttoBuffer* buffer;
 }ArgsThreadCoccodrillo;

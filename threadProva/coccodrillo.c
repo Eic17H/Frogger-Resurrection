@@ -9,7 +9,7 @@
 #include "altrecose.h"
 #include "thread.h"
 
-void coccodrillo(int fdScrittura, Flusso flussoAttuale, TuttoBuffer* buffer) {
+void coccodrillo(Flusso flussoAttuale, TuttoBuffer* buffer) {
     Posizione pos, posPartenzaSparo; 
     Messaggio messaggio;
     time_t start, ora;

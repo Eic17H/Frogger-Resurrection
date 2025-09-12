@@ -2,7 +2,6 @@
 #include "costanti.h"
 #include "inizializzazione.h"
 #include "regole.h"
-#include <signal.h>
 
 // Inserire i dati di tipo Coccodrillo
 Coccodrillo assegnaDatiCoccodrillo(pthread_t id, Posizione posAttuale, Flusso flusso) {
