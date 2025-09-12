@@ -5,6 +5,7 @@
 #include "listaCoccodrillo.h"
 #include "processi.h"
 #include "struttureDati.h"
+#include "thread.h"
 #include "visualizzazione.h"
 #include "costanti.h"
 #include "coccodrillo.h"
@@ -174,16 +175,11 @@ void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFluss
     }
 }
 
-typedef struct 
-{
-    int fdScrittura;
-    Flusso flussoAttuale;
-    TuttoBuffer* buffer;
-}Args_thread_coccodrillo;
-
 void* thread_coccodrillo(void* arg) {
-    Args_thread_coccodrillo args = *(Args_thread_coccodrillo*) arg;
+    ArgsThreadCoccodrillo args = *(ArgsThreadCoccodrillo*) arg;
     coccodrillo(args.fdScrittura, args.flussoAttuale, args.buffer);
+
+    return NULL;
 }
 
 void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso, TuttoBuffer* buffer) {
@@ -191,47 +187,54 @@ void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso, TuttoBuff
     Coccodrillo nuovoCoccodrillo;
     NodoCoccodrillo* nuovoNodo = NULL;
 
-    Args_thread_coccodrillo argsThreadCoccodrillo = {fd[1], flusso, buffer};
+    ArgsThreadCoccodrillo* argsThreadCoccodrillo = malloc(sizeof(ArgsThreadCoccodrillo));
+    if (argsThreadCoccodrillo == NULL) {endwin(); perror("Errore allocazione ArgsThreadCoccodrillo"); return ;}
+    argsThreadCoccodrillo->buffer = buffer;
+    argsThreadCoccodrillo->fdScrittura = fd[1];
+    argsThreadCoccodrillo->flussoAttuale = flusso;
     pthread_t tid;
-    if(pthread_create(&tid, NULL, &thread_coccodrillo, &argsThreadCoccodrillo) != 0) { endwin(); perror("fallito thread coccodrillo"); _exit(2); };
+
+    if(pthread_create(&tid, NULL, &thread_coccodrillo, argsThreadCoccodrillo) != 0) { endwin(); perror("fallito thread coccodrillo"); _exit(2); };
     nuovoCoccodrillo = assegnaDatiCoccodrillo(tid, flusso.posIniziale, flusso);
     nuovoNodo = creaNodoCoccodrillo(nuovoCoccodrillo);
     pushCoccodrillo(lista, nuovoNodo);
+
+    //free(argsThreadCoccodrillo);
 }
 
-pid_t creaRana(int n, int fd[n], TuttoBuffer* buffer) {
-    pid_t pidRana = fork();
-
-    // ERRORE
-    if (forkFallita(pidRana)){
-        endwin();
-        perror("chiamata fork() rana");
-        _exit(2);
-    }
-    // RANA
-    else if(processoFiglio(pidRana)){
-        close(fd[0]);
-        rana(fd[1], buffer);
-    }
-    // MAIN
-    return pidRana;
-}
+//pid_t creaRana(int n, int fd[n], TuttoBuffer* buffer) {
+//    pid_t pidRana = fork();
+//
+//    // ERRORE
+//    if (forkFallita(pidRana)){
+//        endwin();
+//        perror("chiamata fork() rana");
+//        _exit(2);
+//    }
+//    // RANA
+//    else if(processoFiglio(pidRana)){
+//        close(fd[0]);
+//        rana(fd[1], buffer);
+//    }
+//    // MAIN
+//    return pidRana;
+//}
 
 void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, ListaGranata* listaGranate, TuttoBuffer* buffer) {
     Granata nuovaGranata;
     NodoGranata* nuovoNodo = NULL;
-    pid_t pid_sparo = fork();
+    //pid_t pid_sparo = fork();
 
-    if (forkFallita(pid_sparo)) {endwin(); perror("Errore fork() sparo"); _exit(2);}
+    //if (forkFallita(pid_sparo)) {endwin(); perror("Errore fork() sparo"); _exit(2);}
     
-    if (processoFiglio(pid_sparo)) { // processo granata (eredita il fd chiuso in lettura)
-        sparo(mittente, fdScrittura, posPartenza, direzione, buffer);
-    }
-    else {
-        nuovaGranata = assegnaDatiGranata(pid_sparo, posPartenza);
-        nuovoNodo = creaNodoGranata(nuovaGranata);
-        pushGranata(listaGranate, nuovoNodo);
-    }
+    //if (processoFiglio(pid_sparo)) { // processo granata (eredita il fd chiuso in lettura)
+    //    sparo(mittente, fdScrittura, posPartenza, direzione, buffer);
+    //}
+    //else {
+    //    nuovaGranata = assegnaDatiGranata(pid_sparo, posPartenza);
+    //    nuovoNodo = creaNodoGranata(nuovaGranata);
+    //    pushGranata(listaGranate, nuovoNodo);
+    //}
 }
 
 void creaProcessoProiettile(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, TuttoBuffer* buffer) {

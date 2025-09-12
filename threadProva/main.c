@@ -9,7 +9,6 @@
 #include <sys/types.h>
 
 #include "inizializzazione.h"
-#include "processi.h"
 #include "struttureDati.h"
 #include "costanti.h"
 #include "listaCoccodrillo.h"
@@ -18,14 +17,7 @@
 #include "thread.h"
 
 
-
-
 int main() {
-    Messaggio bufferArray[BUFFER_SIZE];
-pthread_mutex_t mutex;
-int head = 0, tail = 0;
-TuttoBuffer buffer = {bufferArray, &head, &tail, &mutex};
-    pthread_mutex_init(buffer.mutex, NULL);
     srand(time(0));
     
     
@@ -42,11 +34,27 @@ TuttoBuffer buffer = {bufferArray, &head, &tail, &mutex};
     Tana tane[N_TANE];
     ListaCoccodrillo* listaCoccodrilli[N_FLUSSI];
     ListaGranata* listaGranate;
+
+    pthread_t idRana;
+    Messaggio* buffer = NULL;
+    sem_t semLiberi, semOccupati;
+    pthread_mutex_t mutex;
+    int iScrittura = 0, iLettura = 0;
+
+    inizializzaBufferSemaforiMutex(&buffer, &semLiberi, &semOccupati, &mutex);
+    TuttoBuffer tb = {.buffer = buffer, .mutex = &mutex, .semLiberi = &semLiberi, . semOccupati = &semOccupati, .iScrittura = &iScrittura};
     // ======== ==== = == = ==== ========
     // ======== INIZIALIZZAZIONE ========
     // ======== ==== = == = ==== ========
     srand(time(NULL));
     inizializzaNcurses();
+
+    if (pthread_create(&idRana, NULL, &rana, &tb) != 0) {
+        endwin();
+        perror("Errore creazione rana");
+        return -1;
+    }
+
     messaggioBenvenuto();
     adattaFinestra();
     inizializzaColori();
@@ -62,18 +70,15 @@ TuttoBuffer buffer = {bufferArray, &head, &tail, &mutex};
             visualizzaVite(vite);
             visualizzaRoundRimasti(N_MANCHE - round);
 
-            if (round > 1) chiudiPipe(fd);
+            //pidRana = creaRana(2, fd, &tb);
 
-            creaPipe(fd);
-            pidRana = creaRana(2, fd, &buffer);
-
-            punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata, &buffer);
+            punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata, &tb);
             if (!tanaOccupata) vite--;
             else nTaneOccupate++;
 
             round++;
         }
-        chiudiPipe(fd);
+        
         messaggioFinePartita(nTaneOccupate, punteggioTotale);
     } while(ricominciaPartita());
 

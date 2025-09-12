@@ -2,16 +2,27 @@
 #define THREAD_H
 
 #include <pthread.h>
+#include <semaphore.h>
 #include "struttureDati.h"
 
 #define BUFFER_SIZE 255
 
 typedef struct {
     Messaggio* buffer;
-    int* head;
-    int* tail;
+    sem_t* semLiberi;
+    sem_t* semOccupati;
+    int* iScrittura;
     pthread_mutex_t* mutex;
 } TuttoBuffer;
+
+typedef struct 
+{
+    int fdScrittura;
+    Flusso flussoAttuale;
+    TuttoBuffer* buffer;
+}ArgsThreadCoccodrillo;
+
+void inizializzaBufferSemaforiMutex(Messaggio** buffer, sem_t* semLiberi, sem_t* semOccupati, pthread_mutex_t* mutex);
 
 bool bufferVuoto(TuttoBuffer* buffer);
 bool bufferPieno(TuttoBuffer* buffer);
