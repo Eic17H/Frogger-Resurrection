@@ -5,8 +5,9 @@
 #include <sys/time.h>
 #include "costanti.h"
 #include "rana.h"
+#include "thread.h"
 
-void rana(int fdScrittura) {
+void rana(int fdScrittura, TuttoBuffer* buffer) {
     int kCode, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
     Posizione pos = {0, 0}, posPartenzaGranata;
     Messaggio messaggio;
@@ -20,7 +21,7 @@ void rana(int fdScrittura) {
     // all'inizio la vecchia posizione è la stessa di quella attuale
     messaggio.posVecchia = pos;
 
-    write(fdScrittura, &messaggio, sizeof(Messaggio));
+    invia(buffer, messaggio);
 
     while (1) {
         messaggio.posVecchia = pos;
@@ -67,7 +68,7 @@ void rana(int fdScrittura) {
             pos.x = 0; pos.y = 0;
         }
         messaggio.posAttuale = pos;
-        write(fdScrittura, &messaggio, sizeof(Messaggio));
+        invia(buffer, messaggio);
 
         usleep(4000);
 

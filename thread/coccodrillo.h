@@ -4,6 +4,6 @@
 #include <unistd.h>
 #include "struttureDati.h"
 
-void coccodrillo(int fdScrittura, Flusso flussoAttuale);
+void coccodrillo(int fdScrittura, Flusso flussoAttuale, TuttoBuffer* buffer);
 
 #endif

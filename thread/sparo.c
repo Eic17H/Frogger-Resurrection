@@ -4,8 +4,9 @@
 #include <ncurses.h>
 
 #include "struttureDati.h"
+#include "thread.h"
 
-void sparo(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione) {
+void sparo(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, TuttoBuffer* buffer) {
     Messaggio messaggio;
     Posizione pos = posPartenza;
 
@@ -18,7 +19,7 @@ void sparo(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzi
     messaggio.pid = getpid();
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
 
-    write(fdScrittura, &messaggio, sizeof(Messaggio));
+    invia(buffer, messaggio);
 
     while (1) {
         messaggio.posVecchia = pos;
@@ -26,7 +27,7 @@ void sparo(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzi
         pos.x += direzione;
 
         messaggio.posAttuale = pos;
-        write(fdScrittura, &messaggio, sizeof(Messaggio));
+        invia(buffer, messaggio);
         usleep(20000);
     }
 }

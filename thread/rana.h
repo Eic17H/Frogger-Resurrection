@@ -4,7 +4,8 @@
 #include <unistd.h>
 #include "struttureDati.h"
 #include <sys/wait.h>
+#include "thread.h"
 
-void rana(int fdScrittura);
+void rana(int fdScrittura, TuttoBuffer* buffer);
 
 #endif

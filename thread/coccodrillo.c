@@ -8,8 +8,9 @@
 #include "inizializzazione.h"
 #include "struttureDati.h"
 #include "altrecose.h"
+#include "thread.h"
 
-void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
+void coccodrillo(int fdScrittura, Flusso flussoAttuale, TuttoBuffer* buffer) {
     Posizione pos, posPartenzaSparo; 
     Messaggio messaggio;
     time_t start, ora;
@@ -26,7 +27,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
     if (messaggio.pid < 0) {perror("Errore getpid()"); _exit(2);}
     messaggio.posAttuale = pos;
     messaggio.posVecchia = pos;
-    write(fdScrittura, &messaggio, sizeof(Messaggio));
+    invia(buffer, messaggio);
 
     // offsetSparo usato per far partire il proiettile dalla giusta x. +3 usato per prevedere lo spostamento del coccodrillo
     if (flussoAttuale.verso == AVANZAMENTO_DX) offsetSparo = W_COCCODRILLO + flussoAttuale.velocità;
@@ -47,7 +48,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
 
         if (ora - start >= timerSparo) {
             posPartenzaSparo.x = pos.x + offsetSparo;
-            creaProcessoProiettile(PROIETTILE, fdScrittura, posPartenzaSparo, flussoAttuale.verso);
+            creaProcessoProiettile(PROIETTILE, fdScrittura, posPartenzaSparo, flussoAttuale.verso, buffer);
             
             timerSparo = RAND_TRA(ATTESA_MIN_PROIETTILE_S, ATTESA_MAX_PROIETTILE_S);
 
@@ -59,7 +60,7 @@ void coccodrillo(int fdScrittura, Flusso flussoAttuale) {
         pos.x += flussoAttuale.velocità * flussoAttuale.verso;
         // aggiornamento coordinate
         messaggio.posAttuale = pos;
-        write(fdScrittura, &messaggio, sizeof(Messaggio));
+        invia(buffer, messaggio);
 
         //usleep(400000);
         usleep(150000);

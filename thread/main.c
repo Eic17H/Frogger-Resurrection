@@ -15,8 +15,21 @@
 #include "listaCoccodrillo.h"
 #include "manche.h"
 #include "visualizzazione.h"
+#include "thread.h"
+
+
+
+
+
+Messaggio bufferArray[BUFFER_SIZE];
+int buffer_i_head;
+int buffer_i_tail;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int main() {
+    srand(time(0));
+    
+    TuttoBuffer buffer = {bufferArray, &buffer_i_head, &buffer_i_tail, &mutex};
     // ======== ==== ==== ========
     // ======== VARIABILI ========
     // ======== ==== ==== ========
@@ -53,9 +66,9 @@ int main() {
             if (round > 1) chiudiPipe(fd);
 
             creaPipe(fd);
-            pidRana = creaRana(2, fd);
+            pidRana = creaRana(2, fd, &buffer);
 
-            punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata);
+            punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata, &buffer);
             if (!tanaOccupata) vite--;
             else nTaneOccupate++;
 

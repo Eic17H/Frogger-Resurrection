@@ -86,7 +86,7 @@ void aggiornaPosInListaCoccodrilli(Messaggio messaggio, int n, Flusso flussi[n],
     nodo->dato.posAttuale = messaggio.posAttuale;
 }
 
-void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[n], int fd[]) {
+void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[n], int fd[], TuttoBuffer* buffer) {
     NodoCoccodrillo* temp = NULL, *penultimoNodo = NULL;
 
     for (int i = 0; i < n; i++) {
@@ -106,7 +106,7 @@ void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[
         // se la coda è alla giusta distanza, si crea un nuovo coccodrillo
         if (flussi[i].verso == AVANZAMENTO_DX && lista[i]->coda->dato.posAttuale.x >= flussi[i].distanzaCoccodrilli ||
             flussi[i].verso == AVANZAMENTO_SX && DIM_COLS - lista[i]->coda->dato.posAttuale.x - W_COCCODRILLO >= flussi[i].distanzaCoccodrilli) {
-            creaCoccodrillo(lista[i], fd, flussi[i]);
+            creaCoccodrillo(lista[i], fd, flussi[i], buffer);
         }
     }
 }

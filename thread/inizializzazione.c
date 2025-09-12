@@ -168,13 +168,13 @@ void inizializzaListaCoccodrilli(int nFlussi, ListaCoccodrillo* lista[nFlussi]) 
     }
 }
 
-void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFlussi], ListaCoccodrillo* lista[nFlussi]) {
+void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFlussi], ListaCoccodrillo* lista[nFlussi], TuttoBuffer* buffer) {
     for (int i = 0; i < nFlussi; i++) {
-        creaCoccodrillo(lista[i], fd, flussi[i]);
+        creaCoccodrillo(lista[i], fd, flussi[i], buffer);
     }
 }
 
-void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso) {
+void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso, TuttoBuffer* buffer) {
     pid_t pidCoccodrillo;
     Coccodrillo nuovoCoccodrillo;
     NodoCoccodrillo* nuovoNodo = NULL;
@@ -183,7 +183,7 @@ void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso) {
     if (forkFallita(pidCoccodrillo)) { endwin(); perror("chiamata fork() coccodrillo"); _exit(2); };
     if (processoFiglio(pidCoccodrillo)) {
         close(fd[0]); 
-        coccodrillo(fd[1], flusso); 
+        coccodrillo(fd[1], flusso, buffer); 
     }
     else {
         nuovoCoccodrillo = assegnaDatiCoccodrillo(pidCoccodrillo, flusso.posIniziale, flusso);
@@ -192,7 +192,7 @@ void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso) {
     }
 }
 
-pid_t creaRana(int n, int fd[n]) {
+pid_t creaRana(int n, int fd[n], TuttoBuffer* buffer) {
     pid_t pidRana = fork();
 
     // ERRORE
@@ -204,13 +204,13 @@ pid_t creaRana(int n, int fd[n]) {
     // RANA
     else if(processoFiglio(pidRana)){
         close(fd[0]);
-        rana(fd[1]);
+        rana(fd[1], buffer);
     }
     // MAIN
     return pidRana;
 }
 
-void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, ListaGranata* listaGranate) {
+void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, ListaGranata* listaGranate, TuttoBuffer* buffer) {
     Granata nuovaGranata;
     NodoGranata* nuovoNodo = NULL;
     pid_t pid_sparo = fork();
@@ -218,7 +218,7 @@ void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posParten
     if (forkFallita(pid_sparo)) {endwin(); perror("Errore fork() sparo"); _exit(2);}
     
     if (processoFiglio(pid_sparo)) { // processo granata (eredita il fd chiuso in lettura)
-        sparo(mittente, fdScrittura, posPartenza, direzione);
+        sparo(mittente, fdScrittura, posPartenza, direzione, buffer);
     }
     else {
         nuovaGranata = assegnaDatiGranata(pid_sparo, posPartenza);
@@ -227,7 +227,7 @@ void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posParten
     }
 }
 
-void creaProcessoProiettile(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione) {
+void creaProcessoProiettile(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, TuttoBuffer* buffer) {
     Granata nuovaGranata;
     NodoGranata* nuovoNodo = NULL;
     pid_t pid_sparo = fork();
@@ -235,16 +235,16 @@ void creaProcessoProiettile(Mittente mittente, int fdScrittura, Posizione posPar
     if (forkFallita(pid_sparo)) {endwin(); perror("Errore fork() sparo"); _exit(2);}
     
     if (processoFiglio(pid_sparo)) { // processo granata (eredita il fd chiuso in lettura)
-        sparo(mittente, fdScrittura, posPartenza, direzione);
+        sparo(mittente, fdScrittura, posPartenza, direzione, buffer);
     }
     // processo padre continua l'esecuzione
 }
 
-void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* listaCocco[nFlussi], ListaGranata** listaGranate, int fd[2]) {
+void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* listaCocco[nFlussi], ListaGranata** listaGranate, int fd[2], TuttoBuffer* buffer) {
     disegnaTane(N_TANE, tane);
     inizializzaArrayFlussi(N_FLUSSI, flussi);
     inizializzaListaCoccodrilli(nFlussi, listaCocco);
     *listaGranate = creaListaVuotaGranata();
-    creaCoccodrilliIniziali(2, fd, N_FLUSSI, flussi, listaCocco);
+    creaCoccodrilliIniziali(2, fd, N_FLUSSI, flussi, listaCocco, buffer);
     refresh();
 }

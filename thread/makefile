@@ -1,8 +1,10 @@
-out: main.o altrecose.o coccodrillo.o sparo.o inizializzazione.o listaCoccodrillo.o listaGranate.o processi.o rana.o regole.o visualizzazione.o manche.o
-	gcc main.o altrecose.o coccodrillo.o sparo.o inizializzazione.o listaCoccodrillo.o listaGranate.o processi.o rana.o regole.o visualizzazione.o manche.o -l ncurses -o Frogger
+out: main.o altrecose.o coccodrillo.o sparo.o inizializzazione.o listaCoccodrillo.o listaGranate.o processi.o rana.o regole.o visualizzazione.o manche.o thread.o
+	gcc main.o altrecose.o coccodrillo.o sparo.o inizializzazione.o listaCoccodrillo.o listaGranate.o processi.o rana.o regole.o visualizzazione.o manche.o thread.o -l ncurses -o Frogger
 	rm -f *.o
-main.o: main.h costanti.h struttureDati.h main.c
+main.o: main.h costanti.h struttureDati.h thread.h main.c
 	gcc -c main.c
+threas.o: thread.h thread.c
+	gcc -c thread.c
 manche.o: manche.h manche.c
 	gcc -c manche.c
 altrecose.o: altrecose.h altrecose.c

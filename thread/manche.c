@@ -7,6 +7,7 @@
 #include "struttureDati.h"
 #include "visualizzazione.h"
 #include <ncurses.h>
+#include "thread.h"
 
 /**
  * Aggiorna la posizione della rana in posMain
@@ -53,8 +54,8 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
  * LA STRUTTURA DI UNA MANCHE
  * return:  il punteggio della manche
  */
-int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata) {
-    inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, listaGranate, fd);
+int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata, TuttoBuffer* buffer) {
+    inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, listaGranate, fd, buffer);
     
     // Inizializzazione variabili e timer
     bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false, collisioneGranata = false;
@@ -69,13 +70,15 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
 
     // Loop principale
     while(!tempoScaduto(time(&ora), start) && vivo && !*tanaOccupata){
-        read(fd[0], &messaggio, sizeof(Messaggio));
+        messaggio = ricevi(buffer);
+        mvaddch(0,0,messaggio.mittente+'0');
         switch(messaggio.mittente) {
             case COCCO:
                 aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli);
                 spostaSprite(messaggio);
                 break;
             case RANA:
+            beep();
                 if (messaggio.posAttuale.x != CODICE_GRANATA_SPARATA && messaggio.posAttuale.y != CODICE_GRANATA_SPARATA) {
 
                     // La rana manda lo spostamento, non la posizione
@@ -105,11 +108,12 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                     posPartenzaGranata.x = posRana.x + W_RANA;
                     posPartenzaGranata.y = posRana.y;
 
-                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_DX, *listaGranate);    
+            beep();
+                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_DX, *listaGranate, buffer);    
                     
                     // posizione granata sinistra
                     posPartenzaGranata.x = posRana.x - 1;
-                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_SX, *listaGranate);
+                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_SX, *listaGranate, buffer);
                 }
                 break;
             case GRANATA:
@@ -124,7 +128,7 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                 break;
         }
         vivo = ancoraViva(inAcqua, colpito, tanaSbagliata);
-        controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd);
+        controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd, buffer);
 
         time(&ora);
         visualizzaTimer(DURATA_MANCHE_S - (ora-start));
