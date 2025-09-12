@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <ncurses.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <time.h>

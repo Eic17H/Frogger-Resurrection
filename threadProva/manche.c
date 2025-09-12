@@ -76,7 +76,7 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         switch(messaggio.mittente) {
             case COCCO:
                 aggiornaPosInListaCoccodrilli(messaggio, N_FLUSSI, flussi, listaCoccodrilli);
-                spostaSprite(messaggio);
+                spostaSprite(buffer, messaggio);
                 break;
             case RANA:
             beep();
@@ -103,7 +103,7 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
 
                     // Trovata la posizione, possiamo metterla nel messaggio modificato e inviarla
                     msg.posAttuale = posRana;
-                    spostaSprite(msg);
+                    spostaSprite(buffer, msg);
                 } else {
                     Posizione posPartenzaGranata;
                     posPartenzaGranata.x = posRana.x + W_RANA;
@@ -118,11 +118,11 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                 }
                 break;
             case GRANATA:
-                spostaSprite(messaggio);
+                spostaSprite(buffer, messaggio);
                 aggiornaPosInListaGranate(messaggio,*listaGranate);
                 break;
             case PROIETTILE:
-                spostaSprite(messaggio);
+                spostaSprite(buffer, messaggio);
                 collisioneGranata = gestisciCollisioneConGranate(messaggio, *listaGranate);
                 if(collisioneGranata) punteggioManche += 20;
                 gestisciCollisioneConRana(messaggio, posRana, &colpito);
@@ -132,9 +132,17 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd, buffer);
 
         time(&ora);
-        visualizzaTimer(DURATA_MANCHE_S - (ora-start));
-        visualizzaPunteggio(punteggioManche);
+        visualizzaTimer(buffer, DURATA_MANCHE_S - (ora-start));
+        visualizzaPunteggio(buffer, punteggioManche);
+        
+        sem_wait(buffer->semLiberi);
+        pthread_mutex_lock(buffer->mutex);
+
         refresh();
+
+        pthread_mutex_unlock(buffer->mutex);
+        sem_post(buffer->semLiberi);
+        
     }
 
     //kill(pidRana, SIGKILL);
@@ -159,11 +167,14 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
     free(*listaGranate);
 
     punteggioManche += (ora-start)*5; // 5 punti per secondo rimasto
-    messaggioAltroRound(inAcqua, colpito, tanaSbagliata, *tanaOccupata);
+    messaggioAltroRound(buffer, inAcqua, colpito, tanaSbagliata, *tanaOccupata);
     return punteggioManche;
 }
 
-void messaggioAltroRound(bool inAcqua, bool colpito, bool tanaSbagliata, bool tanaOccupata) {
+void messaggioAltroRound(TuttoBuffer* buffer, bool inAcqua, bool colpito, bool tanaSbagliata, bool tanaOccupata) {
+    sem_wait(buffer->semLiberi);
+    pthread_mutex_lock(buffer->mutex);
+
     if (tanaOccupata) {
         TESTO_CENTRATO("TANA CONQUISTATA!"); 
     }
@@ -178,13 +189,17 @@ void messaggioAltroRound(bool inAcqua, bool colpito, bool tanaSbagliata, bool ta
     }
     else {
         TESTO_CENTRATO("TEMPO SCADUTO!"); 
-    }
-
+    }    
     refresh();
-    for(int i=0; i<4; i++){
-        beep();
-        usleep(150000);
-    }
+
     sleep(1);
     clear();
+    pthread_mutex_unlock(buffer->mutex);
+    sem_post(buffer->semLiberi);
+    
+    //for(int i=0; i<4; i++){
+    //    beep();
+    //    usleep(150000);
+    //}
+    //sleep(1);
 }

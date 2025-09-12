@@ -4,12 +4,13 @@
 #include <ncurses.h>
 #include "listaGranate.h"
 #include "rana.h"
+#include "thread.h"
 #include "visualizzazione.h"
 #include "listaCoccodrillo.h"
 
 void inizializzaNcurses();
 void adattaFinestra();
-void coloraAmbienteGioco();
+void coloraAmbienteGioco(TuttoBuffer* buffer);
 void inizializzaColori();
 void messaggioBenvenuto();
 void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso, TuttoBuffer* buffer);
@@ -17,7 +18,7 @@ pid_t creaRana(int n, int fd[n], TuttoBuffer* buffer);
 void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, ListaGranata* listaGranate, TuttoBuffer* buffer);
 void creaProcessoProiettile(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, TuttoBuffer* buffer);
 void creaTane(int nTane, Tana tane[nTane]);
-void disegnaTane(int nTane, Tana tane[nTane]);
+void disegnaTane(TuttoBuffer* buffer, int nTane, Tana tane[nTane]);
 int generaVersoFlussoIniziale();
 void inizializzaArrayFlussi(int nFlussi, Flusso flussi[nFlussi]);
 void inizializzaListaCoccodrilli(int nFlussi, ListaCoccodrillo* lista[nFlussi]);

@@ -49,27 +49,26 @@ int main() {
     // ======== ==== = == = ==== ========
     srand(time(NULL));
     inizializzaNcurses();
-
+    messaggioBenvenuto();
+    adattaFinestra();
+    inizializzaColori();
+    creaTane(N_TANE, tane);
+    
     if (pthread_create(&idRana, NULL, &rana, &tb) != 0) {
         endwin();
         perror("Errore creazione rana");
         return -1;
     }
 
-    messaggioBenvenuto();
-    adattaFinestra();
-    inizializzaColori();
-    creaTane(N_TANE, tane);
-    
     do {
         round = 1, vite = N_VITE, nTaneOccupate = 0;
         punteggioTotale = 0;
         while (round <= N_MANCHE && vite > 0 && nTaneOccupate < N_TANE) {
             tanaOccupata = false;
 
-            coloraAmbienteGioco();
-            visualizzaVite(vite);
-            visualizzaRoundRimasti(N_MANCHE - round);
+            coloraAmbienteGioco(&tb);
+            visualizzaVite(&tb, vite);
+            visualizzaRoundRimasti(&tb, N_MANCHE - round);
 
             //pidRana = creaRana(2, fd, &tb);
 
@@ -80,7 +79,7 @@ int main() {
             round++;
         }
         
-        messaggioFinePartita(nTaneOccupate, punteggioTotale);
+        messaggioFinePartita(&tb, nTaneOccupate, punteggioTotale);
     } while(ricominciaPartita());
 
     clear(); refresh();

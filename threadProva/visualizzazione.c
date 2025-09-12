@@ -11,7 +11,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-void spostaSprite(Messaggio messaggio){
+void spostaSprite(TuttoBuffer* buffer, Messaggio messaggio){
     Mittente mittente = messaggio.mittente;
     Posizione posVecchia = messaggio.posVecchia, posAttuale = messaggio.posAttuale;
     pid_t pid = messaggio.id;
@@ -37,6 +37,10 @@ void spostaSprite(Messaggio messaggio){
             // Se, verticalmente, si trova dentro l'area di gioco
         
             inizializzaColoreSprite(posVecchiaRana.y);
+
+            sem_wait(buffer->semLiberi);
+            pthread_mutex_lock(buffer->mutex);
+            
             mvprintw(messaggio.posVecchia.y-1, messaggio.posVecchia.x, "%s", stringaVuota);
             mvprintw(messaggio.posVecchia.y, messaggio.posVecchia.x, "%s", stringaVuota);
 
@@ -44,6 +48,9 @@ void spostaSprite(Messaggio messaggio){
             mvprintw(messaggio.posAttuale.y-1, messaggio.posAttuale.x, "%s", sprite);
             mvprintw(messaggio.posAttuale.y, messaggio.posAttuale.x, "%s", sprite2);
             refresh();
+            pthread_mutex_unlock(buffer->mutex);
+            sem_post(buffer->semLiberi);
+
             break;
         }
         case PROIETTILE:
@@ -82,10 +89,10 @@ void spostaSprite(Messaggio messaggio){
             creaStringaVuota(strlen(sprite) - vecchioDaTagliareL - vecchioDaTagliareR, stringaVuota);
 
             selezionaColoreCoccodrillo(posAttuale.x - posVecchia.x, messaggio.staPerSparare);
-            cancellaCoccodrillo(stringaVuota, posVecchia, vecchioDaTagliareL);
+            cancellaCoccodrillo(buffer, stringaVuota, posVecchia, vecchioDaTagliareL);
             
             if (fuoriSchermo(posAttuale, COCCO, posAttuale.x - posVecchia.x)) return ;
-            stampaCoccodrillo(daStampare, daStampare2, posAttuale, daTagliareL);
+            stampaCoccodrillo(buffer, daStampare, daStampare2, posAttuale, daTagliareL);
             break;
         default:
             break;
@@ -177,7 +184,7 @@ void selezionaColoreCoccodrillo(int versoCoccodrillo, bool staPerSparare) {
     attron(COLOR_PAIR(COCCODRILLO_GIALLO));
 }
 
-void cancellaCoccodrillo(char stringaVuota[], Posizione posVecchia, int vecchioDaTagliareL) {
+void cancellaCoccodrillo(TuttoBuffer* buffer, char stringaVuota[], Posizione posVecchia, int vecchioDaTagliareL) {
     int xDaStampare;
     // se il coccodrillo non è uscito completamente, si cancella a partire da x = 0 (perché le coordinate originali sono negative)
     if(vecchioDaTagliareL != 0) {
@@ -192,7 +199,7 @@ void cancellaCoccodrillo(char stringaVuota[], Posizione posVecchia, int vecchioD
     mvprintw(posVecchia.y + 1, xDaStampare, "%s", stringaVuota);
 }
 
-void stampaCoccodrillo(char spriteSu[], char spriteGiu[], Posizione posAttuale, int daTagliareL) {
+void stampaCoccodrillo(TuttoBuffer* buffer, char spriteSu[], char spriteGiu[], Posizione posAttuale, int daTagliareL) {
     int xDaStampare;
 
     // se il coccodrillo non è uscito completamente, si stampa a partire da x = 0 (perché le coordinate originali sono negative)
@@ -204,27 +211,46 @@ void stampaCoccodrillo(char spriteSu[], char spriteGiu[], Posizione posAttuale, 
         xDaStampare = posAttuale.x;
     }
 
+    sem_wait(buffer->semLiberi);
+    pthread_mutex_lock(buffer->mutex);
+    
     mvprintw(posAttuale.y, xDaStampare, "%s", spriteSu);
     mvprintw(posAttuale.y + 1, xDaStampare, "%s", spriteGiu);
+    
+    pthread_mutex_unlock(buffer->mutex);
+    sem_post(buffer->semLiberi);
 }
 
-void visualizzaTimer(int secondi){
+void visualizzaTimer(TuttoBuffer* buffer, int secondi){
     int tempoInt = daSecondiAMinutiSecondi(secondi);
     // Prende ciascuna cifra, +'0' per avere il codice ASCII, e in mezzo mette i due punti
     char tempo[6] = {tempoInt/1000+'0', tempoInt/100%10+'0', ':', tempoInt/10%10+'0', tempoInt/1%10+'0', '\0'};
     /* stampa, magari usando macro per la posizione */
     
     attron(COLOR_PAIR(NERO));
+    sem_wait(buffer->semLiberi);
+    pthread_mutex_lock(buffer->mutex);
+    
     mvprintw(Y_TIMER_MANCHE, X_TIMER_MANCHE, "%s", tempo);
+    
+    pthread_mutex_unlock(buffer->mutex);
+    sem_post(buffer->semLiberi);
 }
 
-void visualizzaPunteggio(int punteggio){
+void visualizzaPunteggio(TuttoBuffer* buffer, int punteggio){
     char punteg[5] = {punteggio/1000+'0', punteggio/100%10+'0', punteggio/10%10+'0', punteggio%10+'0', '\0'};
     attron(COLOR_PAIR(NERO));
+
+    sem_wait(buffer->semLiberi);
+    pthread_mutex_lock(buffer->mutex);
+
     mvprintw(Y_TIMER_MANCHE, X_TIMER_MANCHE+10, "%s", punteg);
+    
+    pthread_mutex_unlock(buffer->mutex);
+    sem_post(buffer->semLiberi);
 }
 
-void visualizzaVite(int vite) {
+void visualizzaVite(TuttoBuffer* buffer, int vite) {
     if (vite < 1) return;
     int x = X_PARTENZA_STAMPA_VITE;
 
@@ -233,6 +259,10 @@ void visualizzaVite(int vite) {
     creaStringaVuota(strlen(stringaVuota), stringaVuota);
     
     attron(COLOR_PAIR(NERO));
+
+    sem_wait(buffer->semLiberi);
+    pthread_mutex_lock(buffer->mutex);
+
     mvprintw(Y_STAMPA_VITE, X_PARTENZA_STAMPA_VITE, "%s", stringaVuota);
     
     for (int i = 0; i < vite; i++) {
@@ -241,9 +271,12 @@ void visualizzaVite(int vite) {
         x+=2;
     }
     refresh();
+    
+    pthread_mutex_unlock(buffer->mutex);
+    sem_post(buffer->semLiberi);
 }
 
-void visualizzaRoundRimasti(int roundRimasti) {
+void visualizzaRoundRimasti(TuttoBuffer* buffer, int roundRimasti) {
     char messaggioDaStampare[] = "Round rimasti: ";
     int lunghezzaMsgDaStampare = strlen(messaggioDaStampare);
     char stringaVuota[lunghezzaMsgDaStampare + 2];
@@ -251,14 +284,24 @@ void visualizzaRoundRimasti(int roundRimasti) {
     creaStringaVuota(strlen(stringaVuota), stringaVuota);
     
     attron(COLOR_PAIR(NERO));
+    
+    sem_wait(buffer->semLiberi);
+    pthread_mutex_lock(buffer->mutex);
+
     mvprintw(Y_STAMPA_ROUND_RIMASTI, X_STAMPA_ROUND_RIMASTI, "%s", stringaVuota);
     
     mvprintw(Y_STAMPA_ROUND_RIMASTI, X_STAMPA_ROUND_RIMASTI, "%s%d", messaggioDaStampare, roundRimasti);
 
     refresh();
+    
+    pthread_mutex_unlock(buffer->mutex);
+    sem_post(buffer->semLiberi);
+
 }
 
-void messaggioFinePartita(int nTaneOccupate, int punti) {
+void messaggioFinePartita(TuttoBuffer* buffer, int nTaneOccupate, int punti) {
+    sem_wait(buffer->semLiberi);
+    pthread_mutex_lock(buffer->mutex);
     if (nTaneOccupate != N_TANE) {
         TESTO_CENTRATO("HAI PERSO :(");
     }
@@ -278,6 +321,9 @@ void messaggioFinePartita(int nTaneOccupate, int punti) {
     }
     
     refresh();
+    pthread_mutex_unlock(buffer->mutex);
+    sem_post(buffer->semLiberi);
+
     sleep(2);
         
 }

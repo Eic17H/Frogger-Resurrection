@@ -12,7 +12,7 @@
 #define TESTO_COORD_CENTRATO(w, s, x, y) mvwprintw(w, LINES/2, COLS/2 - strlen(s)/2, s, x, y);
 #define TESTO_COORD_CENTRATO2(w, s, x, y) mvwprintw(w, LINES/2+1, COLS/2 - strlen(s)/2, s, x, y);
 
-void spostaSprite(Messaggio messaggio);
+void spostaSprite(TuttoBuffer* buffer, Messaggio messaggio);
 
 void creaStringaVuota(int n, char* stringa);
 void assegnaSpriteCoccodrillo(Posizione posAttuale, Posizione posVecchia, char* sprite1, char* sprite2);
@@ -28,13 +28,13 @@ char* tagliaStringa(char* stringa, int lunghezza);
 
 void selezionaColoreCoccodrillo(int versoCoccodrillo, bool staPerSparare);
 
-void cancellaCoccodrillo(char stringaVuota[], Posizione posVecchia, int vecchioDaTagliareL);
-void stampaCoccodrillo(char spriteSu[], char spriteGiu[], Posizione posAttuale, int daTagliareL);
+void cancellaCoccodrillo(TuttoBuffer* buffer, char stringaVuota[], Posizione posVecchia, int vecchioDaTagliareL);
+void stampaCoccodrillo(TuttoBuffer* buffer, char spriteSu[], char spriteGiu[], Posizione posAttuale, int daTagliareL);
 
-void visualizzaTimer(int secondi);
-void visualizzaPunteggio(int punteggio);
-void visualizzaVite(int vite);
-void visualizzaRoundRimasti(int roundRimasti);
+void visualizzaTimer(TuttoBuffer* buffer, int secondi);
+void visualizzaPunteggio(TuttoBuffer* buffer, int punteggio);
+void visualizzaVite(TuttoBuffer* buffer, int vite);
+void visualizzaRoundRimasti(TuttoBuffer* buffer, int roundRimasti);
 
-void messaggioFinePartita(int nTaneOccupate, int punteggio);
+void messaggioFinePartita(TuttoBuffer* buffer, int nTaneOccupate, int punteggio);
 #endif /* VISUALIZZAZIONE_H */

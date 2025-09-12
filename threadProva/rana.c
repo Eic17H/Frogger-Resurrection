@@ -1,4 +1,5 @@
 #include <ncurses.h>
+#include <semaphore.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <time.h>
@@ -27,7 +28,11 @@ void* rana(void* args) {
     while (1) {
         messaggio.posVecchia = pos;
 
+        sem_wait(argomenti->semLiberi);
+        pthread_mutex_lock(argomenti->mutex);
         kCode = getch();
+        pthread_mutex_unlock(argomenti->mutex);
+        sem_post(argomenti->semLiberi);
 
         switch(kCode) {
             case KEY_UP:

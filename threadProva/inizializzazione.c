@@ -43,27 +43,52 @@ void inizializzaColori() {
     bkgd(COLOR_PAIR(ACQUA));
 }
 
-void coloraAmbienteGioco() {
+void coloraAmbienteGioco(TuttoBuffer* buffer) {
+
     // barra superiore        
     attron(COLOR_PAIR(NERO));
     for(int i=0; i<DIM_COLS+1; i++){
-    	mvaddch(0, i, ' ');
+        sem_wait(buffer->semLiberi);
+        pthread_mutex_lock(buffer->mutex);
+
+        mvaddch(0, i, ' ');
+        
+        pthread_mutex_unlock(buffer->mutex);
+        sem_post(buffer->semLiberi);
+    	
     }
     // sponda verde
     attron(COLOR_PAIR(SPONDA));
     for(int i=0; i< DIM_COLS+1; i++){
     	for(int j=0; j< H_SPONDA; j++){
-    		mvaddch(j+1, i, ' ');
+            sem_wait(buffer->semLiberi);
+            pthread_mutex_lock(buffer->mutex);
+
+            mvaddch(j+1, i, ' ');
+            pthread_mutex_unlock(buffer->mutex);
+            sem_post(buffer->semLiberi);
+    		
     	}
     }
     // marciapiede bianco        
     attron(COLOR_PAIR(MARCIAPIEDE));
     for(int i=0; i<DIM_COLS+1; i++){
     	for(int j=0; j< H_MARCIAPIEDE; j++){
-    		mvaddch(LINES-1 -j, i, ' ');
+            sem_wait(buffer->semLiberi);
+            pthread_mutex_lock(buffer->mutex);
+            mvaddch(LINES-1 -j, i, ' ');
+    
+            pthread_mutex_unlock(buffer->mutex);
+            sem_post(buffer->semLiberi);
+    		
     	}
     }
+    sem_wait(buffer->semLiberi);
+    pthread_mutex_lock(buffer->mutex);
+
     refresh();
+    pthread_mutex_unlock(buffer->mutex);
+    sem_post(buffer->semLiberi);
 }
 
 void adattaFinestra() {
@@ -109,7 +134,7 @@ void creaTane(int nTane, Tana tane[nTane]) {
     }
 }
 
-void disegnaTane(int nTane, Tana tane[nTane]) {
+void disegnaTane(TuttoBuffer* buffer, int nTane, Tana tane[nTane]) {
     // W_TANA+1 per includere il terminatore di stringa /0
     char spriteTanaAperta[H_TANA][W_TANA+1] = {SPR_TANA_APERTA1, SPR_TANA_APERTA2, SPR_TANA_APERTA3, SPR_TANA_APERTA4};
     char spriteTanaChiusa[H_TANA][W_TANA+1] = {SPR_TANA_CHIUSA1, SPR_TANA_CHIUSA2, SPR_TANA_CHIUSA3, SPR_TANA_CHIUSA4};
@@ -119,12 +144,20 @@ void disegnaTane(int nTane, Tana tane[nTane]) {
         // si disegna la tana partendo dall'alto fino ad arrivare alla riva
         for (int j = 1; j <= H_TANA; j++) {
             attron(COLOR_PAIR(SPONDA));
+            
+            sem_wait(buffer->semLiberi);
+            pthread_mutex_lock(buffer->mutex);
+
+    
             if (!tane[i].chiusa) {
                 mvaddstr(j, tane[i].xInizio, spriteTanaAperta[indiceTana]);
             }
             else {
                 mvaddstr(j, tane[i].xInizio, spriteTanaChiusa[indiceTana]);
             }
+
+            pthread_mutex_unlock(buffer->mutex);
+            sem_post(buffer->semLiberi);
             indiceTana++;
         }
     }
@@ -251,10 +284,15 @@ void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posParten
 //}
 
 void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* listaCocco[nFlussi], ListaGranata** listaGranate, int fd[2], TuttoBuffer* buffer) {
-    disegnaTane(nTane, tane);
+    disegnaTane(buffer, nTane, tane);
     inizializzaArrayFlussi(nFlussi, flussi);
     inizializzaListaCoccodrilli(nFlussi, listaCocco);
     *listaGranate = creaListaVuotaGranata();
     creaCoccodrilliIniziali(2, fd, nFlussi, flussi, listaCocco, buffer);
+    
+    sem_wait(buffer->semLiberi);
+    pthread_mutex_lock(buffer->mutex);
     refresh();
+    pthread_mutex_unlock(buffer->mutex);
+    sem_post(buffer->semLiberi);
 }
