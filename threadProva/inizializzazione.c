@@ -48,25 +48,20 @@ void coloraAmbienteGioco(TuttoBuffer* buffer) {
     // barra superiore        
     attron(COLOR_PAIR(NERO));
     for(int i=0; i<DIM_COLS+1; i++){
-        sem_wait(buffer->semLiberi);
         pthread_mutex_lock(buffer->mutex);
 
         mvaddch(0, i, ' ');
         
         pthread_mutex_unlock(buffer->mutex);
-        sem_post(buffer->semLiberi);
-    	
     }
     // sponda verde
     attron(COLOR_PAIR(SPONDA));
     for(int i=0; i< DIM_COLS+1; i++){
     	for(int j=0; j< H_SPONDA; j++){
-            sem_wait(buffer->semLiberi);
             pthread_mutex_lock(buffer->mutex);
 
             mvaddch(j+1, i, ' ');
             pthread_mutex_unlock(buffer->mutex);
-            sem_post(buffer->semLiberi);
     		
     	}
     }
@@ -74,21 +69,17 @@ void coloraAmbienteGioco(TuttoBuffer* buffer) {
     attron(COLOR_PAIR(MARCIAPIEDE));
     for(int i=0; i<DIM_COLS+1; i++){
     	for(int j=0; j< H_MARCIAPIEDE; j++){
-            sem_wait(buffer->semLiberi);
             pthread_mutex_lock(buffer->mutex);
             mvaddch(LINES-1 -j, i, ' ');
     
             pthread_mutex_unlock(buffer->mutex);
-            sem_post(buffer->semLiberi);
     		
     	}
     }
-    sem_wait(buffer->semLiberi);
     pthread_mutex_lock(buffer->mutex);
 
     refresh();
     pthread_mutex_unlock(buffer->mutex);
-    sem_post(buffer->semLiberi);
 }
 
 void adattaFinestra() {
@@ -145,7 +136,6 @@ void disegnaTane(TuttoBuffer* buffer, int nTane, Tana tane[nTane]) {
         for (int j = 1; j <= H_TANA; j++) {
             attron(COLOR_PAIR(SPONDA));
             
-            sem_wait(buffer->semLiberi);
             pthread_mutex_lock(buffer->mutex);
 
     
@@ -157,7 +147,6 @@ void disegnaTane(TuttoBuffer* buffer, int nTane, Tana tane[nTane]) {
             }
 
             pthread_mutex_unlock(buffer->mutex);
-            sem_post(buffer->semLiberi);
             indiceTana++;
         }
     }
@@ -313,9 +302,7 @@ void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[n
     *listaGranate = creaListaVuotaGranata();
     creaCoccodrilliIniziali(2, fd, nFlussi, flussi, listaCocco, buffer);
     
-    sem_wait(buffer->semLiberi);
     pthread_mutex_lock(buffer->mutex);
     refresh();
     pthread_mutex_unlock(buffer->mutex);
-    sem_post(buffer->semLiberi);
 }

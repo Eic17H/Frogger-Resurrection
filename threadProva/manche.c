@@ -131,14 +131,11 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
         visualizzaTimer(buffer, DURATA_MANCHE_S - (ora-start));
         visualizzaPunteggio(buffer, punteggioManche);
         
-        sem_wait(buffer->semLiberi);
         pthread_mutex_lock(buffer->mutex);
 
         refresh();
 
-        pthread_mutex_unlock(buffer->mutex);
-        sem_post(buffer->semLiberi);
-        
+        pthread_mutex_unlock(buffer->mutex);  
     }
 
     //TODO: kill(pidRana, SIGKILL);
@@ -168,7 +165,6 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
 }
 
 void messaggioAltroRound(TuttoBuffer* buffer, bool inAcqua, bool colpito, bool tanaSbagliata, bool tanaOccupata) {
-    sem_wait(buffer->semLiberi);
     pthread_mutex_lock(buffer->mutex);
 
     if (tanaOccupata) {
@@ -191,8 +187,8 @@ void messaggioAltroRound(TuttoBuffer* buffer, bool inAcqua, bool colpito, bool t
     sleep(1);
     clear();
     pthread_mutex_unlock(buffer->mutex);
-    sem_post(buffer->semLiberi);
     
+    // TODO: non so perché ma blocca lo schermo
     //for(int i=0; i<4; i++){
     //    beep();
     //    usleep(150000);
