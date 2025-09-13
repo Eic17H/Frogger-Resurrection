@@ -138,7 +138,10 @@ int manche(Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI]
         pthread_mutex_unlock(&buffer->mutex);  
     }
 
-    terminaProcessi = 1;
+    pthread_mutex_lock(&buffer->mutex);
+    terminaThreads = true;
+    pthread_mutex_unlock(&buffer->mutex);
+
     pthread_join(idRana, NULL);
 
     for(int i = 0; i<N_FLUSSI; i++) {

@@ -13,9 +13,10 @@ void* rana(void* args) {
     TuttoBuffer* argomenti = (TuttoBuffer*)args;
 
     int kCode, spazioNuovaTestaRana = SALTO_RANA + W_RANA, wRanaSenzaTesta = (W_RANA - 1);
-    Posizione pos = {0, 0}, posPartenzaGranata;
+    Posizione pos = {0, 0};
     Messaggio messaggio;
     time_t start = 0, ora = 0;
+    bool termina = false;
 
     // scrittura primo messaggio
     messaggio.mittente = RANA;
@@ -26,11 +27,12 @@ void* rana(void* args) {
 
     invia(argomenti, messaggio);
 
-    while (terminaProcessi != 1) {
+    while (!termina) {
         messaggio.posVecchia = pos;
 
         pthread_mutex_lock(&argomenti->mutex);
         kCode = getch();
+        termina = terminaThreads;
         pthread_mutex_unlock(&argomenti->mutex);
 
         switch(kCode) {
@@ -55,13 +57,6 @@ void* rana(void* args) {
                     time(&start);
                     pos.x = CODICE_GRANATA_SPARATA;
                     pos.y = CODICE_GRANATA_SPARATA;
-                    // posizione granata destra
-                    posPartenzaGranata.x = pos.x + W_RANA;
-                    posPartenzaGranata.y = pos.y;
-                    //creaProcessoGranata(fdScrittura, posPartenzaGranata, AVANZAMENTO_DX);    
-                    // posizione granata sinistra
-                    posPartenzaGranata.x = pos.x - 1;
-                    //creaProcessoGranata(fdScrittura, posPartenzaGranata, AVANZAMENTO_SX);
                 }
                 break;
 

@@ -69,6 +69,8 @@ bool gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* l
         granata = granata->successivo;
     }
     if (granataColpita != NULL) {
+        pthread_join(granataColpita->dato.id, NULL);
+        pthread_join(messaggioProiettile.id, NULL);
         //TODO: kill(granataColpita->dato.pid, SIGKILL);
         //TODO: kill(messaggioProiettile.pid, SIGKILL);
         return true;

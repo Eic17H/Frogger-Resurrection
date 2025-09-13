@@ -1,6 +1,4 @@
 #include <pthread.h>
-#include <signal.h>
-#include <stdatomic.h>
 #include <stdbool.h>
 #include <ncurses.h>
 #include <stdio.h>
@@ -18,8 +16,7 @@
 #include "visualizzazione.h"
 #include "thread.h"
 
-// TODO: si può fare?
-atomic_int terminaProcessi;
+bool terminaThreads;
 
 int main() {
     srand(time(0));
@@ -59,7 +56,7 @@ int main() {
         punteggioTotale = 0;
         while (round <= N_MANCHE && vite > 0 && nTaneOccupate < N_TANE) {
             tanaOccupata = false;
-            terminaProcessi = 0;
+            terminaThreads = false;
 
             coloraAmbienteGioco();
             visualizzaVite(vite);

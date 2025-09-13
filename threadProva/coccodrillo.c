@@ -17,6 +17,7 @@ void coccodrillo(Flusso flussoAttuale, TuttoBuffer* buffer) {
     time_t start, ora;
     _Bool sparato = false;
     int timerSparo, offsetSparo = 0;
+    bool termina = false;
     srand(time(NULL));
 
     pos = flussoAttuale.posIniziale;
@@ -38,8 +39,12 @@ void coccodrillo(Flusso flussoAttuale, TuttoBuffer* buffer) {
     time(&start);
     time(&ora);
 
-    while (!fuoriSchermo(messaggio.posAttuale, COCCO, flussoAttuale.verso) && terminaProcessi != 1) {
+    while (!fuoriSchermo(messaggio.posAttuale, COCCO, flussoAttuale.verso) && !termina) {
         messaggio.staPerSparare = false;
+
+        pthread_mutex_lock(&buffer->mutex);
+        termina = terminaThreads;
+        pthread_mutex_unlock(&buffer->mutex);
 
         time(&ora);
         if (timerSparo - (ora - start) <= PREAVVISO_SPARO_S) {
