@@ -7,10 +7,11 @@
 
 typedef struct {
     Messaggio* buffer;
-    sem_t* semLiberi;
-    sem_t* semOccupati;
-    int* iScrittura;
-    pthread_mutex_t* mutex;
+    sem_t semLiberi;
+    sem_t semOccupati;
+    int iScrittura;
+    int iLettura;
+    pthread_mutex_t mutex;
 } TuttoBuffer;
 
 typedef struct 
@@ -19,10 +20,17 @@ typedef struct
     TuttoBuffer* buffer;
 }ArgsThreadCoccodrillo;
 
-void inizializzaBufferSemaforiMutex(Messaggio** buffer, sem_t* semLiberi, sem_t* semOccupati, pthread_mutex_t* mutex);
+typedef struct 
+{
+    Mittente mittente;
+    Posizione posPartenza;
+    int direzione;
+    TuttoBuffer* buffer;
+}ArgsThreadSparo;
 
-bool bufferVuoto(TuttoBuffer* buffer);
-bool bufferPieno(TuttoBuffer* buffer);
+void inizializzaTuttoBuffer(TuttoBuffer* buffer);
+void ripulisciTuttoBuffer(TuttoBuffer* buffer);
+
 void invia(TuttoBuffer* buffer, Messaggio msg);
 Messaggio ricevi(TuttoBuffer* buffer);
 

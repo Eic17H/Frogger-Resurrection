@@ -1,52 +1,53 @@
 #include "thread.h"
 #include "stdlib.h"
 #include <ncurses.h>
+#include <pthread.h>
 #include <semaphore.h>
 #include "costanti.h"
 
-void inizializzaBufferSemaforiMutex(Messaggio** buffer, sem_t* semLiberi, sem_t* semOccupati, pthread_mutex_t* mutex) {
-    *buffer = (Messaggio*)malloc(sizeof(Messaggio) * BUFFER_SIZE);
-    if (*buffer == NULL) {endwin(); perror("errore creazione buffer"); return ;}
+void inizializzaTuttoBuffer(TuttoBuffer* buffer) {
+    buffer->buffer = (Messaggio*)malloc(sizeof(Messaggio) * BUFFER_SIZE);
+    if (buffer->buffer == NULL) {endwin(); perror("errore creazione buffer"); return ;}
 
-    sem_init(semLiberi, 0, BUFFER_SIZE);
-    sem_init(semOccupati, 0, 0);
+    sem_init(&buffer->semLiberi, 0, BUFFER_SIZE);
+    sem_init(&buffer->semOccupati, 0, 0);
 
-    pthread_mutex_init(mutex, NULL);
+    pthread_mutex_init(&buffer->mutex, NULL);
+
+    buffer->iLettura = 0;
+    buffer->iScrittura = 0;
 }
 
-//bool bufferVuoto(TuttoBuffer* buffer) {
-//    pthread_mutex_lock(buffer->mutex);
-//    bool ret = *buffer->head == *buffer->tail;
-//    pthread_mutex_unlock(buffer->mutex);
-//    return ret;
-//    }
-//bool bufferPieno(TuttoBuffer* buffer) {
-//    pthread_mutex_lock(buffer->mutex);
-//    bool ret = (*buffer->head + 1) % BUFFER_SIZE == *buffer->tail;
-//    pthread_mutex_unlock(buffer->mutex);
-//    return ret;
-//    }
-//
+void ripulisciTuttoBuffer(TuttoBuffer* buffer) {
+    // distruzione vecchi semafori
+    sem_destroy(&buffer->semLiberi);
+    sem_destroy(&buffer->semOccupati);
+
+    pthread_mutex_destroy(&buffer->mutex);
+    
+    free(buffer->buffer);
+    buffer->buffer = NULL;
+}
 
 void invia(TuttoBuffer* buffer, Messaggio msg) {
-    sem_wait(buffer->semLiberi);
-    pthread_mutex_lock(buffer->mutex);
-    buffer->buffer[*buffer->iScrittura] = msg;
-    *buffer->iScrittura = (*buffer->iScrittura + 1) % BUFFER_SIZE;
-    pthread_mutex_unlock(buffer->mutex);
-    sem_post(buffer->semOccupati);
+    sem_wait(&buffer->semLiberi);
+    pthread_mutex_lock(&buffer->mutex);
+    buffer->buffer[buffer->iScrittura] = msg;
+    buffer->iScrittura = (buffer->iScrittura + 1) % BUFFER_SIZE;
+    pthread_mutex_unlock(&buffer->mutex);
+    sem_post(&buffer->semOccupati);
 }
 
 Messaggio ricevi(TuttoBuffer* buffer) {
     Messaggio msg;
     msg.mittente = -1;
-    static int iLettura = 0;
 
-    sem_wait(buffer->semOccupati);
-    msg = buffer->buffer[iLettura];
-    sem_post(buffer->semLiberi);
+    sem_wait(&buffer->semOccupati);
+    msg = buffer->buffer[buffer->iLettura];
+    sem_post(&buffer->semLiberi);
 
-    iLettura = (iLettura + 1)  % BUFFER_SIZE;
+    // non c'è bisogno di mutex perché solo il main thread può leggere
+    buffer->iLettura = (buffer->iLettura + 1)  % BUFFER_SIZE;
 
     return msg;
 }

@@ -33,8 +33,8 @@ void stampaCoccodrillo(TuttoBuffer* buffer, char spriteSu[], char spriteGiu[], P
 
 void visualizzaTimer(TuttoBuffer* buffer, int secondi);
 void visualizzaPunteggio(TuttoBuffer* buffer, int punteggio);
-void visualizzaVite(TuttoBuffer* buffer, int vite);
-void visualizzaRoundRimasti(TuttoBuffer* buffer, int roundRimasti);
+void visualizzaVite(int vite);
+void visualizzaRoundRimasti(int roundRimasti);
 
 void messaggioFinePartita(TuttoBuffer* buffer, int nTaneOccupate, int punteggio);
 #endif /* VISUALIZZAZIONE_H */

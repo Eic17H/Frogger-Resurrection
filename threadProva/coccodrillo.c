@@ -4,6 +4,7 @@
 #include <time.h>
 
 #include "costanti.h"
+#include "main.h"
 #include "struttureDati.h"
 #include "altrecose.h"
 #include "thread.h"
@@ -37,7 +38,7 @@ void coccodrillo(Flusso flussoAttuale, TuttoBuffer* buffer) {
     time(&start);
     time(&ora);
 
-    while (!fuoriSchermo(messaggio.posAttuale, COCCO, flussoAttuale.verso)) {
+    while (!fuoriSchermo(messaggio.posAttuale, COCCO, flussoAttuale.verso) && terminaProcessi != 1) {
         messaggio.staPerSparare = false;
 
         time(&ora);

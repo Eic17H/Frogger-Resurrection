@@ -1,4 +1,5 @@
 #include "manche.h"
+#include "main.h"
 #include "altrecose.h"
 #include "costanti.h"
 #include "inizializzazione.h"
@@ -7,6 +8,7 @@
 #include "struttureDati.h"
 #include "visualizzazione.h"
 #include <ncurses.h>
+#include <pthread.h>
 #include "thread.h"
 
 /**
@@ -54,8 +56,8 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
  * LA STRUTTURA DI UNA MANCHE
  * return:  il punteggio della manche
  */
-int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pid_t pidRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata, TuttoBuffer* buffer) {
-    inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, listaGranate, fd, buffer);
+int manche(Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pthread_t idRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata, TuttoBuffer* buffer) {
+    inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, listaGranate, buffer);
     
     // Inizializzazione variabili e timer
     bool vivo = true, inAcqua = false, tanaSbagliata = false, colpito = false, collisioneGranata = false;
@@ -107,10 +109,10 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                     Posizione posPartenzaGranata;
                     posPartenzaGranata.x = posRana.x + W_RANA;
                     posPartenzaGranata.y = posRana.y;
-                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_DX, *listaGranate, buffer);    
+                    creaProcessoGranata(GRANATA,posPartenzaGranata, AVANZAMENTO_DX, *listaGranate, buffer);    
                     // posizione granata sinistra
                     posPartenzaGranata.x = posRana.x - 1;
-                    creaProcessoGranata(GRANATA, fd[1], posPartenzaGranata, AVANZAMENTO_SX, *listaGranate, buffer);
+                    creaProcessoGranata(GRANATA,posPartenzaGranata, AVANZAMENTO_SX, *listaGranate, buffer);
                 }
                 break;
             case GRANATA:
@@ -125,26 +127,25 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
                 break;
         }
         vivo = ancoraViva(inAcqua, colpito, tanaSbagliata);
-        controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, fd, buffer);
+        controllaSpawnCoccodrilli(N_FLUSSI, listaCoccodrilli, flussi, buffer);
 
         time(&ora);
         visualizzaTimer(buffer, DURATA_MANCHE_S - (ora-start));
         visualizzaPunteggio(buffer, punteggioManche);
         
-        pthread_mutex_lock(buffer->mutex);
-
+        pthread_mutex_lock(&buffer->mutex);
         refresh();
-
-        pthread_mutex_unlock(buffer->mutex);  
+        pthread_mutex_unlock(&buffer->mutex);  
     }
 
-    //TODO: kill(pidRana, SIGKILL);
+    terminaProcessi = 1;
+    pthread_join(idRana, NULL);
 
     for(int i = 0; i<N_FLUSSI; i++) {
         NodoCoccodrillo* listaCoccodrilliDiQuestoFlusso = listaCoccodrilli[i]->testa;
         NodoCoccodrillo* successivo = listaCoccodrilliDiQuestoFlusso->successivo;
         for(NodoCoccodrillo* coccodrillo = listaCoccodrilliDiQuestoFlusso; coccodrillo != NULL; coccodrillo = successivo){
-            //TODO: kill(coccodrillo->dato.pid, SIGKILL);
+            pthread_join(coccodrillo->dato.id, NULL);
             successivo = coccodrillo->successivo;
             free(coccodrillo);
         }
@@ -153,19 +154,20 @@ int manche(int fd[2], Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrill
 
     NodoGranata* granata = (*listaGranate)->testa, *temp = NULL;
     while (granata != NULL) {
+        pthread_join(granata->dato.id, NULL);
         temp = granata;
         granata = granata->successivo;
         free(temp);
     }
     free(*listaGranate);
-
+    
     punteggioManche += (ora-start)*5; // 5 punti per secondo rimasto
     messaggioAltroRound(buffer, inAcqua, colpito, tanaSbagliata, *tanaOccupata);
     return punteggioManche;
 }
 
 void messaggioAltroRound(TuttoBuffer* buffer, bool inAcqua, bool colpito, bool tanaSbagliata, bool tanaOccupata) {
-    pthread_mutex_lock(buffer->mutex);
+    pthread_mutex_lock(&buffer->mutex);
 
     if (tanaOccupata) {
         TESTO_CENTRATO("TANA CONQUISTATA!"); 
@@ -186,7 +188,7 @@ void messaggioAltroRound(TuttoBuffer* buffer, bool inAcqua, bool colpito, bool t
 
     sleep(1);
     clear();
-    pthread_mutex_unlock(buffer->mutex);
+    pthread_mutex_unlock(&buffer->mutex);
     
     // TODO: non so perché ma blocca lo schermo
     //for(int i=0; i<4; i++){

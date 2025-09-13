@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include "costanti.h"
 #include "rana.h"
+#include "main.h"
 #include "thread.h"
 
 void* rana(void* args) {
@@ -25,12 +26,12 @@ void* rana(void* args) {
 
     invia(argomenti, messaggio);
 
-    while (1) {
+    while (terminaProcessi != 1) {
         messaggio.posVecchia = pos;
 
-        pthread_mutex_lock(argomenti->mutex);
+        pthread_mutex_lock(&argomenti->mutex);
         kCode = getch();
-        pthread_mutex_unlock(argomenti->mutex);
+        pthread_mutex_unlock(&argomenti->mutex);
 
         switch(kCode) {
             case KEY_UP:

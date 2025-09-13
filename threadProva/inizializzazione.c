@@ -43,43 +43,29 @@ void inizializzaColori() {
     bkgd(COLOR_PAIR(ACQUA));
 }
 
-void coloraAmbienteGioco(TuttoBuffer* buffer) {
+void coloraAmbienteGioco() {
 
     // barra superiore        
     attron(COLOR_PAIR(NERO));
     for(int i=0; i<DIM_COLS+1; i++){
-        pthread_mutex_lock(buffer->mutex);
-
         mvaddch(0, i, ' ');
-        
-        pthread_mutex_unlock(buffer->mutex);
     }
     // sponda verde
     attron(COLOR_PAIR(SPONDA));
     for(int i=0; i< DIM_COLS+1; i++){
     	for(int j=0; j< H_SPONDA; j++){
-            pthread_mutex_lock(buffer->mutex);
-
             mvaddch(j+1, i, ' ');
-            pthread_mutex_unlock(buffer->mutex);
-    		
     	}
     }
     // marciapiede bianco        
     attron(COLOR_PAIR(MARCIAPIEDE));
     for(int i=0; i<DIM_COLS+1; i++){
     	for(int j=0; j< H_MARCIAPIEDE; j++){
-            pthread_mutex_lock(buffer->mutex);
             mvaddch(LINES-1 -j, i, ' ');
-    
-            pthread_mutex_unlock(buffer->mutex);
-    		
     	}
     }
-    pthread_mutex_lock(buffer->mutex);
 
     refresh();
-    pthread_mutex_unlock(buffer->mutex);
 }
 
 void adattaFinestra() {
@@ -136,7 +122,7 @@ void disegnaTane(TuttoBuffer* buffer, int nTane, Tana tane[nTane]) {
         for (int j = 1; j <= H_TANA; j++) {
             attron(COLOR_PAIR(SPONDA));
             
-            pthread_mutex_lock(buffer->mutex);
+            pthread_mutex_lock(&buffer->mutex);
 
     
             if (!tane[i].chiusa) {
@@ -146,7 +132,7 @@ void disegnaTane(TuttoBuffer* buffer, int nTane, Tana tane[nTane]) {
                 mvaddstr(j, tane[i].xInizio, spriteTanaChiusa[indiceTana]);
             }
 
-            pthread_mutex_unlock(buffer->mutex);
+            pthread_mutex_unlock(&buffer->mutex);
             indiceTana++;
         }
     }
@@ -193,9 +179,9 @@ void inizializzaListaCoccodrilli(int nFlussi, ListaCoccodrillo* lista[nFlussi]) 
     }
 }
 
-void creaCoccodrilliIniziali(int n, int fd[n], int nFlussi, Flusso flussi[nFlussi], ListaCoccodrillo* lista[nFlussi], TuttoBuffer* buffer) {
+void creaCoccodrilliIniziali(int nFlussi, Flusso flussi[nFlussi], ListaCoccodrillo* lista[nFlussi], TuttoBuffer* buffer) {
     for (int i = 0; i < nFlussi; i++) {
-        creaCoccodrillo(lista[i], fd, flussi[i], buffer);
+        creaCoccodrillo(lista[i],flussi[i], buffer);
     }
 }
 
@@ -207,7 +193,7 @@ void* thread_coccodrillo(void* arg) {
     return NULL;
 }
 
-void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso, TuttoBuffer* buffer) {
+void creaCoccodrillo(ListaCoccodrillo* lista, Flusso flusso, TuttoBuffer* buffer) {
     pid_t pidCoccodrillo;
     Coccodrillo nuovoCoccodrillo;
     NodoCoccodrillo* nuovoNodo = NULL;
@@ -226,33 +212,6 @@ void creaCoccodrillo(ListaCoccodrillo* lista, int fd[], Flusso flusso, TuttoBuff
     //free(argsThreadCoccodrillo);
 }
 
-//pid_t creaRana(int n, int fd[n], TuttoBuffer* buffer) {
-//    pid_t pidRana = fork();
-//
-//    // ERRORE
-//    if (forkFallita(pidRana)){
-//        endwin();
-//        perror("chiamata fork() rana");
-//        _exit(2);
-//    }
-//    // RANA
-//    else if(processoFiglio(pidRana)){
-//        close(fd[0]);
-//        rana(fd[1], buffer);
-//    }
-//    // MAIN
-//    return pidRana;
-//}
-
-typedef struct 
-{
-    Mittente mittente;
-    int fdScrittura;
-    Posizione posPartenza;
-    int direzione;
-    TuttoBuffer* buffer;
-}ArgsThreadSparo;
-
 void* thread_sparo(void* arg) {
     ArgsThreadSparo args = *(ArgsThreadSparo*) arg;
     free(arg);
@@ -260,7 +219,7 @@ void* thread_sparo(void* arg) {
     return NULL;
 }
 
-void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posPartenza, int direzione, ListaGranata* listaGranate, TuttoBuffer* buffer) {
+void creaProcessoGranata(Mittente mittente, Posizione posPartenza, int direzione, ListaGranata* listaGranate, TuttoBuffer* buffer) {
     Granata nuovaGranata;
     NodoGranata* nuovoNodo = NULL;
     
@@ -268,7 +227,6 @@ void creaProcessoGranata(Mittente mittente, int fdScrittura, Posizione posParten
     if (argsThreadSparo == NULL) {endwin(); perror("Errore allocazione ArgsThreadSparo"); return ;}
     argsThreadSparo->buffer = buffer;
     argsThreadSparo->direzione = direzione;
-    argsThreadSparo->fdScrittura = fdScrittura;
     argsThreadSparo->mittente = mittente;
     argsThreadSparo->posPartenza = posPartenza;
     pthread_t tid;
@@ -295,14 +253,14 @@ void creaProcessoProiettile(Mittente mittente, Posizione posPartenza, int direzi
     // processo padre continua l'esecuzione
 }
 
-void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* listaCocco[nFlussi], ListaGranata** listaGranate, int fd[2], TuttoBuffer* buffer) {
+void inizializzaManche(int nTane, int nFlussi, Tana tane[nTane], Flusso flussi[nFlussi], ListaCoccodrillo* listaCocco[nFlussi], ListaGranata** listaGranate, TuttoBuffer* buffer) {
     disegnaTane(buffer, nTane, tane);
     inizializzaArrayFlussi(nFlussi, flussi);
     inizializzaListaCoccodrilli(nFlussi, listaCocco);
     *listaGranate = creaListaVuotaGranata();
-    creaCoccodrilliIniziali(2, fd, nFlussi, flussi, listaCocco, buffer);
+    creaCoccodrilliIniziali(nFlussi, flussi, listaCocco, buffer);
     
-    pthread_mutex_lock(buffer->mutex);
+    pthread_mutex_lock(&buffer->mutex);
     refresh();
-    pthread_mutex_unlock(buffer->mutex);
+    pthread_mutex_unlock(&buffer->mutex);
 }

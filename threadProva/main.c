@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <signal.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <ncurses.h>
 #include <stdio.h>
@@ -17,6 +18,8 @@
 #include "visualizzazione.h"
 #include "thread.h"
 
+// TODO: si può fare?
+atomic_int terminaProcessi;
 
 int main() {
     srand(time(0));
@@ -25,13 +28,11 @@ int main() {
     // ======== ==== ==== ========
     // ======== VARIABILI ========
     // ======== ==== ==== ========
-    int fd[2];
     int x_rana = X_PARTENZA_RANA, y_rana = Y_PARTENZA_RANA, x_granata = NON_SU_SCHERMO, y_granata = NON_SU_SCHERMO;
     int round, vite, nTaneOccupate;
     int punteggioTotale;
     bool tanaOccupata; 
     Flusso flussi[N_FLUSSI];
-    pid_t pidRana;
     Tana tane[N_TANE];
     ListaCoccodrillo* listaCoccodrilli[N_FLUSSI];
     ListaGranata* listaGranate;
@@ -42,8 +43,7 @@ int main() {
     pthread_mutex_t mutex;
     int iScrittura = 0, iLettura = 0;
 
-    inizializzaBufferSemaforiMutex(&buffer, &semLiberi, &semOccupati, &mutex);
-    TuttoBuffer tb = {.buffer = buffer, .mutex = &mutex, .semLiberi = &semLiberi, . semOccupati = &semOccupati, .iScrittura = &iScrittura};
+    TuttoBuffer tb = {0};
     // ======== ==== = == = ==== ========
     // ======== INIZIALIZZAZIONE ========
     // ======== ==== = == = ==== ========
@@ -59,19 +59,21 @@ int main() {
         punteggioTotale = 0;
         while (round <= N_MANCHE && vite > 0 && nTaneOccupate < N_TANE) {
             tanaOccupata = false;
+            terminaProcessi = 0;
 
-            coloraAmbienteGioco(&tb);
-            visualizzaVite(&tb, vite);
-            visualizzaRoundRimasti(&tb, N_MANCHE - round);
+            coloraAmbienteGioco();
+            visualizzaVite(vite);
+            visualizzaRoundRimasti(N_MANCHE - round);
 
+            inizializzaTuttoBuffer(&tb);
             if (pthread_create(&idRana, NULL, &rana, &tb) != 0) {
                 endwin();
                 perror("Errore creazione rana");
                 return -1;
             }
-            //pidRana = creaRana(2, fd, &tb);
 
-            punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata, &tb);
+            punteggioTotale += manche(flussi, listaCoccodrilli, &listaGranate, idRana, tane, 0, &tanaOccupata, &tb);
+            ripulisciTuttoBuffer(&tb);
             if (!tanaOccupata) vite--;
             else nTaneOccupate++;
 
