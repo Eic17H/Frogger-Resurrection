@@ -8,6 +8,7 @@
 #include "altrecose.h"
 #include "thread.h"
 #include "inizializzazione.h"
+#include "regole.h"
 
 void coccodrillo(Flusso flussoAttuale, TuttoBuffer* buffer) {
     Posizione pos, posPartenzaSparo; 
@@ -36,7 +37,7 @@ void coccodrillo(Flusso flussoAttuale, TuttoBuffer* buffer) {
     time(&start);
     time(&ora);
 
-    while (1) {
+    while (!fuoriSchermo(messaggio.posAttuale, COCCO, flussoAttuale.verso)) {
         messaggio.staPerSparare = false;
 
         time(&ora);

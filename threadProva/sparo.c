@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <ncurses.h>
 
+#include "regole.h"
 #include "struttureDati.h"
 #include "thread.h"
 
@@ -20,7 +21,7 @@ void sparo(Mittente mittente, Posizione posPartenza, int direzione, TuttoBuffer*
 
     invia(buffer, messaggio);
 
-    while (1) {
+    while (!fuoriSchermo(messaggio.posAttuale, mittente, direzione)) {
         messaggio.posVecchia = pos;
 
         pos.x += direzione;

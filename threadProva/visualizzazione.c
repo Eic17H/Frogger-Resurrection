@@ -57,16 +57,21 @@ void spostaSprite(TuttoBuffer* buffer, Messaggio messaggio){
             creaStringaVuota(strlen(SPR_GRANATA), stringaVuota);
             
             inizializzaColoreSprite(posVecchia.y);
+            pthread_mutex_lock(buffer->mutex);
             mvprintw(posVecchia.y, posVecchia.x, "%s", stringaVuota);
-                    
+            pthread_mutex_unlock(buffer->mutex);
+
             if (fuoriSchermo(posAttuale, mittente, posAttuale.x - posVecchia.x)) {
                 //TODO: kill(pid, SIGKILL);
                 return ;
             }
             inizializzaColoreSprite(posAttuale.y);
             if(mittente == PROIETTILE) attron(COLOR_PAIR(COCCODRILLO_ROSSO));
+            else inizializzaColoreSprite(posVecchia.y);
+            
+            pthread_mutex_lock(buffer->mutex);
             mvprintw(posAttuale.y, posAttuale.x, "%s", sprite);
-
+            pthread_mutex_unlock(buffer->mutex);
             break;
         
         case COCCO:

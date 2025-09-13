@@ -53,12 +53,6 @@ int main() {
     adattaFinestra();
     inizializzaColori();
     creaTane(N_TANE, tane);
-    
-    if (pthread_create(&idRana, NULL, &rana, &tb) != 0) {
-        endwin();
-        perror("Errore creazione rana");
-        return -1;
-    }
 
     do {
         round = 1, vite = N_VITE, nTaneOccupate = 0;
@@ -70,6 +64,11 @@ int main() {
             visualizzaVite(&tb, vite);
             visualizzaRoundRimasti(&tb, N_MANCHE - round);
 
+            if (pthread_create(&idRana, NULL, &rana, &tb) != 0) {
+                endwin();
+                perror("Errore creazione rana");
+                return -1;
+            }
             //pidRana = creaRana(2, fd, &tb);
 
             punteggioTotale += manche(fd, flussi, listaCoccodrilli, &listaGranate, pidRana, tane, 0, &tanaOccupata, &tb);
