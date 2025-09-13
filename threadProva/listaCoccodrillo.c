@@ -99,7 +99,6 @@ void controllaSpawnCoccodrilli(int n, ListaCoccodrillo* lista[n], Flusso flussi[
     
             lista[i]->testa = penultimoNodo;
 
-            //TODO: kill(temp->dato.pid, SIGKILL);
             free(temp);
         }
         // se la coda è alla giusta distanza, si crea un nuovo coccodrillo
