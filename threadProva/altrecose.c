@@ -8,6 +8,7 @@
 #include <ncurses.h>
 #include "regole.h"
 #include "visualizzazione.h"
+#include "listaThreadDaTerminare.h"
 
 bool laRanaESuUnCoccodrilloPuntoInterrogativo(Posizione rana, Posizione coccodrillo, int difficolta){
     
@@ -58,12 +59,14 @@ void gestisciCollisioneConRana(Messaggio messaggioProiettile, Posizione posRana,
  * return:  true - se c'è stata una collisione
  *          false - se non c'è stata una collisione
  */
-bool gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* listaGranate) {
+bool gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* listaGranate, ListaThreadTerminabili listaThreadTerminabili) {
     NodoGranata* granata = listaGranate->testa, *granataColpita = NULL, *nodoPrimaGranataColp = NULL, *nodoDopoGranataColp = NULL;
 
     while (granata != NULL && granataColpita == NULL) {
         if (posizioniUguali(granata->dato.posAttuale, messaggioProiettile.posAttuale)) {
             granataColpita = granata;
+            terminaThread(listaThreadTerminabili, messaggioProiettile.id);
+            terminaThread(listaThreadTerminabili, granataColpita->dato.id);
             beep();
         }
         granata = granata->successivo;

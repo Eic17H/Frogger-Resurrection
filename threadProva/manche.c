@@ -56,7 +56,7 @@ bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flus
  * LA STRUTTURA DI UNA MANCHE
  * return:  il punteggio della manche
  */
-int manche(Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pthread_t idRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata, TuttoBuffer* buffer) {
+int manche(Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pthread_t idRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata, TuttoBuffer* buffer, ListaThreadTerminabili* listaThreadTerminabili) {
     inizializzaManche(N_TANE, N_FLUSSI, tane, flussi, listaCoccodrilli, listaGranate, buffer);
     
     // Inizializzazione variabili e timer
@@ -116,14 +116,18 @@ int manche(Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI]
                 }
                 break;
             case GRANATA:
+                if(!checkSeEDaIgnorare(*listaThreadTerminabili, messaggio.id)){
                 spostaSprite(buffer, messaggio);
                 aggiornaPosInListaGranate(messaggio,*listaGranate);
+                pushNuovoThreadTerminabile(*listaThreadTerminabili, messaggio.id);}
                 break;
             case PROIETTILE:
+                if(!checkSeEDaIgnorare(*listaThreadTerminabili, messaggio.id)){
                 spostaSprite(buffer, messaggio);
-                collisioneGranata = gestisciCollisioneConGranate(messaggio, *listaGranate);
+                collisioneGranata = gestisciCollisioneConGranate(messaggio, *listaGranate, *listaThreadTerminabili);
                 if(collisioneGranata) punteggioManche += 20;
                 gestisciCollisioneConRana(messaggio, posRana, &colpito);
+                pushNuovoThreadTerminabile(*listaThreadTerminabili, messaggio.id);}
                 break;
         }
         vivo = ancoraViva(inAcqua, colpito, tanaSbagliata);
@@ -138,9 +142,10 @@ int manche(Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI]
         pthread_mutex_unlock(&buffer->mutex);  
     }
 
+    /*
     pthread_mutex_lock(&buffer->mutex);
     terminaThreads = true;
-    pthread_mutex_unlock(&buffer->mutex);
+    pthread_mutex_unlock(&buffer->mutex);*/
 
     pthread_join(idRana, NULL);
 

@@ -24,7 +24,7 @@ void sparo(Mittente mittente, Posizione posPartenza, int direzione, TuttoBuffer*
 
     while (!fuoriSchermo(messaggio.posAttuale, mittente, direzione) && !termina) {
         pthread_mutex_lock(&buffer->mutex);
-        termina = terminaThreads;
+        //termina = terminaThreads;
         pthread_mutex_unlock(&buffer->mutex);
 
         messaggio.posVecchia = pos;

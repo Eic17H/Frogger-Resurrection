@@ -12,9 +12,10 @@
 #include "visualizzazione.h"
 #include "inizializzazione.h"
 #include "thread.h"
+#include "listaThreadDaTerminare.h"
 
 bool aggiornaPosizioneRana(Posizione *posMain, Posizione posInviata, Flusso flussi[N_FLUSSI], ListaCoccodrillo* lista[N_FLUSSI]);
-int manche(Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pthread_t idRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata, TuttoBuffer* buffer);
+int manche(Flusso flussi[N_FLUSSI], ListaCoccodrillo* listaCoccodrilli[N_FLUSSI], ListaGranata** listaGranate, pthread_t idRana, Tana tane[N_TANE], int difficolta, bool* tanaOccupata, TuttoBuffer* buffer, ListaThreadTerminabili* listaThreadTerminabili);
 void messaggioAltroRound(TuttoBuffer* buffer, bool inAcqua, bool colpito, bool tanaSbagliata, bool tanaOccupata);
 
 #endif /* MANCHE_H */

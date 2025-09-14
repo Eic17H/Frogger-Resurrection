@@ -4,6 +4,7 @@
 #include "listaCoccodrillo.h"
 #include "listaGranate.h"
 #include "struttureDati.h"
+#include "listaThreadDaTerminare.h"
 
 #define RAND_TRA(x,y) x + rand() % (y - x + 1)
 
@@ -13,7 +14,7 @@ bool laRanaConquistatoTanaChiusa(Posizione rana, Tana tane[], int difficolta, bo
 bool ranaSuTanaSbagliata(Posizione rana, bool );
 NodoCoccodrillo* trovaCoccodrilloSottoRana(Posizione posAttualeRana, NodoCoccodrillo* coccodrilloAttuale, ListaCoccodrillo** lista, int indiceFlusso);
 int trovaPosRanaSuCoccodrillo(int xCoccodrillo, int xRana);
-bool gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* listaGranate);
+bool gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* listaGranate, ListaThreadTerminabili listaThreadTerminabili);
 void gestisciCollisioneConRana(Messaggio messaggioProiettile, Posizione posRana, bool* colpito);
 bool laRanaESuUnCoccodrilloDiverso(NodoCoccodrillo* precedente, NodoCoccodrillo* attuale);
 bool laRanaSpostataSuStessoCoccodrillo(NodoCoccodrillo* precedente, NodoCoccodrillo* attuale, Posizione posVecchiaRana, Posizione posNuovaRana);

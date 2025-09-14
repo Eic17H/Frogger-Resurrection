@@ -32,7 +32,7 @@ void* rana(void* args) {
 
         pthread_mutex_lock(&argomenti->mutex);
         kCode = getch();
-        termina = terminaThreads;
+        //termina = terminaThreads;
         pthread_mutex_unlock(&argomenti->mutex);
 
         switch(kCode) {

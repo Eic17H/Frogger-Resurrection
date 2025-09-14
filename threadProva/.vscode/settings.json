@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "types.h": "c",
-        "visualizzazione.h": "c"
+        "visualizzazione.h": "c",
+        "pthread.h": "c",
+        "manche.h": "c",
+        "listathreaddaterminare.h": "c",
+        "altrecose.h": "c"
     }
 }

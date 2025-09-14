@@ -15,13 +15,13 @@
 #include "manche.h"
 #include "visualizzazione.h"
 #include "thread.h"
-
-bool terminaThreads;
+#include "listaThreadDaTerminare.h"
 
 int main() {
     srand(time(0));
     
-    
+    ListaThreadTerminabili* listaThreadTerminabili = (ListaThreadTerminabili*) malloc(sizeof(ListaThreadTerminabili));
+    listaThreadTerminabili->testa = listaThreadTerminabili->coda = NULL;
     // ======== ==== ==== ========
     // ======== VARIABILI ========
     // ======== ==== ==== ========
@@ -56,7 +56,6 @@ int main() {
         punteggioTotale = 0;
         while (round <= N_MANCHE && vite > 0 && nTaneOccupate < N_TANE) {
             tanaOccupata = false;
-            terminaThreads = false;
 
             coloraAmbienteGioco();
             visualizzaVite(vite);
@@ -69,7 +68,7 @@ int main() {
                 return -1;
             }
 
-            punteggioTotale += manche(flussi, listaCoccodrilli, &listaGranate, idRana, tane, 0, &tanaOccupata, &tb);
+            punteggioTotale += manche(flussi, listaCoccodrilli, &listaGranate, idRana, tane, 0, &tanaOccupata, &tb, listaThreadTerminabili);
             ripulisciTuttoBuffer(&tb);
             if (!tanaOccupata) vite--;
             else nTaneOccupate++;

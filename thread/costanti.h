@@ -32,7 +32,7 @@
 
 #define N_FLUSSI 10
 #define DISTANZA_FLUSSI 1
-#define N_TANE 5 
+#define N_TANE 5
 #define N_SEPARATORI_TANE 6
 #define N_VITE 4
 #define N_MANCHE 8

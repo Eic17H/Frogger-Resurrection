@@ -43,7 +43,6 @@ void coccodrillo(Flusso flussoAttuale, TuttoBuffer* buffer) {
         messaggio.staPerSparare = false;
 
         pthread_mutex_lock(&buffer->mutex);
-        termina = terminaThreads;
         pthread_mutex_unlock(&buffer->mutex);
 
         time(&ora);
