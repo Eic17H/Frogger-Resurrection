@@ -62,7 +62,6 @@ void spostaSprite(TuttoBuffer* buffer, Messaggio messaggio){
             pthread_mutex_unlock(&buffer->mutex);
 
             if (fuoriSchermo(posAttuale, mittente, posAttuale.x - posVecchia.x)) {
-                
                 return ;
             }
             inizializzaColoreSprite(posAttuale.y);

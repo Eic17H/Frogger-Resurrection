@@ -59,7 +59,7 @@ void gestisciCollisioneConRana(Messaggio messaggioProiettile, Posizione posRana,
  *          false - se non c'è stata una collisione
  */
 bool gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* listaGranate) {
-    NodoGranata* granata = listaGranate->testa, *granataColpita = NULL, *nodoPrimaGranataColp = NULL, *nodoDopoGranataColp = NULL;
+    NodoGranata* granata = listaGranate->testa, *granataColpita = NULL;
 
     while (granata != NULL && granataColpita == NULL) {
         if (posizioniUguali(granata->dato.posAttuale, messaggioProiettile.posAttuale)) {
@@ -69,7 +69,10 @@ bool gestisciCollisioneConGranate(Messaggio messaggioProiettile, ListaGranata* l
         granata = granata->successivo;
     }
     if (granataColpita != NULL) {
-        eliminaNodoGranataFuoriLista(granataColpita,listaGranate);
+        pthread_join(granataColpita->dato.id, NULL);
+        pthread_join(messaggioProiettile.id, NULL);
+        //TODO: kill(granataColpita->dato.pid, SIGKILL);
+        //TODO: kill(messaggioProiettile.pid, SIGKILL);
         return true;
     }
     return false;

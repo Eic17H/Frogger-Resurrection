@@ -1,5 +1,4 @@
 #include "listaGranate.h"
-#include "regole.h"
 
 // Inserire i dati di tipo Granata
 Granata assegnaDatiGranata(pthread_t id, Posizione posAttuale) {
@@ -65,49 +64,15 @@ NodoGranata* creaNodoGranata(Granata dato){
     return nodo;
 }
 
-NodoGranata* trovaNodoGranata(pthread_t id, ListaGranata* lista) {
+void aggiornaPosInListaGranate(Messaggio messaggio, ListaGranata* lista) {
     NodoGranata* nodo = lista->testa;
+
     // si trova il nodo corrispondente al Granata
-    while (nodo->dato.id != id && nodo != NULL) {
+    while (nodo->dato.id != messaggio.id && nodo != NULL) {
         nodo = nodo->successivo;
     }
-    return nodo;
-}
-
-void aggiornaPosInListaGranate(Messaggio messaggio, ListaGranata* lista) {
-    NodoGranata* nodo = trovaNodoGranata(messaggio.id, lista);
 
     if (nodo == NULL) return ;
-
-    if (fuoriSchermo(messaggio.posAttuale, messaggio.mittente, messaggio.posAttuale.x - messaggio.posVecchia.x)) {
-        eliminaNodoGranataFuoriLista(nodo, lista);
-    }
-
     // si aggiornano le coordinate
     nodo->dato.posAttuale = messaggio.posAttuale;
-}
-
-void eliminaNodoGranataFuoriLista(NodoGranata* nodoDaElim, ListaGranata* lista) {
-    NodoGranata* nodoPrimaGranataDaElim = NULL, *nodoDopoGranataDaElim = NULL;
-    if (nodoDaElim == NULL)  return ;
-    
-    nodoPrimaGranataDaElim = nodoDaElim->successivo;
-    nodoDopoGranataDaElim = nodoDaElim->precedente;
-    
-    //granataColpita non è la testa
-    if (nodoDopoGranataDaElim != NULL) {
-        nodoDopoGranataDaElim->successivo = nodoDaElim->successivo;
-    } else {
-        lista->testa = nodoDaElim->successivo;
-    }
-    
-    //granataColpita non è la coda
-    if (nodoPrimaGranataDaElim != NULL) {
-        nodoPrimaGranataDaElim->precedente = nodoDaElim->precedente;
-    } else {
-        lista->coda = nodoDaElim->precedente;
-    }
-    
-    scollegaGranata(nodoDaElim);
-    free(nodoDaElim);
 }

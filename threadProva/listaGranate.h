@@ -34,8 +34,6 @@ bool listaVuotaGranata(ListaGranata lista);
 ListaGranata* creaListaVuotaGranata();
 NodoGranata* creaNodoGranata(Granata dato);
 
-NodoGranata* trovaNodoGranata(pthread_t id, ListaGranata* lista);
 void aggiornaPosInListaGranate(Messaggio messaggio, ListaGranata* lista);
-void eliminaNodoGranataFuoriLista(NodoGranata* nodoDaElim, ListaGranata* lista);
 
 #endif /* LISTAGRANATA_H */
